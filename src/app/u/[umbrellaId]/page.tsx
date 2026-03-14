@@ -10,8 +10,6 @@ import {
   Receipt,
   HelpCircle,
   ChevronRight,
-  Crown,
-  Users,
 } from "lucide-react";
 import { Spinner } from "@/components/ui";
 import { PhoneModal } from "@/components/layout/PhoneModal";
@@ -72,12 +70,9 @@ export default function LandingPage({
       <div className="min-h-dvh flex items-center justify-center p-6 bg-[#0A0A0A]">
         <div className="text-center">
           <span className="text-5xl">🏖️</span>
-          <h1 className="text-2xl mt-4 mb-2 text-white font-bold">
-            QR invalid
-          </h1>
+          <h1 className="text-2xl mt-4 mb-2 text-white font-bold">QR invalid</h1>
           <p className="text-white/40 text-sm">
-            Această umbrelă nu a fost găsită. Verifică QR code-ul sau adresează-te
-            recepției.
+            Această umbrelă nu a fost găsită. Verifică QR code-ul.
           </p>
         </div>
       </div>
@@ -96,72 +91,31 @@ export default function LandingPage({
         />
       )}
 
-      <div className="min-h-dvh bg-[#0A0A0A] text-white">
-        {/* Header */}
-        <div className="px-5 pt-8 pb-6">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <p className="text-[10px] font-bold tracking-[0.3em] text-[#C9AB81] uppercase mb-1">
-                Lounge &amp; Beach
-              </p>
-              <h1 className="text-2xl font-bold tracking-wide">
-                Kuziini <span className="text-[#C9AB81]">×</span> LOFT
-              </h1>
-            </div>
-            <Image src="/kuziini-logo.png" alt="Kuziini" width={48} height={48} className="rounded-xl border border-white/10 invert brightness-200" />
-          </div>
-
-          {/* Umbrella card */}
-          <div className="bg-white/[0.04] border border-white/[0.08] p-5 mb-5 animate-fade-up">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-[10px] text-white/30 uppercase tracking-[0.2em] mb-1">
-                  Umbrela ta
-                </p>
-                <h2 className="text-4xl font-bold text-white tracking-wide">
-                  {umbrella.number}
-                </h2>
-                <p className="text-sm text-[#C9AB81] font-semibold mt-1 tracking-wide">
-                  {umbrella.zone}
-                </p>
-              </div>
-              <div className="flex flex-col items-end gap-2">
-                <span className="text-3xl">⛱️</span>
-                {userSession && (
-                  <span className={cn(
-                    "text-[9px] font-bold tracking-wider uppercase px-2 py-1 border",
-                    userSession.role === "owner"
-                      ? "border-[#C9AB81]/50 text-[#C9AB81]"
-                      : "border-white/20 text-white/50"
-                  )}>
-                    {userSession.role === "owner" ? (
-                      <span className="flex items-center gap-1">
-                        <Crown className="w-3 h-3" /> Owner
-                      </span>
-                    ) : (
-                      <span className="flex items-center gap-1">
-                        <Users className="w-3 h-3" /> Guest
-                      </span>
-                    )}
-                  </span>
-                )}
-              </div>
-            </div>
-
+      <div className="min-h-dvh bg-[#0A0A0A] text-white flex flex-col">
+        {/* ═══ TOP: Umbrella number + ad space ═══ */}
+        <div className="flex-1 flex flex-col items-center justify-center px-5 pt-6">
+          {/* Umbrella icon + number - centered, prominent */}
+          <div className="text-center mb-6 animate-fade-up">
+            <span className="text-6xl block mb-3">⛱️</span>
+            <h1 className="text-6xl font-bold tracking-wider text-white">
+              {umbrella.number}
+            </h1>
+            <p className="text-[#C9AB81] text-sm font-semibold tracking-[0.2em] uppercase mt-2">
+              {umbrella.zone}
+            </p>
             {userSession && (
-              <div className="mt-4 pt-4 border-t border-white/[0.06] flex items-center gap-2">
-                <div className="w-7 h-7 rounded-full bg-[#C9AB81]/10 flex items-center justify-center">
-                  <span className="text-xs">👋</span>
-                </div>
-                <p className="text-sm text-white/50">
-                  Bun venit, <span className="font-semibold text-white/80">{userSession.name || userSession.phone}</span>
-                </p>
-              </div>
+              <p className="text-white/30 text-xs mt-3 tracking-wide">
+                {userSession.name || userSession.phone}
+                <span className="mx-2 text-white/10">·</span>
+                <span className={userSession.role === "owner" ? "text-[#C9AB81]" : "text-white/40"}>
+                  {userSession.role === "owner" ? "Owner" : "Guest"}
+                </span>
+              </p>
             )}
           </div>
 
-          {/* Promo banner */}
-          <div className="bg-white/[0.04] border border-white/[0.06] p-4 overflow-hidden animate-fade-in transition-all duration-500">
+          {/* Ad / Promo space */}
+          <div className="w-full max-w-sm bg-white/[0.03] border border-white/[0.06] p-4 animate-fade-in transition-all duration-500">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-bold text-white tracking-wide">{banner.title}</p>
@@ -183,63 +137,58 @@ export default function LandingPage({
           </div>
         </div>
 
-        {/* Action buttons */}
-        <div className="px-5 pb-8">
-          <p className="text-[10px] font-bold tracking-[0.3em] text-white/30 uppercase mb-4">
-            Ce dorești?
-          </p>
+        {/* ═══ BOTTOM: Action buttons grouped at bottom ═══ */}
+        <div className="px-5 pb-6 pt-6">
+          {/* Quick order CTA - main action */}
+          <Link href={`/u/${umbrellaId}/menu`}>
+            <div className="bg-[#C9AB81] p-4 text-[#0A0A0A] flex items-center justify-between active:opacity-80 transition-opacity mb-3">
+              <div className="flex items-center gap-3">
+                <UtensilsCrossed className="w-5 h-5" />
+                <div>
+                  <p className="font-bold text-sm tracking-wide">Comandă acum</p>
+                  <p className="text-[#0A0A0A]/50 text-[10px] tracking-wide">
+                    Livrare direct la șezlong
+                  </p>
+                </div>
+              </div>
+              <ChevronRight className="w-5 h-5 text-[#0A0A0A]/40" />
+            </div>
+          </Link>
 
-          <div className="grid grid-cols-2 gap-2 stagger">
-            <Link href={`/u/${umbrellaId}/menu`} className="animate-fade-up">
-              <ActionCard
-                icon={<UtensilsCrossed className="w-5 h-5" />}
-                label="Vezi meniul"
-                accent
-              />
+          {/* Secondary actions - 3 columns */}
+          <div className="grid grid-cols-3 gap-2">
+            <Link href={`/u/${umbrellaId}/cart`}>
+              <ActionCard icon={<ShoppingBag className="w-4 h-4" />} label="Coș" />
             </Link>
-            <Link href={`/u/${umbrellaId}/cart`} className="animate-fade-up">
-              <ActionCard
-                icon={<ShoppingBag className="w-5 h-5" />}
-                label="Coș comandă"
-              />
-            </Link>
-            <Link href={`/u/${umbrellaId}/bill`} className="animate-fade-up">
-              <ActionCard
-                icon={<Receipt className="w-5 h-5" />}
-                label="Solicită nota"
-              />
+            <Link href={`/u/${umbrellaId}/bill`}>
+              <ActionCard icon={<Receipt className="w-4 h-4" />} label="Nota" />
             </Link>
             <ActionCard
-              icon={<HelpCircle className="w-5 h-5" />}
+              icon={<HelpCircle className="w-4 h-4" />}
               label="Ajutor"
               onClick={() => alert("Apelează recepția la ext. 0 sau suna la +40 756 385 638")}
             />
           </div>
 
-          {/* Quick order CTA */}
-          <Link href={`/u/${umbrellaId}/menu`}>
-            <div className="mt-4 bg-[#C9AB81] p-5 text-[#0A0A0A] flex items-center justify-between active:opacity-80 transition-opacity animate-fade-up">
-              <div>
-                <p className="font-bold text-base tracking-wide">Comandă acum</p>
-                <p className="text-[#0A0A0A]/60 text-xs mt-0.5 tracking-wide">
-                  Livrare direct la șezlong
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-xl">🍹</span>
-                <ChevronRight className="w-5 h-5 text-[#0A0A0A]/50" />
-              </div>
-            </div>
-          </Link>
-
           {!userSession && (
             <button
               onClick={() => setShowPhone(true)}
-              className="w-full mt-3 py-3 text-xs text-[#C9AB81] font-bold tracking-[0.15em] uppercase"
+              className="w-full mt-3 py-3 text-[10px] text-[#C9AB81] font-bold tracking-[0.2em] uppercase"
             >
               Identifică-te pentru a comanda →
             </button>
           )}
+
+          {/* Branding footer */}
+          <div className="flex items-center justify-center gap-3 mt-4 pt-4 border-t border-white/[0.04]">
+            <Image src="/kuziini-logo.png" alt="Kuziini" width={28} height={28} className="rounded-md invert brightness-200" />
+            <span className="text-[#C9AB81]/40 text-xs font-bold">×</span>
+            <img
+              src="https://loftlounge.ro/wp-content/uploads/2025/07/LOFT-White-Transparent-LOGO-1024x330.png"
+              alt="LOFT"
+              className="h-4 object-contain opacity-40"
+            />
+          </div>
         </div>
       </div>
     </>
@@ -249,31 +198,21 @@ export default function LandingPage({
 function ActionCard({
   icon,
   label,
-  accent,
   onClick,
 }: {
   icon: React.ReactNode;
   label: string;
-  accent?: boolean;
   onClick?: () => void;
 }) {
   return (
     <div
       onClick={onClick}
-      className={cn(
-        "border p-4 flex flex-col gap-3 transition-all active:bg-white/[0.06] cursor-pointer",
-        accent
-          ? "bg-white/[0.04] border-[#C9AB81]/20"
-          : "bg-white/[0.02] border-white/[0.06]"
-      )}
+      className="bg-white/[0.03] border border-white/[0.06] p-3 flex flex-col items-center gap-2 transition-all active:bg-white/[0.06] cursor-pointer"
     >
-      <div className={cn(
-        "w-9 h-9 flex items-center justify-center",
-        accent ? "bg-[#C9AB81] text-[#0A0A0A]" : "bg-white/10 text-white/60"
-      )}>
+      <div className="w-8 h-8 flex items-center justify-center bg-white/10 text-white/50">
         {icon}
       </div>
-      <p className="font-bold text-xs tracking-wide">{label}</p>
+      <p className="font-bold text-[10px] tracking-wider text-white/60 uppercase">{label}</p>
     </div>
   );
 }
