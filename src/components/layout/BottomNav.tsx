@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ShoppingBag, UtensilsCrossed, Receipt, Home } from "lucide-react";
+import { ShoppingBag, UtensilsCrossed, Receipt, Home, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCartStore } from "@/store";
 
@@ -16,7 +16,8 @@ export function BottomNav({ umbrellaId }: BottomNavProps) {
   const base = `/u/${umbrellaId}`;
 
   const links = [
-    { href: base, label: "Acasă", icon: Home },
+    { href: "/", label: "K×L", icon: Sparkles, exact: true },
+    { href: base, label: "Acasă", icon: Home, exact: true },
     { href: `${base}/menu`, label: "Meniu", icon: UtensilsCrossed },
     {
       href: `${base}/cart`,
@@ -29,16 +30,17 @@ export function BottomNav({ umbrellaId }: BottomNavProps) {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 bg-[#0A0A0A]/95 backdrop-blur-md border-t border-white/[0.06] pb-safe">
-      <div className="flex items-center justify-around px-2 pt-2 pb-2">
-        {links.map(({ href, label, icon: Icon, badge }) => {
-          const active =
-            href === base ? pathname === base : pathname.startsWith(href);
+      <div className="flex items-center justify-around px-1 pt-2 pb-2">
+        {links.map(({ href, label, icon: Icon, badge, exact }) => {
+          const active = exact
+            ? pathname === href
+            : pathname.startsWith(href);
           return (
             <Link
               key={href}
               href={href}
               className={cn(
-                "flex flex-col items-center gap-0.5 px-4 py-1.5 transition-all duration-200 relative",
+                "flex flex-col items-center gap-0.5 px-2.5 py-1.5 transition-all duration-200 relative",
                 active
                   ? "text-[#C9AB81]"
                   : "text-white/30 active:text-white/50"
@@ -60,7 +62,7 @@ export function BottomNav({ umbrellaId }: BottomNavProps) {
               </div>
               <span
                 className={cn(
-                  "text-[10px] font-bold tracking-wider uppercase",
+                  "text-[9px] font-bold tracking-wider uppercase",
                   active ? "text-[#C9AB81]" : "text-white/30"
                 )}
               >

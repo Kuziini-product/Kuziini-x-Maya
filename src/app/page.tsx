@@ -84,6 +84,48 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ═══ Advertising Zone ═══ */}
+      <section className="py-10 px-5 border-b border-white/5">
+        <div className="max-w-md mx-auto space-y-4">
+          {/* Featured Ad */}
+          <div className="relative overflow-hidden border border-[#C9AB81]/20">
+            <div className="bg-gradient-to-br from-[#C9AB81]/10 to-transparent p-6">
+              <p className="text-[10px] font-bold text-[#C9AB81]/60 tracking-[0.3em] uppercase mb-2">
+                Sponsor
+              </p>
+              <h3 className="text-xl font-bold text-white tracking-wide mb-2">
+                Kuziini Furniture & More
+              </h3>
+              <p className="text-white/40 text-xs leading-relaxed mb-4">
+                Mobilier premium pentru terase, restaurante și beach clubs.
+                Design italian, calitate germană.
+              </p>
+              <a
+                href="https://www.instagram.com/kuziiniconceptstore/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-[#C9AB81] text-[#0A0A0A] px-5 py-2.5 font-bold text-[10px] tracking-[0.15em] uppercase active:opacity-80 transition-opacity"
+              >
+                Descoperă colecția
+                <ChevronRight className="w-3 h-3" />
+              </a>
+            </div>
+          </div>
+
+          {/* Ad slots - 2 columns */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-white/[0.03] border border-white/[0.06] p-4 text-center">
+              <p className="text-[10px] text-[#C9AB81]/40 tracking-[0.2em] uppercase mb-2">Ad Space</p>
+              <p className="text-white/20 text-[10px]">Spațiu publicitar disponibil</p>
+            </div>
+            <div className="bg-white/[0.03] border border-white/[0.06] p-4 text-center">
+              <p className="text-[10px] text-[#C9AB81]/40 tracking-[0.2em] uppercase mb-2">Ad Space</p>
+              <p className="text-white/20 text-[10px]">Spațiu publicitar disponibil</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* About */}
       <section className="py-16 px-5">
         <div className="text-center mb-10">
