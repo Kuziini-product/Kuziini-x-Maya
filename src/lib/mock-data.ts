@@ -61,6 +61,41 @@ export const MOCK_SESSIONS: Record<string, Session> = {
   },
 };
 
+// ─── Login Log ───────────────────────────────────────────────────────────────
+
+export interface LoginEntry {
+  name: string;
+  phone: string;
+  umbrellaId: string;
+  timestamp: string;
+}
+
+export const LOGIN_LOG: LoginEntry[] = [];
+
+// ─── Bill Requests Log ───────────────────────────────────────────────────────
+
+export interface BillRequestEntry {
+  umbrellaId: string;
+  paymentMethod: string;
+  amount: number;
+  timestamp: string;
+}
+
+export const BILL_REQUESTS_LOG: BillRequestEntry[] = [];
+
+// ─── Order Log ───────────────────────────────────────────────────────────────
+
+export interface OrderLogEntry {
+  orderId: string;
+  umbrellaId: string;
+  phone: string;
+  items: { name: string; quantity: number; price: number }[];
+  total: number;
+  timestamp: string;
+}
+
+export const ORDER_LOG: OrderLogEntry[] = [];
+
 // ─── Menu Categories ──────────────────────────────────────────────────────────
 
 export const MENU_CATEGORIES: MenuCategory[] = [

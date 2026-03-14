@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sleep, generateId } from "@/lib/utils";
+import { ORDER_LOG } from "@/lib/mock-data";
 import type { Order, CartItem } from "@/types";
 
 export async function POST(req: NextRequest) {
@@ -63,6 +64,16 @@ export async function POST(req: NextRequest) {
     ownerApprovalRequired,
     ownerApproved: null,
   };
+
+  // Log order
+  ORDER_LOG.push({
+    orderId: order.id,
+    umbrellaId,
+    phone: guestPhone,
+    items: order.items.map((i) => ({ name: i.name, quantity: i.quantity, price: i.price })),
+    total: order.total,
+    timestamp: order.createdAt,
+  });
 
   return NextResponse.json({ success: true, data: { order } });
 }

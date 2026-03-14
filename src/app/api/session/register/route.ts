@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { MOCK_UMBRELLAS, MOCK_SESSIONS } from "@/lib/mock-data";
+import { MOCK_UMBRELLAS, MOCK_SESSIONS, LOGIN_LOG } from "@/lib/mock-data";
 import { sleep, generateId } from "@/lib/utils";
 
 export async function POST(req: NextRequest) {
   await sleep(400);
 
-  const { umbrellaId, phone } = await req.json();
+  const { umbrellaId, phone, name } = await req.json();
 
   if (!umbrellaId || !phone) {
     return NextResponse.json({ success: false, error: "umbrellaId și phone sunt obligatorii." }, { status: 400 });
@@ -64,6 +64,14 @@ export async function POST(req: NextRequest) {
     homeUmbrellaId = umbrellaId;
     isRegistered = true;
   }
+
+  // Log login
+  LOGIN_LOG.push({
+    name: name || "",
+    phone,
+    umbrellaId,
+    timestamp: new Date().toISOString(),
+  });
 
   return NextResponse.json({
     success: true,
