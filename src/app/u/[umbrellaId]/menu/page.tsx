@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Search, ShoppingBag } from "lucide-react";
 import Link from "next/link";
-import { Spinner, EmptyState, PageHeader } from "@/components/ui";
+import { Spinner } from "@/components/ui";
 import { MenuItemCard } from "@/components/menu/MenuItemCard";
 import { useCartStore } from "@/store";
 import { cn } from "@/lib/utils";
@@ -17,12 +17,20 @@ async function fetchMenu(umbrellaId: string) {
   return json.data as { categories: MenuCategory[]; items: MenuItem[] };
 }
 
+const MENU_TABS = [
+  { id: "food", label: "FOOD MENU", slugs: ["starters", "pasta", "pizza", "sea", "land", "sides", "desserts"] },
+  { id: "bar", label: "BAR MENU", slugs: ["cocktails", "shots"] },
+  { id: "drinks", label: "DRINKS", slugs: ["beer", "energy-drinks", "soft-drinks", "water"] },
+  { id: "wine", label: "WINE LIST", slugs: ["wine"] },
+];
+
 export default function MenuPage({ params }: { params: { umbrellaId: string } }) {
   const { umbrellaId } = params;
-  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState("food");
   const [search, setSearch] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
   const itemCount = useCartStore((s) => s.itemCount());
-  const catBarRef = useRef<HTMLDivElement>(null);
+
 
   const { data, isLoading } = useQuery({
     queryKey: ["menu", umbrellaId],
@@ -32,134 +40,143 @@ export default function MenuPage({ params }: { params: { umbrellaId: string } })
   const categories = data?.categories ?? [];
   const allItems = data?.items ?? [];
 
+  const currentTab = MENU_TABS.find((t) => t.id === activeTab)!;
+  const tabCategories = categories.filter((c) => currentTab.slugs.includes(c.slug));
+
   const filteredItems = allItems.filter((item) => {
-    const matchCat = activeCategory ? item.categorySlug === activeCategory : true;
+    const matchTab = currentTab.slugs.includes(item.categorySlug);
     const matchSearch = search
       ? item.name.toLowerCase().includes(search.toLowerCase()) ||
         item.description.toLowerCase().includes(search.toLowerCase())
       : true;
-    return matchCat && matchSearch;
+    return matchTab && matchSearch;
   });
 
-  // Group by category for display
-  const grouped = categories
-    .filter((c) =>
-      filteredItems.some((i) => i.categorySlug === c.slug)
-    )
+  const grouped = tabCategories
+    .filter((c) => filteredItems.some((i) => i.categorySlug === c.slug))
     .map((c) => ({
       category: c,
       items: filteredItems.filter((i) => i.categorySlug === c.slug),
     }));
 
-  function scrollCatIntoView(slug: string) {
-    const el = catBarRef.current?.querySelector(`[data-cat="${slug}"]`);
-    el?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
-  }
-
   return (
-    <div>
-      <PageHeader
-        title="Meniu"
-        subtitle="Kuziini × LOFT Lounge"
-        back={
-          <Link href={`/u/${umbrellaId}`} className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center">
-            <ArrowLeft className="w-4 h-4 text-gray-600" />
+    <div className="min-h-dvh bg-[#0A0A0A] text-white">
+      {/* Header */}
+      <div className="sticky top-0 z-30 bg-[#0A0A0A]/95 backdrop-blur-md border-b border-white/10">
+        <div className="flex items-center justify-between px-4 py-3">
+          <Link
+            href={`/u/${umbrellaId}`}
+            className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center"
+          >
+            <ArrowLeft className="w-4 h-4 text-white/70" />
           </Link>
-        }
-        right={
-          itemCount > 0 ? (
-            <Link href={`/u/${umbrellaId}/cart`} className="relative w-9 h-9 rounded-full bg-ocean-600 flex items-center justify-center">
-              <ShoppingBag className="w-4 h-4 text-white" />
-              <span className="absolute -top-1 -right-1 bg-coral-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
-                {itemCount}
-              </span>
-            </Link>
-          ) : null
-        }
-      />
 
-      {/* Search */}
-      <div className="px-4 py-3 bg-cream sticky top-[57px] z-20">
-        <div className="flex items-center gap-2 bg-gray-100 rounded-2xl px-4 py-2.5">
-          <Search className="w-4 h-4 text-gray-400 shrink-0" />
-          <input
-            type="text"
-            placeholder="Caută în meniu..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="flex-1 bg-transparent outline-none text-sm font-body text-gray-800 placeholder:text-gray-400"
-          />
+          <div className="text-center">
+            <h1 className="text-xs font-bold tracking-[0.3em] uppercase text-[#C9AB81]">
+              LOFT
+            </h1>
+            <p className="text-[10px] text-white/40 tracking-widest uppercase">
+              Mamaia
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setSearchOpen(!searchOpen)}
+              className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center"
+            >
+              <Search className="w-4 h-4 text-white/70" />
+            </button>
+            {itemCount > 0 && (
+              <Link
+                href={`/u/${umbrellaId}/cart`}
+                className="relative w-9 h-9 rounded-full bg-[#C9AB81] flex items-center justify-center"
+              >
+                <ShoppingBag className="w-4 h-4 text-[#0A0A0A]" />
+                <span className="absolute -top-1 -right-1 bg-white text-[#0A0A0A] text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                  {itemCount}
+                </span>
+              </Link>
+            )}
+          </div>
         </div>
+
+        {/* Search bar */}
+        {searchOpen && (
+          <div className="px-4 pb-3 animate-fade-up">
+            <div className="flex items-center gap-2 bg-white/10 rounded-lg px-3 py-2">
+              <Search className="w-3.5 h-3.5 text-white/40 shrink-0" />
+              <input
+                type="text"
+                placeholder="Caută în meniu..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                autoFocus
+                className="flex-1 bg-transparent outline-none text-sm text-white placeholder:text-white/30"
+              />
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Category tabs */}
-      {!search && (
-        <div
-          ref={catBarRef}
-          className="flex gap-2 px-4 py-2 overflow-x-auto scrollbar-hide sticky top-[113px] z-20 bg-cream"
-        >
+      {/* LOFT Logo */}
+      <div className="flex flex-col items-center pt-8 pb-6 px-4">
+        <img
+          src="https://loftlounge.ro/wp-content/uploads/2025/07/LOFT-White-Transparent-LOGO-1024x330.png"
+          alt="LOFT"
+          className="h-10 object-contain mb-4"
+        />
+        <p className="text-white/30 text-[10px] tracking-[0.4em] uppercase">
+          The best restaurant is a club, and the best club is a restaurant
+        </p>
+      </div>
+
+      {/* Menu Tabs - LOFT style */}
+      <div className="flex justify-center gap-2 px-4 pb-8">
+        {MENU_TABS.map((tab) => (
           <button
-            data-cat="all"
-            onClick={() => setActiveCategory(null)}
+            key={tab.id}
+            onClick={() => { setActiveTab(tab.id); setSearch(""); }}
             className={cn(
-              "shrink-0 px-4 py-2 rounded-full text-sm font-semibold font-body transition-all",
-              activeCategory === null
-                ? "bg-ocean-600 text-white"
-                : "bg-gray-100 text-gray-600"
+              "px-4 py-2 text-[10px] font-bold tracking-[0.2em] uppercase border transition-all duration-300",
+              activeTab === tab.id
+                ? "bg-white text-[#0A0A0A] border-white"
+                : "bg-transparent text-white border-white/40 active:bg-white/10"
             )}
           >
-            Toate
+            {tab.label}
           </button>
-          {categories.map((c) => (
-            <button
-              key={c.slug}
-              data-cat={c.slug}
-              onClick={() => {
-                setActiveCategory(c.slug === activeCategory ? null : c.slug);
-                scrollCatIntoView(c.slug);
-              }}
-              className={cn(
-                "shrink-0 px-4 py-2 rounded-full text-sm font-semibold font-body transition-all flex items-center gap-1.5",
-                activeCategory === c.slug
-                  ? "bg-ocean-600 text-white"
-                  : "bg-gray-100 text-gray-600"
-              )}
-            >
-              <span>{c.icon}</span> {c.name}
-            </button>
-          ))}
-        </div>
-      )}
+        ))}
+      </div>
 
       {/* Content */}
-      <div className="px-4 py-4">
+      <div className="px-5 pb-32">
         {isLoading && (
           <div className="flex justify-center py-16">
-            <Spinner />
+            <Spinner className="text-[#C9AB81]" />
           </div>
         )}
 
         {!isLoading && grouped.length === 0 && (
-          <EmptyState
-            icon="🔍"
-            title="Niciun produs găsit"
-            description="Încearcă altă căutare sau altă categorie."
-          />
+          <div className="flex flex-col items-center py-16 text-center">
+            <span className="text-4xl mb-4">🔍</span>
+            <p className="text-white/40 text-sm">Niciun produs găsit</p>
+          </div>
         )}
 
-        <div className="space-y-8">
+        <div className="space-y-10">
           {grouped.map(({ category, items }) => (
-            <section key={category.slug}>
-              <div className="flex items-center gap-2 mb-4">
-                <span className="text-xl">{category.icon}</span>
-                <h2 className="font-display text-xl font-bold text-gray-900">
+            <section key={category.slug} className="text-center">
+              {/* Category header - LOFT gold style */}
+              <div className="mb-6">
+                <h2 className="text-[#C9AB81] text-lg font-bold tracking-[0.25em] uppercase">
                   {category.name}
                 </h2>
-                <span className="text-xs text-gray-400 font-body">
-                  ({items.length})
-                </span>
+                <div className="w-12 h-px bg-[#C9AB81]/40 mx-auto mt-2" />
               </div>
-              <div className="grid gap-3">
+
+              {/* Items */}
+              <div className="space-y-1">
                 {items.map((item) => (
                   <MenuItemCard
                     key={item.id}
@@ -172,6 +189,19 @@ export default function MenuPage({ params }: { params: { umbrellaId: string } })
           ))}
         </div>
       </div>
+
+      {/* Floating cart button */}
+      {itemCount > 0 && (
+        <div className="fixed bottom-6 left-4 right-4 z-40 animate-slide-up">
+          <Link
+            href={`/u/${umbrellaId}/cart`}
+            className="flex items-center justify-center gap-3 w-full bg-[#C9AB81] text-[#0A0A0A] py-4 rounded-none font-bold text-sm tracking-[0.15em] uppercase active:opacity-90 transition-opacity"
+          >
+            <ShoppingBag className="w-4 h-4" />
+            VEZI COȘUL ({itemCount})
+          </Link>
+        </div>
+      )}
     </div>
   );
 }
