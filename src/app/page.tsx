@@ -1,22 +1,39 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronRight, MapPin, Phone, Mail, AtSign } from "lucide-react";
+import type { GalleryImage } from "@/lib/mock-data";
 
-const GALLERY_IMAGES = [
-  "https://loftlounge.ro/wp-content/uploads/2025/07/loft-mamaia-featured.jpg",
-  "https://kuziini.ro/wp-content/uploads/2025/02/IMG-20240403-WA0019.jpg",
-  "https://loftlounge.ro/wp-content/uploads/2025/07/loft-mamaia-1-1024x684.jpg",
-  "https://kuziini.ro/wp-content/uploads/2025/02/aqua-marina-1.jpg",
-  "https://loftlounge.ro/wp-content/uploads/2025/07/loft-mamaia-3-1024x684.jpg",
-  "https://kuziini.ro/wp-content/uploads/2025/02/Classic-Grace-1.jpg",
-  "https://kuziini.ro/wp-content/uploads/2025/03/orchid-oasis-2.jpg",
-  "https://kuziini.ro/wp-content/uploads/2023/04/moderno-3013786877.jpg",
-  "https://kuziini.ro/wp-content/uploads/2023/04/moderno-2847464326.jpg",
-];
+interface GalleryData {
+  slots: number;
+  images: GalleryImage[];
+}
+
+function getGridCols(slots: number): string {
+  switch (slots) {
+    case 1: return "grid-cols-1";
+    case 2: return "grid-cols-2";
+    case 3: return "grid-cols-3";
+    case 4: return "grid-cols-2";
+    case 6: return "grid-cols-3";
+    default: return "grid-cols-2";
+  }
+}
 
 export default function HomePage() {
+  const [loftGallery, setLoftGallery] = useState<GalleryData | null>(null);
+  const [kuziiniGallery, setKuziiniGallery] = useState<GalleryData | null>(null);
+
+  useEffect(() => {
+    fetch("/api/gallery?category=loft")
+      .then((r) => r.json())
+      .then((j) => { if (j.success) setLoftGallery(j.data); });
+    fetch("/api/gallery?category=kuziini")
+      .then((r) => r.json())
+      .then((j) => { if (j.success) setKuziiniGallery(j.data); });
+  }, []);
   return (
     <div className="min-h-dvh bg-[#0A0A0A] text-white overflow-x-hidden">
       {/* Hero - full screen mobile */}
@@ -142,25 +159,59 @@ export default function HomePage() {
           </p>
         </div>
 
-        {/* Gallery */}
-        <div className="grid grid-cols-2 gap-1.5">
-          {GALLERY_IMAGES.slice(0, 8).map((src, i) => (
-            <div
-              key={i}
-              className={`relative overflow-hidden ${
-                i === 0 ? "col-span-2 aspect-[16/9]" : "aspect-square"
-              }`}
-            >
+        {/* LOFT Gallery */}
+        {loftGallery && loftGallery.images.length > 0 && (
+          <div className="mb-8">
+            <div className="flex items-center gap-3 mb-4">
               <img
-                src={src}
-                alt=""
-                loading="lazy"
-                className="w-full h-full object-cover"
+                src="https://loftlounge.ro/wp-content/uploads/2025/07/LOFT-White-Transparent-LOGO-1024x330.png"
+                alt="LOFT"
+                className="h-5 object-contain opacity-60"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+              <div className="flex-1 h-px bg-white/[0.06]" />
             </div>
-          ))}
-        </div>
+            <div className={`grid ${getGridCols(loftGallery.slots)} gap-1.5`}>
+              {loftGallery.images.slice(0, loftGallery.slots).map((img) => (
+                <div
+                  key={img.id}
+                  className="relative aspect-square overflow-hidden border border-white/[0.08]"
+                >
+                  <img
+                    src={img.url}
+                    alt=""
+                    loading="lazy"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Kuziini Gallery */}
+        {kuziiniGallery && kuziiniGallery.images.length > 0 && (
+          <div>
+            <div className="flex items-center gap-3 mb-4">
+              <span className="text-sm font-bold tracking-[0.15em] uppercase text-white/60">Kuziini</span>
+              <div className="flex-1 h-px bg-white/[0.06]" />
+            </div>
+            <div className={`grid ${getGridCols(kuziiniGallery.slots)} gap-1.5`}>
+              {kuziiniGallery.images.slice(0, kuziiniGallery.slots).map((img) => (
+                <div
+                  key={img.id}
+                  className="relative aspect-square overflow-hidden border border-white/[0.08]"
+                >
+                  <img
+                    src={img.url}
+                    alt=""
+                    loading="lazy"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </section>
 
       {/* Footer */}

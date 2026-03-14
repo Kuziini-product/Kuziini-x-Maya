@@ -1830,6 +1830,37 @@ export const KUZIINI_BANNERS: PromoBanner[] = [
 // Keep backward compat reference
 export const PROMO_BANNERS: PromoBanner[] = LOFT_BANNERS;
 
+// ─── Landing Page Galleries ──────────────────────────────────────────────────
+
+export interface GalleryConfig {
+  slots: number; // 1, 2, 3, 4, or 6
+  images: GalleryImage[];
+}
+
+export interface GalleryImage {
+  id: string;
+  url: string; // base64 or external URL
+  order: number;
+}
+
+export const LOFT_GALLERY: GalleryConfig = {
+  slots: 3,
+  images: [
+    { id: "lg-1", url: "https://loftlounge.ro/wp-content/uploads/2025/07/loft-mamaia-featured.jpg", order: 0 },
+    { id: "lg-2", url: "https://loftlounge.ro/wp-content/uploads/2025/07/loft-mamaia-1-1024x684.jpg", order: 1 },
+    { id: "lg-3", url: "https://loftlounge.ro/wp-content/uploads/2025/07/loft-mamaia-3-1024x684.jpg", order: 2 },
+  ],
+};
+
+export const KUZIINI_GALLERY: GalleryConfig = {
+  slots: 3,
+  images: [
+    { id: "kg-1", url: "https://kuziini.ro/wp-content/uploads/2025/02/IMG-20240403-WA0019.jpg", order: 0 },
+    { id: "kg-2", url: "https://kuziini.ro/wp-content/uploads/2025/02/aqua-marina-1.jpg", order: 1 },
+    { id: "kg-3", url: "https://kuziini.ro/wp-content/uploads/2025/02/Classic-Grace-1.jpg", order: 2 },
+  ],
+};
+
 // ─── Mock Guest Requests ──────────────────────────────────────────────────────
 
 export const MOCK_GUEST_REQUESTS: GuestJoinRequest[] = [];

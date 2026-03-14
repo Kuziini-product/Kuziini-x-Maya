@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
-import { Lock, RefreshCw, ImageIcon, QrCode, Plus, Trash2, Download, Printer } from "lucide-react";
+import { Lock, RefreshCw, ImageIcon, QrCode, Plus, Trash2, Download, Printer, LayoutGrid } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import type { PromoBanner } from "@/types";
+import type { GalleryImage } from "@/lib/mock-data";
 import BannerManager from "@/components/BannerManager";
+import GalleryManager from "@/components/GalleryManager";
 
-type Tab = "banners" | "qrcodes";
+type Tab = "banners" | "qrcodes" | "gallery";
 
 interface UmbrellaQR {
   id: string;
@@ -21,6 +23,8 @@ export default function LoftPage() {
   const [loading, setLoading] = useState(false);
   const [banners, setBanners] = useState<PromoBanner[]>([]);
   const [tab, setTab] = useState<Tab>("banners");
+  const [gallerySlots, setGallerySlots] = useState(3);
+  const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
 
   // QR state
   const [umbrellas, setUmbrellas] = useState<UmbrellaQR[]>([
@@ -51,6 +55,19 @@ export default function LoftPage() {
       setBanners(json.data);
       setStoredPassword(password);
       setAuthenticated(true);
+      // Fetch gallery
+      fetch("/api/gallery", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password, category: "loft", action: "get" }),
+      })
+        .then((r) => r.json())
+        .then((j) => {
+          if (j.success) {
+            setGallerySlots(j.data.slots);
+            setGalleryImages(j.data.images);
+          }
+        });
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Eroare.");
     } finally {
@@ -214,6 +231,7 @@ export default function LoftPage() {
 
   const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
     { key: "banners", label: "Bannere", icon: <ImageIcon className="w-4 h-4" /> },
+    { key: "gallery", label: "Galerie", icon: <LayoutGrid className="w-4 h-4" /> },
     { key: "qrcodes", label: "QR Codes", icon: <QrCode className="w-4 h-4" /> },
   ];
 
@@ -270,6 +288,25 @@ export default function LoftPage() {
               password={storedPassword}
               banners={banners}
               onUpdate={setBanners}
+            />
+          </>
+        )}
+
+        {/* Gallery Tab */}
+        {tab === "gallery" && (
+          <>
+            <p className="text-white/30 text-xs mb-4">
+              Pozele apar pe pagina de landing în secțiunea LOFT
+            </p>
+            <GalleryManager
+              category="loft"
+              password={storedPassword}
+              slots={gallerySlots}
+              images={galleryImages}
+              onUpdate={(d) => {
+                setGallerySlots(d.slots);
+                setGalleryImages(d.images);
+              }}
             />
           </>
         )}

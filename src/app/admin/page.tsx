@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Lock, Users, ShoppingBag, Receipt, DollarSign, RefreshCw, Umbrella, ImageIcon } from "lucide-react";
+import { Lock, Users, ShoppingBag, Receipt, DollarSign, RefreshCw, Umbrella, ImageIcon, LayoutGrid } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
 import type { PromoBanner } from "@/types";
+import type { GalleryImage } from "@/lib/mock-data";
 import BannerManager from "@/components/BannerManager";
+import GalleryManager from "@/components/GalleryManager";
 
 interface Stats {
   totalLogins: number;
@@ -55,7 +57,7 @@ interface AdminData {
   billRequests: BillEntry[];
 }
 
-type Tab = "overview" | "logins" | "orders" | "bills" | "umbrellas" | "banners";
+type Tab = "overview" | "logins" | "orders" | "bills" | "umbrellas" | "banners" | "gallery";
 
 export default function AdminPage() {
   const [password, setPassword] = useState("");
@@ -65,6 +67,8 @@ export default function AdminPage() {
   const [data, setData] = useState<AdminData | null>(null);
   const [tab, setTab] = useState<Tab>("overview");
   const [kuziiniBanners, setKuziiniBanners] = useState<PromoBanner[]>([]);
+  const [gallerySlots, setGallerySlots] = useState(3);
+  const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
 
   async function fetchData(pw?: string) {
     setLoading(true);
@@ -87,6 +91,17 @@ export default function AdminPage() {
       });
       const bJson = await bRes.json();
       if (bJson.success) setKuziiniBanners(bJson.data);
+      // Fetch Kuziini gallery
+      const gRes = await fetch("/api/gallery", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: pw || password, category: "kuziini", action: "get" }),
+      });
+      const gJson = await gRes.json();
+      if (gJson.success) {
+        setGallerySlots(gJson.data.slots);
+        setGalleryImages(gJson.data.images);
+      }
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Eroare.");
       if (!authenticated) setAuthenticated(false);
@@ -167,6 +182,7 @@ export default function AdminPage() {
     { key: "bills", label: "Note", icon: <Receipt className="w-4 h-4" /> },
     { key: "umbrellas", label: "Umbrele", icon: <Umbrella className="w-4 h-4" /> },
     { key: "banners", label: "Bannere", icon: <ImageIcon className="w-4 h-4" /> },
+    { key: "gallery", label: "Galerie", icon: <LayoutGrid className="w-4 h-4" /> },
   ];
 
   return (
@@ -336,6 +352,25 @@ export default function AdminPage() {
               password={password}
               banners={kuziiniBanners}
               onUpdate={setKuziiniBanners}
+            />
+          </>
+        )}
+
+        {/* Gallery Kuziini */}
+        {tab === "gallery" && (
+          <>
+            <p className="text-white/30 text-xs mb-4">
+              Pozele apar pe pagina de landing în secțiunea Kuziini
+            </p>
+            <GalleryManager
+              category="kuziini"
+              password={password}
+              slots={gallerySlots}
+              images={galleryImages}
+              onUpdate={(d) => {
+                setGallerySlots(d.slots);
+                setGalleryImages(d.images);
+              }}
             />
           </>
         )}
