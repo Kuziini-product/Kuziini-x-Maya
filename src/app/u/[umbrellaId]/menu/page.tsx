@@ -125,7 +125,7 @@ export default function MenuPage({ params }: { params: { umbrellaId: string } })
           <img
             src="/kuziini-logo.png"
             alt="Kuziini"
-            className="h-12 object-contain"
+            className="h-12 object-contain invert brightness-200"
           />
           <span className="text-[#C9AB81] text-xl font-bold">×</span>
           <img

@@ -24,6 +24,7 @@ export interface Session {
 
 export interface UserSession {
   phone: string;
+  name?: string;
   role: UserRole;
   sessionId: string;
   umbrellaId: string;

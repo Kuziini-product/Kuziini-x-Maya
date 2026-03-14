@@ -1,10 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Phone, X, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui";
+import { Phone, User, X } from "lucide-react";
 import { useSessionStore } from "@/store";
-import { cn } from "@/lib/utils";
 
 interface PhoneModalProps {
   umbrellaId: string;
@@ -12,12 +10,18 @@ interface PhoneModalProps {
 }
 
 export function PhoneModal({ umbrellaId, onClose }: PhoneModalProps) {
+  const [name, setName] = useState("");
   const [phone, setPhone] = useState("+40");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { setUserSession } = useSessionStore();
 
   async function handleSubmit() {
+    const trimmedName = name.trim();
+    if (!trimmedName) {
+      setError("Introdu numele tău.");
+      return;
+    }
     const cleaned = phone.replace(/\s/g, "");
     if (cleaned.length < 10) {
       setError("Introdu un număr de telefon valid.");
@@ -29,12 +33,13 @@ export function PhoneModal({ umbrellaId, onClose }: PhoneModalProps) {
       const res = await fetch("/api/session/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ umbrellaId, phone: cleaned }),
+        body: JSON.stringify({ umbrellaId, phone: cleaned, name: trimmedName }),
       });
       const json = await res.json();
       if (!json.success) throw new Error(json.error);
       setUserSession({
         phone: json.data.phone,
+        name: trimmedName,
         role: json.data.role,
         sessionId: json.data.sessionId,
         umbrellaId: json.data.umbrellaId,
@@ -52,42 +57,60 @@ export function PhoneModal({ umbrellaId, onClose }: PhoneModalProps) {
     <div className="fixed inset-0 z-50 flex items-end justify-center">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/40 backdrop-blur-sm animate-fade-in"
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-fade-in"
         onClick={onClose}
       />
 
-      {/* Sheet */}
-      <div className="relative w-full max-w-lg bg-white rounded-t-[2rem] p-6 pb-10 animate-slide-up shadow-2xl">
+      {/* Sheet - dark LOFT style */}
+      <div className="relative w-full max-w-lg bg-[#141414] border-t border-[#C9AB81]/30 p-6 pb-10 animate-slide-up">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="font-display text-2xl font-bold text-gray-900">
-              Bun venit! 👋
+            <h2 className="text-xl font-bold text-white tracking-wide">
+              Bun venit
             </h2>
-            <p className="text-gray-500 text-sm mt-1 font-body">
-              Introdu numărul tău de telefon pentru a continua.
+            <p className="text-white/40 text-xs mt-1 tracking-wide">
+              Introdu datele tale pentru a comanda
             </p>
           </div>
           <button
             onClick={onClose}
-            className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200 transition-colors"
+            className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white/50 active:bg-white/20 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        <div className="mb-2">
-          <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide font-body mb-2 block">
-            Număr de telefon
+        {/* Name field */}
+        <div className="mb-3">
+          <label className="text-[10px] font-bold text-[#C9AB81] uppercase tracking-[0.2em] mb-2 block">
+            Nume
           </label>
-          <div className="flex items-center gap-3 bg-gray-50 rounded-2xl px-4 py-3.5 border-2 border-transparent focus-within:border-ocean-300 transition-colors">
-            <Phone className="w-5 h-5 text-gray-400 shrink-0" />
+          <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-3 focus-within:border-[#C9AB81]/50 transition-colors">
+            <User className="w-4 h-4 text-white/30 shrink-0" />
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="flex-1 bg-transparent outline-none text-white text-sm placeholder:text-white/20"
+              placeholder="Numele tău"
+              autoFocus
+            />
+          </div>
+        </div>
+
+        {/* Phone field */}
+        <div className="mb-2">
+          <label className="text-[10px] font-bold text-[#C9AB81] uppercase tracking-[0.2em] mb-2 block">
+            Telefon
+          </label>
+          <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-3 focus-within:border-[#C9AB81]/50 transition-colors">
+            <Phone className="w-4 h-4 text-white/30 shrink-0" />
             <input
               type="tel"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="flex-1 bg-transparent outline-none text-gray-900 font-body text-lg placeholder:text-gray-300"
+              className="flex-1 bg-transparent outline-none text-white text-sm placeholder:text-white/20"
               placeholder="+40 7XX XXX XXX"
-              autoFocus
               inputMode="tel"
               onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
             />
@@ -95,22 +118,21 @@ export function PhoneModal({ umbrellaId, onClose }: PhoneModalProps) {
         </div>
 
         {error && (
-          <p className="text-coral-600 text-sm font-body mt-2">{error}</p>
+          <p className="text-red-400 text-xs mt-2">{error}</p>
         )}
 
-        <p className="text-gray-400 text-xs font-body mt-3 mb-6 leading-relaxed">
+        <p className="text-white/20 text-[10px] mt-3 mb-6 leading-relaxed">
           Numărul tău de telefon a fost înregistrat la recepție. Primul număr pe
-          această umbrelă devine <strong>owner</strong>.
+          această umbrelă devine owner.
         </p>
 
-        <Button
-          fullWidth
-          size="lg"
+        <button
           onClick={handleSubmit}
-          loading={loading}
+          disabled={loading}
+          className="w-full bg-[#C9AB81] text-[#0A0A0A] py-3.5 font-bold text-sm tracking-[0.15em] uppercase active:opacity-80 transition-opacity disabled:opacity-50"
         >
-          Continuă
-        </Button>
+          {loading ? "Se procesează..." : "CONTINUĂ"}
+        </button>
       </div>
     </div>
   );
