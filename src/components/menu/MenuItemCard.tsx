@@ -27,44 +27,63 @@ export function MenuItemCard({ item }: MenuItemCardProps) {
     setNotes("");
   }
 
+  function handleQuickAdd(e: React.MouseEvent) {
+    e.stopPropagation();
+    if (inCart) {
+      updateQuantity(item.id, cartItem.quantity + 1);
+    } else {
+      addItem(item, 1, "");
+    }
+  }
+
   return (
-    <div className="text-center py-3 border-b border-white/5 last:border-b-0">
+    <div className="py-3 border-b border-white/5 last:border-b-0">
       {/* Main row - clickable */}
       <div
-        className={`cursor-pointer active:opacity-70 transition-opacity ${!item.available ? "opacity-40" : ""}`}
+        className={`cursor-pointer active:opacity-70 transition-opacity flex items-center ${!item.available ? "opacity-40" : ""}`}
         onClick={() => item.available && setExpanded((e) => !e)}
       >
-        {/* Item name */}
-        <div className="flex items-center justify-center gap-2 mb-1">
-          <h3 className="text-white text-[13px] font-bold tracking-[0.15em] uppercase">
-            {item.name}
-          </h3>
-          {item.popular && (
-            <span className="text-[#C9AB81] text-[9px] tracking-wider uppercase">★</span>
-          )}
-          {inCart && (
-            <span className="bg-[#C9AB81] text-[#0A0A0A] text-[9px] font-bold px-1.5 py-0.5 rounded-sm">
-              ×{cartItem.quantity}
-            </span>
-          )}
+        {/* Left: item info */}
+        <div className="flex-1 min-w-0 text-left">
+          <div className="flex items-center gap-2 mb-0.5">
+            <h3 className="text-white text-[13px] font-bold tracking-[0.15em] uppercase">
+              {item.name}
+            </h3>
+            {item.popular && (
+              <span className="text-[#C9AB81] text-[9px] tracking-wider uppercase">★</span>
+            )}
+          </div>
+          <p className="text-white/35 text-[11px] leading-relaxed mb-0.5">
+            {item.description}
+          </p>
+          <p className="text-[#C9AB81] text-sm font-bold tracking-wide">
+            {formatPrice(item.price)}
+          </p>
         </div>
 
-        {/* Description */}
-        <p className="text-white/35 text-[11px] leading-relaxed mb-1 max-w-[300px] mx-auto">
-          {item.description}
-        </p>
-
-        {/* Price */}
-        <p className="text-[#C9AB81] text-sm font-bold tracking-wide">
-          {formatPrice(item.price)}
-        </p>
+        {/* Right: quantity + add button */}
+        <div className="flex items-center gap-2 ml-3 shrink-0">
+          {inCart && (
+            <span className="text-white text-sm font-bold w-5 text-center">
+              {cartItem.quantity}
+            </span>
+          )}
+          {item.available && (
+            <button
+              onClick={handleQuickAdd}
+              className="w-9 h-9 flex items-center justify-center bg-[#C9AB81] text-[#0A0A0A] active:opacity-70 transition-opacity"
+            >
+              <Plus className="w-4 h-4" strokeWidth={2.5} />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Expanded - add to cart panel */}
       {expanded && item.available && (
-        <div className="mt-3 pt-3 border-t border-white/10 animate-fade-up max-w-[280px] mx-auto">
+        <div className="mt-3 pt-3 border-t border-white/10 animate-fade-up max-w-[280px]">
           {/* Quantity */}
-          <div className="flex items-center justify-center gap-4 mb-3">
+          <div className="flex items-center gap-4 mb-3">
             <button
               onClick={() => setQty((q) => Math.max(1, q - 1))}
               className="w-8 h-8 rounded-full border border-white/20 text-white/60 flex items-center justify-center active:bg-white/10"

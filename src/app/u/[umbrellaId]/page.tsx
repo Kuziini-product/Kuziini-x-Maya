@@ -180,13 +180,13 @@ export default function LandingPage({
           )}
 
           {/* Branding footer */}
-          <div className="flex items-center justify-center gap-3 mt-4 pt-4 border-t border-white/[0.04]">
-            <Image src="/kuziini-logo.png" alt="Kuziini" width={28} height={28} className="rounded-md invert brightness-200" />
-            <span className="text-[#C9AB81]/40 text-xs font-bold">×</span>
+          <div className="flex items-center justify-center gap-4 mt-4 pt-4 border-t border-white/[0.04]">
+            <Image src="/kuziini-logo.png" alt="Kuziini" width={52} height={52} className="rounded-lg invert brightness-200" />
+            <span className="text-[#C9AB81]/40 text-lg font-bold">×</span>
             <img
               src="https://loftlounge.ro/wp-content/uploads/2025/07/LOFT-White-Transparent-LOGO-1024x330.png"
               alt="LOFT"
-              className="h-4 object-contain opacity-40"
+              className="h-8 object-contain opacity-60"
             />
           </div>
         </div>

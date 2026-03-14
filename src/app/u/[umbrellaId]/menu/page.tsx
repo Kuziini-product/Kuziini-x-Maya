@@ -87,17 +87,17 @@ export default function MenuPage({ params }: { params: { umbrellaId: string } })
             >
               <Search className="w-4 h-4 text-white/70" />
             </button>
-            {itemCount > 0 && (
-              <Link
-                href={`/u/${umbrellaId}/cart`}
-                className="relative w-9 h-9 rounded-full bg-[#C9AB81] flex items-center justify-center"
-              >
-                <ShoppingBag className="w-4 h-4 text-[#0A0A0A]" />
+            <Link
+              href={`/u/${umbrellaId}/cart`}
+              className={`relative w-9 h-9 rounded-full flex items-center justify-center ${itemCount > 0 ? "bg-[#C9AB81]" : "bg-white/10"}`}
+            >
+              <ShoppingBag className={`w-4 h-4 ${itemCount > 0 ? "text-[#0A0A0A]" : "text-white/70"}`} />
+              {itemCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-white text-[#0A0A0A] text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
                   {itemCount}
                 </span>
-              </Link>
-            )}
+              )}
+            </Link>
           </div>
         </div>
 
