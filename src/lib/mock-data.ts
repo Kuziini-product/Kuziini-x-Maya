@@ -1861,6 +1861,25 @@ export const KUZIINI_GALLERY: GalleryConfig = {
   ],
 };
 
+// ─── Photo Library ──────────────────────────────────────────────────────────
+export interface LibraryPhoto {
+  id: string;
+  url: string;
+  addedAt: string;
+}
+
+export const LOFT_LIBRARY: LibraryPhoto[] = [
+  { id: "ll-1", url: "https://loftlounge.ro/wp-content/uploads/2025/07/loft-mamaia-featured.jpg", addedAt: new Date().toISOString() },
+  { id: "ll-2", url: "https://loftlounge.ro/wp-content/uploads/2025/07/loft-mamaia-1-1024x684.jpg", addedAt: new Date().toISOString() },
+  { id: "ll-3", url: "https://loftlounge.ro/wp-content/uploads/2025/07/loft-mamaia-3-1024x684.jpg", addedAt: new Date().toISOString() },
+];
+
+export const KUZIINI_LIBRARY: LibraryPhoto[] = [
+  { id: "kl-1", url: "https://kuziini.ro/wp-content/uploads/2025/02/IMG-20240403-WA0019.jpg", addedAt: new Date().toISOString() },
+  { id: "kl-2", url: "https://kuziini.ro/wp-content/uploads/2025/02/aqua-marina-1.jpg", addedAt: new Date().toISOString() },
+  { id: "kl-3", url: "https://kuziini.ro/wp-content/uploads/2025/02/Classic-Grace-1.jpg", addedAt: new Date().toISOString() },
+];
+
 // ─── Mock Guest Requests ──────────────────────────────────────────────────────
 
 export const MOCK_GUEST_REQUESTS: GuestJoinRequest[] = [];

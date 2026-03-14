@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Lock, Users, ShoppingBag, Receipt, DollarSign, RefreshCw, Umbrella, ImageIcon, LayoutGrid } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
 import type { PromoBanner } from "@/types";
-import type { GalleryImage } from "@/lib/mock-data";
+import type { GalleryImage, LibraryPhoto } from "@/lib/mock-data";
 import BannerManager from "@/components/BannerManager";
 import GalleryManager from "@/components/GalleryManager";
 
@@ -69,6 +69,7 @@ export default function AdminPage() {
   const [kuziiniBanners, setKuziiniBanners] = useState<PromoBanner[]>([]);
   const [gallerySlots, setGallerySlots] = useState(3);
   const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
+  const [galleryLibrary, setGalleryLibrary] = useState<LibraryPhoto[]>([]);
 
   async function fetchData(pw?: string) {
     setLoading(true);
@@ -101,6 +102,7 @@ export default function AdminPage() {
       if (gJson.success) {
         setGallerySlots(gJson.data.slots);
         setGalleryImages(gJson.data.images);
+        if (gJson.data.library) setGalleryLibrary(gJson.data.library);
       }
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Eroare.");
@@ -367,9 +369,11 @@ export default function AdminPage() {
               password={password}
               slots={gallerySlots}
               images={galleryImages}
+              library={galleryLibrary}
               onUpdate={(d) => {
                 setGallerySlots(d.slots);
                 setGalleryImages(d.images);
+                if (d.library) setGalleryLibrary(d.library);
               }}
             />
           </>

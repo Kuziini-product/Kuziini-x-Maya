@@ -4,7 +4,7 @@ import { useState, useRef, useCallback } from "react";
 import { Lock, RefreshCw, ImageIcon, QrCode, Plus, Trash2, Download, Printer, LayoutGrid } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import type { PromoBanner } from "@/types";
-import type { GalleryImage } from "@/lib/mock-data";
+import type { GalleryImage, LibraryPhoto } from "@/lib/mock-data";
 import BannerManager from "@/components/BannerManager";
 import GalleryManager from "@/components/GalleryManager";
 
@@ -25,6 +25,7 @@ export default function LoftPage() {
   const [tab, setTab] = useState<Tab>("banners");
   const [gallerySlots, setGallerySlots] = useState(3);
   const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
+  const [galleryLibrary, setGalleryLibrary] = useState<LibraryPhoto[]>([]);
 
   // QR state
   const [umbrellas, setUmbrellas] = useState<UmbrellaQR[]>([
@@ -66,6 +67,7 @@ export default function LoftPage() {
           if (j.success) {
             setGallerySlots(j.data.slots);
             setGalleryImages(j.data.images);
+            if (j.data.library) setGalleryLibrary(j.data.library);
           }
         });
     } catch (e: unknown) {
@@ -303,9 +305,11 @@ export default function LoftPage() {
               password={storedPassword}
               slots={gallerySlots}
               images={galleryImages}
+              library={galleryLibrary}
               onUpdate={(d) => {
                 setGallerySlots(d.slots);
                 setGalleryImages(d.images);
+                if (d.library) setGalleryLibrary(d.library);
               }}
             />
           </>

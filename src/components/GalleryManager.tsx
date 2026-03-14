@@ -1,16 +1,17 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Plus, Trash2, ChevronUp, ChevronDown, ImageIcon } from "lucide-react";
+import { Plus, Trash2, ImageIcon, X, Upload, FolderOpen } from "lucide-react";
 import type { BannerCategory } from "@/types";
-import type { GalleryImage } from "@/lib/mock-data";
+import type { GalleryImage, LibraryPhoto } from "@/lib/mock-data";
 
 interface GalleryManagerProps {
   category: BannerCategory;
   password: string;
   slots: number;
   images: GalleryImage[];
-  onUpdate: (data: { slots: number; images: GalleryImage[] }) => void;
+  library: LibraryPhoto[];
+  onUpdate: (data: { slots: number; images: GalleryImage[]; library: LibraryPhoto[] }) => void;
 }
 
 const SLOT_OPTIONS = [1, 2, 3, 4, 6];
@@ -20,10 +21,13 @@ export default function GalleryManager({
   password,
   slots,
   images,
+  library,
   onUpdate,
 }: GalleryManagerProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [activeSlot, setActiveSlot] = useState<number | null>(null);
+  const [showLibrary, setShowLibrary] = useState(false);
 
   const apiCall = useCallback(
     async (action: string, extra: Record<string, unknown> = {}) => {
@@ -49,7 +53,7 @@ export default function GalleryManager({
     [password, category, onUpdate]
   );
 
-  function handleImageUpload() {
+  function uploadForSlot(slotIndex: number) {
     const input = document.createElement("input");
     input.type = "file";
     input.accept = "image/*";
@@ -62,29 +66,40 @@ export default function GalleryManager({
       }
       const reader = new FileReader();
       reader.onload = () => {
-        apiCall("addImage", { url: reader.result as string });
+        apiCall("setSlotImage", { slotIndex, url: reader.result as string });
       };
       reader.readAsDataURL(file);
     };
     input.click();
   }
 
-  function handleUrlAdd() {
-    const url = prompt("Introdu URL-ul imaginii:");
-    if (url?.trim()) {
-      apiCall("addImage", { url: url.trim() });
-    }
+  function selectFromLibrary(photo: LibraryPhoto) {
+    if (activeSlot === null) return;
+    apiCall("setSlotImage", { slotIndex: activeSlot, url: photo.url });
+    setActiveSlot(null);
+    setShowLibrary(false);
   }
 
-  async function handleMove(index: number, direction: "up" | "down") {
-    const ids = images.map((img) => img.id);
-    const swapIdx = direction === "up" ? index - 1 : index + 1;
-    if (swapIdx < 0 || swapIdx >= ids.length) return;
-    [ids[index], ids[swapIdx]] = [ids[swapIdx], ids[index]];
-    await apiCall("reorderImages", { orderedIds: ids });
+  function uploadToLibrary() {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+      if (file.size > 800 * 1024) {
+        setError("Imaginea trebuie să fie sub 800KB.");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        apiCall("addToLibrary", { url: reader.result as string });
+      };
+      reader.readAsDataURL(file);
+    };
+    input.click();
   }
 
-  // Grid layout classes based on slots
   function getGridPreview(): string {
     switch (slots) {
       case 1: return "grid-cols-1";
@@ -127,10 +142,10 @@ export default function GalleryManager({
         </div>
       </div>
 
-      {/* Preview grid */}
+      {/* Grid - clickable slots */}
       <div className="bg-white/[0.03] border border-white/[0.06] p-4">
         <p className="text-[#C9AB81] text-[10px] font-bold tracking-[0.2em] uppercase mb-3">
-          Previzualizare ({images.length}/{slots} imagini)
+          Ferestre ({images.length}/{slots})
         </p>
         <div className={`grid ${getGridPreview()} gap-2`}>
           {Array.from({ length: slots }).map((_, i) => {
@@ -138,33 +153,39 @@ export default function GalleryManager({
             return (
               <div
                 key={i}
-                className="relative aspect-square bg-white/[0.03] border border-white/[0.08] overflow-hidden"
+                className="relative aspect-square bg-white/[0.03] border border-white/[0.08] overflow-hidden group"
               >
                 {img ? (
                   <>
                     <img src={img.url} alt="" className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-black/20 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center gap-1">
-                      {i > 0 && (
-                        <button
-                          onClick={() => handleMove(i, "up")}
-                          className="w-7 h-7 bg-black/60 flex items-center justify-center"
-                        >
-                          <ChevronUp className="w-4 h-4 text-white" />
-                        </button>
-                      )}
-                      {i < images.length - 1 && (
-                        <button
-                          onClick={() => handleMove(i, "down")}
-                          className="w-7 h-7 bg-black/60 flex items-center justify-center"
-                        >
-                          <ChevronDown className="w-4 h-4 text-white" />
-                        </button>
-                      )}
+                    {/* Overlay with actions */}
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2">
                       <button
-                        onClick={() => apiCall("removeImage", { imageId: img.id })}
-                        className="w-7 h-7 bg-red-500/60 flex items-center justify-center"
+                        onClick={() => uploadForSlot(i)}
+                        disabled={loading}
+                        className="flex items-center gap-1.5 bg-[#C9AB81] text-[#0A0A0A] px-3 py-1.5 text-[10px] font-bold tracking-wider uppercase"
                       >
-                        <Trash2 className="w-4 h-4 text-white" />
+                        <Upload className="w-3 h-3" />
+                        Înlocuiește
+                      </button>
+                      <button
+                        onClick={() => {
+                          setActiveSlot(i);
+                          setShowLibrary(true);
+                        }}
+                        disabled={loading}
+                        className="flex items-center gap-1.5 bg-white/20 text-white px-3 py-1.5 text-[10px] font-bold tracking-wider uppercase"
+                      >
+                        <FolderOpen className="w-3 h-3" />
+                        Bibliotecă
+                      </button>
+                      <button
+                        onClick={() => apiCall("removeSlotImage", { slotIndex: i })}
+                        disabled={loading}
+                        className="flex items-center gap-1.5 bg-red-500/60 text-white px-3 py-1.5 text-[10px] font-bold tracking-wider uppercase"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                        Șterge
                       </button>
                     </div>
                     <span className="absolute bottom-1 right-1 text-[9px] bg-black/60 text-white/60 px-1.5 py-0.5">
@@ -172,9 +193,24 @@ export default function GalleryManager({
                     </span>
                   </>
                 ) : (
-                  <div className="w-full h-full flex flex-col items-center justify-center text-white/20">
-                    <ImageIcon className="w-6 h-6 mb-1" />
-                    <span className="text-[9px]">Gol</span>
+                  <div
+                    className="w-full h-full flex flex-col items-center justify-center text-white/30 cursor-pointer active:bg-white/[0.06] transition-colors gap-2"
+                    onClick={() => {
+                      setActiveSlot(i);
+                      setShowLibrary(true);
+                    }}
+                  >
+                    <Plus className="w-6 h-6" />
+                    <span className="text-[9px] font-bold tracking-wider uppercase">Adaugă</span>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        uploadForSlot(i);
+                      }}
+                      className="text-[8px] bg-white/10 px-2 py-1 text-white/40 font-bold tracking-wider uppercase mt-1"
+                    >
+                      Din PC
+                    </button>
                   </div>
                 )}
               </div>
@@ -183,63 +219,117 @@ export default function GalleryManager({
         </div>
       </div>
 
-      {/* Add buttons */}
-      {images.length < slots && (
-        <div className="flex gap-2">
+      {/* Library section */}
+      <div className="bg-white/[0.03] border border-white/[0.06] p-4">
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-[#C9AB81] text-[10px] font-bold tracking-[0.2em] uppercase">
+            Bibliotecă poze ({library.length})
+          </p>
           <button
-            onClick={handleImageUpload}
+            onClick={uploadToLibrary}
             disabled={loading}
-            className="flex-1 flex items-center justify-center gap-2 bg-[#C9AB81] text-[#0A0A0A] py-2.5 font-bold text-xs tracking-wider uppercase disabled:opacity-50"
+            className="flex items-center gap-1.5 bg-[#C9AB81] text-[#0A0A0A] px-3 py-1.5 text-[10px] font-bold tracking-wider uppercase disabled:opacity-50"
           >
-            <Plus className="w-3.5 h-3.5" />
-            Încarcă poză
-          </button>
-          <button
-            onClick={handleUrlAdd}
-            disabled={loading}
-            className="flex-1 flex items-center justify-center gap-2 bg-white/[0.06] border border-white/[0.1] py-2.5 text-white/60 text-xs font-bold tracking-wider uppercase disabled:opacity-50 active:bg-white/[0.1]"
-          >
-            <ImageIcon className="w-3.5 h-3.5" />
-            URL imagine
+            <Upload className="w-3 h-3" />
+            Încarcă
           </button>
         </div>
-      )}
 
-      {/* Image list */}
-      <div className="space-y-2">
-        {images.map((img, i) => (
-          <div key={img.id} className="flex items-center gap-3 bg-white/[0.03] border border-white/[0.06] p-2">
-            <img src={img.url} alt="" className="w-12 h-12 object-cover shrink-0" />
-            <div className="flex-1 min-w-0">
-              <p className="text-white/60 text-[10px] truncate">{img.url.startsWith("data:") ? "Imagine încărcată" : img.url}</p>
-              <p className="text-white/30 text-[9px]">Poziția {i + 1}</p>
+        {library.length === 0 ? (
+          <div className="py-6 text-center">
+            <ImageIcon className="w-8 h-8 text-white/10 mx-auto mb-2" />
+            <p className="text-white/20 text-xs">Nicio poză în bibliotecă</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-4 gap-1.5">
+            {library.map((photo) => (
+              <div key={photo.id} className="relative aspect-square group overflow-hidden border border-white/[0.06]">
+                <img src={photo.url} alt="" className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <button
+                    onClick={() => apiCall("removeFromLibrary", { photoId: photo.id })}
+                    className="w-7 h-7 bg-red-500/80 flex items-center justify-center"
+                  >
+                    <Trash2 className="w-3.5 h-3.5 text-white" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Library picker modal */}
+      {showLibrary && activeSlot !== null && (
+        <div className="fixed inset-0 bg-black/80 z-50 flex items-end justify-center">
+          <div className="w-full max-w-lg bg-[#111] border-t border-white/[0.1] max-h-[70vh] flex flex-col">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06]">
+              <p className="text-[#C9AB81] text-xs font-bold tracking-wider uppercase">
+                Alege din bibliotecă — Fereastra {activeSlot + 1}
+              </p>
+              <button
+                onClick={() => { setShowLibrary(false); setActiveSlot(null); }}
+                className="w-8 h-8 flex items-center justify-center bg-white/10"
+              >
+                <X className="w-4 h-4 text-white/60" />
+              </button>
             </div>
-            <div className="flex items-center gap-1 shrink-0">
+
+            <div className="flex-1 overflow-y-auto p-4">
+              {library.length === 0 ? (
+                <div className="py-10 text-center">
+                  <ImageIcon className="w-10 h-10 text-white/10 mx-auto mb-2" />
+                  <p className="text-white/30 text-sm mb-3">Biblioteca e goală</p>
+                  <button
+                    onClick={() => {
+                      uploadForSlot(activeSlot);
+                      setShowLibrary(false);
+                      setActiveSlot(null);
+                    }}
+                    className="bg-[#C9AB81] text-[#0A0A0A] px-4 py-2 text-xs font-bold tracking-wider uppercase"
+                  >
+                    Încarcă de pe PC
+                  </button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-3 gap-2">
+                  {library.map((photo) => (
+                    <button
+                      key={photo.id}
+                      onClick={() => selectFromLibrary(photo)}
+                      disabled={loading}
+                      className="relative aspect-square overflow-hidden border-2 border-transparent hover:border-[#C9AB81] transition-colors disabled:opacity-50"
+                    >
+                      <img src={photo.url} alt="" className="w-full h-full object-cover" />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="flex gap-2 p-4 border-t border-white/[0.06]">
               <button
-                onClick={() => handleMove(i, "up")}
-                disabled={i === 0 || loading}
-                className="w-6 h-6 flex items-center justify-center bg-white/10 disabled:opacity-20"
-              >
-                <ChevronUp className="w-3 h-3 text-white/60" />
-              </button>
-              <button
-                onClick={() => handleMove(i, "down")}
-                disabled={i === images.length - 1 || loading}
-                className="w-6 h-6 flex items-center justify-center bg-white/10 disabled:opacity-20"
-              >
-                <ChevronDown className="w-3 h-3 text-white/60" />
-              </button>
-              <button
-                onClick={() => apiCall("removeImage", { imageId: img.id })}
+                onClick={() => {
+                  uploadForSlot(activeSlot);
+                  setShowLibrary(false);
+                  setActiveSlot(null);
+                }}
                 disabled={loading}
-                className="w-6 h-6 flex items-center justify-center bg-red-500/10 text-red-400 disabled:opacity-50"
+                className="flex-1 flex items-center justify-center gap-2 bg-[#C9AB81] text-[#0A0A0A] py-2.5 font-bold text-xs tracking-wider uppercase disabled:opacity-50"
               >
-                <Trash2 className="w-3 h-3" />
+                <Upload className="w-3.5 h-3.5" />
+                Încarcă de pe PC
+              </button>
+              <button
+                onClick={() => { setShowLibrary(false); setActiveSlot(null); }}
+                className="flex-1 flex items-center justify-center gap-2 bg-white/[0.06] border border-white/[0.1] py-2.5 text-white/60 text-xs font-bold tracking-wider uppercase"
+              >
+                Anulează
               </button>
             </div>
           </div>
-        ))}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
