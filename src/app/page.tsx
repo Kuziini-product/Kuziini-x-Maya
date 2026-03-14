@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronRight, MapPin, Phone, Mail, AtSign, Download } from "lucide-react";
+import { ChevronRight, MapPin, Phone, Mail, AtSign } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 
 const GALLERY_IMAGES = [
@@ -199,13 +199,6 @@ export default function HomePage() {
               </div>
               <p className="font-bold text-sm text-white tracking-wide">{u.id}</p>
               <p className="text-[#C9AB81] text-[10px] tracking-wider uppercase">{u.zone}</p>
-              <a
-                href={`/u/${u.id}`}
-                className="mt-2 flex items-center gap-1 text-[10px] text-white/30 hover:text-white/50 transition-colors"
-              >
-                <Download className="w-3 h-3" />
-                Deschide direct
-              </a>
             </div>
           ))}
         </div>

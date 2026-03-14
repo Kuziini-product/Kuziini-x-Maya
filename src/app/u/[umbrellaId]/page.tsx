@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import {
   UtensilsCrossed,
   ShoppingBag,
@@ -12,7 +13,6 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { Spinner } from "@/components/ui";
-import { PhoneModal } from "@/components/layout/PhoneModal";
 import { useSessionStore } from "@/store";
 import { cn } from "@/lib/utils";
 import type { Umbrella, PromoBanner } from "@/types";
@@ -31,8 +31,8 @@ export default function LandingPage({
   params: { umbrellaId: string };
 }) {
   const { umbrellaId } = params;
+  const router = useRouter();
   const { userSession } = useSessionStore();
-  const [showPhone, setShowPhone] = useState(false);
   const [bannerIdx, setBannerIdx] = useState(0);
 
   const { data, isLoading, isError } = useQuery({
@@ -47,12 +47,12 @@ export default function LandingPage({
     return () => clearInterval(t);
   }, []);
 
+  // Redirect to /scan if not authenticated via QR
   useEffect(() => {
     if (!isLoading && !userSession) {
-      const t = setTimeout(() => setShowPhone(true), 800);
-      return () => clearTimeout(t);
+      router.replace("/scan");
     }
-  }, [isLoading, userSession]);
+  }, [isLoading, userSession, router]);
 
   if (isLoading) {
     return (
@@ -86,13 +86,6 @@ export default function LandingPage({
 
   return (
     <>
-      {showPhone && !userSession && (
-        <PhoneModal
-          umbrellaId={umbrellaId}
-          onClose={() => setShowPhone(false)}
-        />
-      )}
-
       <div className="min-h-dvh bg-[#0A0A0A] text-white flex flex-col">
         {/* ═══ TOP: Umbrella number + ad space ═══ */}
         <div className="flex-1 flex flex-col items-center justify-center px-5 pt-6">
@@ -167,15 +160,6 @@ export default function LandingPage({
               onClick={() => alert("Apelează recepția la ext. 0 sau suna la +40 756 385 638")}
             />
           </div>
-
-          {!userSession && (
-            <button
-              onClick={() => setShowPhone(true)}
-              className="w-full mt-3 py-3 text-[10px] text-[#C9AB81] font-bold tracking-[0.2em] uppercase"
-            >
-              Identifică-te pentru a comanda →
-            </button>
-          )}
 
           {/* Branding footer */}
           <div className="flex items-center justify-center gap-4 mt-4 pt-4 border-t border-white/[0.04]">
