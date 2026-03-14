@@ -1682,6 +1682,8 @@ export const MOCK_ORDERS: Order[] = [
   {
     id: "ord-001",
     umbrellaId: "A-01",
+    deliveryUmbrellaId: "A-01",
+    billingUmbrellaId: "A-01",
     sessionId: "sess-a01-001",
     guestPhone: "+40700000001",
     role: "owner",
