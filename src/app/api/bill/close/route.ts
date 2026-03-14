@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { MOCK_UMBRELLAS, MOCK_SESSIONS } from "@/lib/mock-data";
 import { sleep } from "@/lib/utils";
 
 export async function POST(req: NextRequest) {
@@ -13,13 +14,29 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // Close session and release umbrella
+  if (MOCK_SESSIONS[sessionId]) {
+    MOCK_SESSIONS[sessionId] = {
+      ...MOCK_SESSIONS[sessionId],
+      closed: true,
+    };
+  }
+
+  if (MOCK_UMBRELLAS[umbrellaId]) {
+    MOCK_UMBRELLAS[umbrellaId] = {
+      ...MOCK_UMBRELLAS[umbrellaId],
+      sessionId: null,
+    };
+  }
+
   return NextResponse.json({
     success: true,
     data: {
       closed: true,
+      umbrellaReleased: true,
       paymentMethod,
       closedAt: new Date().toISOString(),
-      message: `Nota a fost închisă cu succes. Metoda de plată: ${paymentMethod}`,
+      message: `Nota a fost închisă. Șezlongul ${umbrellaId} a fost eliberat.`,
     },
   });
 }

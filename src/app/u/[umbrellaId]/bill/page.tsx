@@ -19,7 +19,7 @@ async function fetchPaymentOptions(umbrellaId: string) {
 
 export default function BillPage({ params }: { params: { umbrellaId: string } }) {
   const { umbrellaId } = params;
-  const { userSession, orders } = useSessionStore();
+  const { userSession, orders, clearSession } = useSessionStore();
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethod | null>(null);
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
@@ -68,6 +68,8 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
         if (!json.success) throw new Error(json.error);
       }
       setDone(true);
+      // Clear session — umbrella is released
+      clearSession();
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Eroare la închiderea notei.");
     } finally {
@@ -89,6 +91,11 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
             ? `Suma de ${formatPrice(total)} a fost adăugată la camera ta.`
             : `Plata de ${formatPrice(total)} confirmată. Mulțumim!`}
         </p>
+        <div className="bg-emerald-500/10 border border-emerald-500/20 px-4 py-3 mb-2">
+          <p className="text-emerald-400 text-sm font-bold tracking-wide">
+            ⛱️ Șezlongul {umbrellaId} a fost eliberat
+          </p>
+        </div>
         <p className="text-white/30 text-sm mb-8">
           A fost o plăcere să te servim
         </p>

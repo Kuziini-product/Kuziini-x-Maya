@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { MOCK_CREDIT_STATUS } from "@/lib/mock-data";
+import { MOCK_CREDIT_STATUS, MOCK_UMBRELLAS, MOCK_SESSIONS } from "@/lib/mock-data";
 import { sleep } from "@/lib/utils";
 
 export async function POST(req: NextRequest) {
@@ -31,14 +31,30 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // Close session and release umbrella
+  if (MOCK_SESSIONS[sessionId]) {
+    MOCK_SESSIONS[sessionId] = {
+      ...MOCK_SESSIONS[sessionId],
+      closed: true,
+    };
+  }
+
+  if (MOCK_UMBRELLAS[umbrellaId]) {
+    MOCK_UMBRELLAS[umbrellaId] = {
+      ...MOCK_UMBRELLAS[umbrellaId],
+      sessionId: null,
+    };
+  }
+
   return NextResponse.json({
     success: true,
     data: {
       charged: true,
+      umbrellaReleased: true,
       roomNumber: MOCK_CREDIT_STATUS.roomNumber,
       amount,
       currency: MOCK_CREDIT_STATUS.currency,
-      message: `Suma de ${amount} RON a fost adăugată la camera ${MOCK_CREDIT_STATUS.roomNumber}.`,
+      message: `Suma de ${amount} RON a fost adăugată la camera ${MOCK_CREDIT_STATUS.roomNumber}. Șezlongul ${umbrellaId} a fost eliberat.`,
     },
   });
 }
