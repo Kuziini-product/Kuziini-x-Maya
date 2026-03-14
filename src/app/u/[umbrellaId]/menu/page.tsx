@@ -122,11 +122,13 @@ export default function MenuPage({ params }: { params: { umbrellaId: string } })
       {/* Kuziini × LOFT Logos */}
       <div className="flex flex-col items-center pt-8 pb-6 px-4">
         <div className="flex items-center justify-center gap-4 mb-4">
-          <img
-            src="/kuziini-logo.png"
-            alt="Kuziini"
-            className="h-12 object-contain invert brightness-200"
-          />
+          <a href="https://www.instagram.com/kuziiniconceptstore/" target="_blank" rel="noopener noreferrer">
+            <img
+              src="/kuziini-logo.png"
+              alt="Kuziini"
+              className="h-12 object-contain invert brightness-200"
+            />
+          </a>
           <span className="text-[#C9AB81] text-xl font-bold">×</span>
           <img
             src="https://loftlounge.ro/wp-content/uploads/2025/07/LOFT-White-Transparent-LOGO-1024x330.png"

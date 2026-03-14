@@ -58,7 +58,9 @@ export default function LandingPage({
     return (
       <div className="min-h-dvh flex items-center justify-center bg-[#0A0A0A]">
         <div className="flex flex-col items-center gap-4">
-          <Image src="/kuziini-logo.png" alt="Kuziini" width={80} height={80} className="rounded-xl opacity-60 invert brightness-200" />
+          <a href="https://www.instagram.com/kuziiniconceptstore/" target="_blank" rel="noopener noreferrer">
+            <Image src="/kuziini-logo.png" alt="Kuziini" width={80} height={80} className="rounded-xl opacity-60 invert brightness-200" />
+          </a>
           <Spinner className="text-[#C9AB81]" />
         </div>
       </div>
@@ -181,7 +183,9 @@ export default function LandingPage({
 
           {/* Branding footer */}
           <div className="flex items-center justify-center gap-4 mt-4 pt-4 border-t border-white/[0.04]">
-            <Image src="/kuziini-logo.png" alt="Kuziini" width={52} height={52} className="rounded-lg invert brightness-200" />
+            <a href="https://www.instagram.com/kuziiniconceptstore/" target="_blank" rel="noopener noreferrer">
+              <img src="/kuziini-logo.png" alt="Kuziini" className="h-8 object-contain invert brightness-200" />
+            </a>
             <span className="text-[#C9AB81]/40 text-lg font-bold">×</span>
             <img
               src="https://loftlounge.ro/wp-content/uploads/2025/07/LOFT-White-Transparent-LOGO-1024x330.png"
