@@ -106,25 +106,9 @@ export default function LandingPage({
               {umbrella.zone}
             </p>
             {userSession && (
-              <>
-                <p className="text-white/30 text-xs mt-3 tracking-wide">
-                  {userSession.name || userSession.phone}
-                  <span className="mx-2 text-white/10">·</span>
-                  <span className={userSession.role === "owner" ? "text-[#C9AB81]" : "text-white/40"}>
-                    {userSession.role === "owner" ? "Owner" : "Guest"}
-                  </span>
-                </p>
-                {userSession.homeUmbrellaId && userSession.homeUmbrellaId !== umbrellaId && (
-                  <p className="text-amber-400/70 text-[10px] mt-2 tracking-wider uppercase">
-                    ⛱️ Cazat la umbrela {userSession.homeUmbrellaId}
-                  </p>
-                )}
-                {!userSession.isRegistered && (
-                  <p className="text-amber-400/70 text-[10px] mt-2 tracking-wider uppercase">
-                    Neînregistrat la recepție · Necesită aprobare owner
-                  </p>
-                )}
-              </>
+              <p className="text-white/30 text-xs mt-3 tracking-wide">
+                {userSession.name || userSession.phone}
+              </p>
             )}
           </div>
 

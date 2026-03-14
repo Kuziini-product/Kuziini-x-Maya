@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronRight, MapPin, Phone, Mail, AtSign } from "lucide-react";
+import { ChevronRight, MapPin, Phone, Mail, AtSign, Download } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 
 const GALLERY_IMAGES = [
   "https://loftlounge.ro/wp-content/uploads/2025/07/loft-mamaia-featured.jpg",
@@ -62,7 +63,7 @@ export default function HomePage() {
           </p>
 
           <Link
-            href="/u/A-01"
+            href="/scan"
             className="inline-flex items-center gap-2 bg-[#C9AB81] text-[#0A0A0A] px-8 py-3.5 font-bold text-sm tracking-[0.15em] uppercase transition-all active:opacity-80"
           >
             Scanează QR & Comandă
@@ -158,6 +159,53 @@ export default function HomePage() {
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* QR Codes */}
+      <section className="py-16 px-5 border-t border-white/5">
+        <div className="text-center mb-10">
+          <p className="text-[#C9AB81] text-[10px] font-bold tracking-[0.4em] uppercase mb-3">
+            QR Codes
+          </p>
+          <h2 className="text-2xl font-bold tracking-wide">
+            Salvează <span className="text-[#C9AB81]">QR-ul</span> tău
+          </h2>
+          <p className="text-white/40 text-xs mt-3 max-w-sm mx-auto">
+            Apasă lung pe QR pentru a-l salva în galerie, apoi încarcă-l din pagina de scanare.
+          </p>
+          <div className="w-12 h-px bg-[#C9AB81]/40 mx-auto mt-3" />
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 max-w-md mx-auto">
+          {[
+            { id: "A-01", zone: "Zona Lounge" },
+            { id: "A-02", zone: "Zona Lounge" },
+            { id: "B-07", zone: "Zona Beach" },
+            { id: "VIP-03", zone: "VIP Premium" },
+          ].map((u) => (
+            <div
+              key={u.id}
+              className="bg-white/[0.03] border border-white/[0.06] p-4 flex flex-col items-center"
+            >
+              <div className="bg-white p-2 mb-3">
+                <QRCodeSVG
+                  value={`https://kuziini.app/u/${u.id}`}
+                  size={100}
+                  level="M"
+                />
+              </div>
+              <p className="font-bold text-sm text-white tracking-wide">{u.id}</p>
+              <p className="text-[#C9AB81] text-[10px] tracking-wider uppercase">{u.zone}</p>
+              <a
+                href={`/u/${u.id}`}
+                className="mt-2 flex items-center gap-1 text-[10px] text-white/30 hover:text-white/50 transition-colors"
+              >
+                <Download className="w-3 h-3" />
+                Deschide direct
+              </a>
             </div>
           ))}
         </div>

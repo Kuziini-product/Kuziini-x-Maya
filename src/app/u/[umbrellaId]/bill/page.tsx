@@ -86,9 +86,11 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
         <p className="text-white/30 text-sm mb-8">
           Mulțumim că ai ales LOFT
         </p>
-        <Link href={`/u/${umbrellaId}`}>
-          <Button variant="secondary">Înapoi la umbrelă</Button>
-        </Link>
+        <div className="bg-white/[0.03] border border-white/[0.06] px-5 py-3">
+          <p className="text-white/30 text-xs">
+            Pentru a comanda din nou, prezintă-te la recepție pentru înregistrare.
+          </p>
+        </div>
       </div>
     );
   }
