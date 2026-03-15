@@ -544,7 +544,7 @@ export default function AdminPage() {
                     <p className="font-bold text-sm text-white tracking-wide">
                       {l.name || "—"}
                     </p>
-                    <span className="text-[10px] text-white/30">{formatTime(l.timestamp)}</span>
+                    <span className="text-[10px] text-white/70">{formatTime(l.timestamp)}</span>
                   </div>
                   <div className="flex items-center gap-3 text-xs text-white/40">
                     <span>{l.phone}</span>
@@ -576,7 +576,7 @@ export default function AdminPage() {
                     <p className="font-bold text-sm text-white tracking-wide">
                       {o.orderId}
                     </p>
-                    <span className="text-[10px] text-white/30">{formatTime(o.timestamp)}</span>
+                    <span className="text-[10px] text-white/70">{formatTime(o.timestamp)}</span>
                   </div>
                   <div className="flex items-center gap-3 text-xs text-white/40 mb-2">
                     <span>{o.phone}</span>
@@ -624,7 +624,7 @@ export default function AdminPage() {
                   </div>
                   <div className="text-right">
                     <p className="font-bold text-[#C9AB81]">{formatPrice(b.amount)}</p>
-                    <p className="text-[10px] text-white/30">{formatTime(b.timestamp)}</p>
+                    <p className="text-[10px] text-white/70">{formatTime(b.timestamp)}</p>
                   </div>
                 </div>
               ))
@@ -747,7 +747,7 @@ export default function AdminPage() {
                             </span>
                           )}
                         </p>
-                        <span className="text-[10px] text-white/30 shrink-0">{formatTime(o.timestamp)}</span>
+                        <span className="text-[10px] text-white/70 shrink-0">{formatTime(o.timestamp)}</span>
                       </div>
                       <p className="text-xs text-white/50">{o.phone}</p>
                       <p className="text-xs text-[#C9AB81]/70">{o.email}</p>
@@ -827,7 +827,7 @@ export default function AdminPage() {
                       <p className="text-xl font-bold text-red-400">{selectedGalleryUser.likes}</p>
                     </div>
                   </div>
-                  <div className="flex justify-between text-[10px] text-white/20 mt-3">
+                  <div className="flex justify-between text-[10px] text-white/70 mt-3">
                     <span>Prima vizită: {formatTime(selectedGalleryUser.firstView)}</span>
                     <span>Ultima: {formatTime(selectedGalleryUser.lastView)}</span>
                   </div>
@@ -854,7 +854,7 @@ export default function AdminPage() {
                           </div>
                         </div>
                       </div>
-                      <span className="text-[10px] text-white/30 shrink-0">{formatTime(p.timestamp)}</span>
+                      <span className="text-[10px] text-white/70 shrink-0">{formatTime(p.timestamp)}</span>
                     </div>
                   ))}
                 </div>
@@ -957,7 +957,7 @@ export default function AdminPage() {
                                   </span>
                                 )}
                               </div>
-                              <div className="text-[9px] text-white/15 mt-0.5">
+                              <div className="text-[9px] text-white/60 mt-0.5">
                                 {formatTime(u.firstView)} — {formatTime(u.lastView)}
                               </div>
                             </div>
@@ -1114,7 +1114,7 @@ export default function AdminPage() {
                               )}
                               <div className="flex-1 min-w-0">
                                 {od.message && <p className="text-[10px] text-white/50 italic">&ldquo;{od.message}&rdquo;</p>}
-                                <p className="text-[9px] text-white/20">{formatTime(od.timestamp)}</p>
+                                <p className="text-[9px] text-white/60">{formatTime(od.timestamp)}</p>
                               </div>
                             </div>
                           ))}
@@ -1122,10 +1122,85 @@ export default function AdminPage() {
                       )}
 
                       {/* Timeline */}
-                      <div className="flex justify-between text-[10px] text-white/20 mt-2">
+                      <div className="flex justify-between text-[10px] text-white/70 mt-2">
                         <span>Prima: {new Date(c.firstVisit).toLocaleDateString("ro-RO")}</span>
                         <span>Ultima: {new Date(c.lastVisit).toLocaleDateString("ro-RO")}</span>
                       </div>
+
+                      {/* Generate report button */}
+                      <button
+                        onClick={() => {
+                          // Find access data for this user
+                          const accessUser = accessData?.users.find((u) => u.phone === c.phone);
+                          const lines: string[] = [];
+                          lines.push("═══════════════════════════════════════════");
+                          lines.push(`RAPORT CLIENT — ${c.name}`);
+                          lines.push("═══════════════════════════════════════════");
+                          lines.push("");
+                          lines.push("── DATE DE CONTACT ──");
+                          lines.push(`Nume:    ${c.name}`);
+                          lines.push(`Telefon: ${c.phone}`);
+                          lines.push(`Email:   ${c.email || "—"}`);
+                          lines.push(`Sursa:   ${c.source.join(", ") || "—"}`);
+                          lines.push("");
+                          lines.push("── STATISTICI GENERALE ──");
+                          lines.push(`Total vizite:     ${c.totalVisits}`);
+                          lines.push(`Total comenzi:    ${c.totalOrders}`);
+                          lines.push(`Total cheltuieli: ${formatPrice(c.totalSpent)}`);
+                          lines.push(`Medie/vizită:     ${formatPrice(c.avgPerVisit)}`);
+                          lines.push(`Cereri ofertă:    ${c.offerRequests}`);
+                          lines.push(`Prima vizită:     ${new Date(c.firstVisit).toLocaleString("ro-RO")}`);
+                          lines.push(`Ultima vizită:    ${new Date(c.lastVisit).toLocaleString("ro-RO")}`);
+                          lines.push("");
+                          if (Object.keys(c.paymentMethods).length > 0) {
+                            lines.push("── METODE DE PLATĂ ──");
+                            Object.entries(c.paymentMethods).forEach(([m, cnt]) => {
+                              lines.push(`  ${m}: ${cnt}×`);
+                            });
+                            lines.push("");
+                          }
+                          if (c.umbrellas.length > 0) {
+                            lines.push("── UMBRELE FOLOSITE ──");
+                            lines.push(`  ${c.umbrellas.join(", ")}`);
+                            lines.push("");
+                          }
+                          if (c.offerDetails.length > 0) {
+                            lines.push("── SOLICITĂRI OFERTĂ ──");
+                            c.offerDetails.forEach((od, i) => {
+                              lines.push(`  ${i + 1}. ${new Date(od.timestamp).toLocaleString("ro-RO")}`);
+                              if (od.message) lines.push(`     Mesaj: "${od.message}"`);
+                            });
+                            lines.push("");
+                          }
+                          if (accessUser && accessUser.pages.length > 0) {
+                            lines.push("── ISTORIC ACCESĂRI ──");
+                            [...accessUser.pages].reverse().forEach((p) => {
+                              const type = p.action === "scan" ? "Scanare QR" :
+                                p.action === "menu" ? "Acces meniu" :
+                                p.action === "menu-return" ? "Revenire meniu" : p.action;
+                              lines.push(`  ${new Date(p.timestamp).toLocaleString("ro-RO")} — ${type} — ${p.page}${p.umbrellaId ? ` (⛱ ${p.umbrellaId})` : ""}`);
+                            });
+                            lines.push("");
+                          }
+                          lines.push("═══════════════════════════════════════════");
+                          lines.push(`Raport generat: ${new Date().toLocaleString("ro-RO")}`);
+                          lines.push("Kuziini × LOFT — Admin Panel");
+                          lines.push("═══════════════════════════════════════════");
+
+                          const text = lines.join("\n");
+                          const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+                          const url = URL.createObjectURL(blob);
+                          const a = document.createElement("a");
+                          a.href = url;
+                          a.download = `raport-${c.name.replace(/\s+/g, "-").toLowerCase()}-${new Date().toISOString().slice(0, 10)}.txt`;
+                          a.click();
+                          URL.revokeObjectURL(url);
+                        }}
+                        className="w-full mt-3 flex items-center justify-center gap-2 bg-[#C9AB81]/15 border border-[#C9AB81]/30 text-[#C9AB81] py-2 text-[10px] font-bold tracking-wider uppercase active:bg-[#C9AB81]/25 transition-colors"
+                      >
+                        <FileText className="w-3.5 h-3.5" />
+                        Generează raport complet
+                      </button>
                     </div>
                   ))}
                   </>);
@@ -1200,7 +1275,7 @@ export default function AdminPage() {
                           </div>
                         </div>
                       </div>
-                      <span className="text-[10px] text-white/30 shrink-0">{formatTime(p.timestamp)}</span>
+                      <span className="text-[10px] text-white/70 shrink-0">{formatTime(p.timestamp)}</span>
                     </div>
                   ))}
                 </div>
@@ -1236,7 +1311,7 @@ export default function AdminPage() {
                           </div>
                           <p className="text-xs text-white/40">{u.phone}</p>
                           {u.email && <p className="text-xs text-[#C9AB81]/60">{u.email}</p>}
-                          <div className="flex items-center gap-3 mt-1.5 text-[10px] text-white/20">
+                          <div className="flex items-center gap-3 mt-1.5 text-[10px] text-white/60">
                             <span>Prima: {formatTime(u.firstAccess)}</span>
                             <span>Ultima: {formatTime(u.lastAccess)}</span>
                           </div>
