@@ -529,6 +529,8 @@ function Lightbox({
   const [selectedPhotos, setSelectedPhotos] = useState<Set<number>>(new Set());
   const [likes, setLikes] = useState<Record<string, { likes: number; liked: boolean }>>({});
   const [likeAnimating, setLikeAnimating] = useState<number | null>(null);
+  const [floatingHearts, setFloatingHearts] = useState<{ id: number; x: number; delay: number; size: number; duration: number }[]>([]);
+  const heartIdRef = useRef(0);
   const trackedViews = useRef<Set<number>>(new Set());
 
   // Get or create anonymous session ID
@@ -564,10 +566,33 @@ function Lightbox({
     }).catch(() => {});
   }, [current, isKuziini]);
 
+  function spawnHearts() {
+    const newHearts = Array.from({ length: 8 }, () => {
+      heartIdRef.current++;
+      return {
+        id: heartIdRef.current,
+        x: 50 + (Math.random() - 0.5) * 80, // spread horizontally around center
+        delay: Math.random() * 0.4,
+        size: 14 + Math.random() * 18,
+        duration: 1.2 + Math.random() * 0.8,
+      };
+    });
+    setFloatingHearts((prev) => [...prev, ...newHearts]);
+    // Clean up after animations complete
+    setTimeout(() => {
+      setFloatingHearts((prev) => prev.filter((h) => !newHearts.find((n) => n.id === h.id)));
+    }, 2500);
+  }
+
   async function toggleLike() {
     if (!sessionId.current) return;
     setLikeAnimating(current);
     setTimeout(() => setLikeAnimating(null), 600);
+    // Spawn floating hearts on like (not unlike)
+    const isCurrentlyLiked = likes[`kuziini-${current}`]?.liked;
+    if (!isCurrentlyLiked) {
+      spawnHearts();
+    }
     try {
       const res = await fetch("/api/analytics", {
         method: "POST",
@@ -800,10 +825,35 @@ function Lightbox({
                 alt=""
                 className="max-w-full max-h-full object-contain animate-fade-in"
               />
+              {/* Floating hearts animation */}
+              {floatingHearts.length > 0 && (
+                <div className="absolute inset-0 pointer-events-none overflow-hidden z-20">
+                  {floatingHearts.map((h) => (
+                    <div
+                      key={h.id}
+                      className="absolute"
+                      style={{
+                        left: `${h.x}%`,
+                        bottom: 0,
+                        animation: `floatHeart ${h.duration}s ease-out ${h.delay}s both`,
+                      }}
+                    >
+                      <Heart
+                        className="text-red-500 fill-red-500 drop-shadow-lg"
+                        style={{
+                          width: h.size,
+                          height: h.size,
+                          animation: `heartWiggle ${0.3 + Math.random() * 0.3}s ease-in-out ${h.delay}s infinite alternate`,
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
               {isKuziini && (
                 <button
                   onClick={toggleLike}
-                  className="absolute bottom-3 right-3 flex items-center gap-1.5 bg-black/60 backdrop-blur-sm px-3 py-2 active:scale-110 transition-transform"
+                  className="absolute bottom-3 right-3 flex items-center gap-1.5 bg-black/60 backdrop-blur-sm px-3 py-2 active:scale-110 transition-transform z-30"
                 >
                   <Heart
                     className={`w-5 h-5 transition-colors ${
