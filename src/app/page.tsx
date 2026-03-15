@@ -364,7 +364,18 @@ function Lightbox({
   const [formSent, setFormSent] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
-  const [formData, setFormData] = useState({ name: "", phone: "", email: "", message: "" });
+  const [formData, setFormData] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("kuziini_contact");
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          return { name: parsed.name || "", phone: parsed.phone || "", email: parsed.email || "", message: "" };
+        } catch { /* ignore */ }
+      }
+    }
+    return { name: "", phone: "", email: "", message: "" };
+  });
 
   const goNext = useCallback(() => {
     setCurrent((c) => (c < images.length - 1 ? c + 1 : c));
@@ -406,11 +417,17 @@ function Lightbox({
         body: JSON.stringify({
           action: "submit",
           ...formData,
-          photoUrl: `[Kuziini gallery photo ${current + 1}]`,
+          photoUrl: images[current],
         }),
       });
       const json = await res.json();
       if (!json.success) throw new Error(json.error);
+      // Save contact info for next time
+      localStorage.setItem("kuziini_contact", JSON.stringify({
+        name: formData.name,
+        phone: formData.phone,
+        email: formData.email,
+      }));
       setFormSent(true);
     } catch (e: unknown) {
       setFormError(e instanceof Error ? e.message : "Eroare la trimitere.");
@@ -554,12 +571,25 @@ function Lightbox({
       {/* Success message */}
       {isKuziini && formSent && (
         <div className="shrink-0 px-4 py-3">
-          <div className="bg-emerald-500/10 border border-emerald-500/20 p-4 flex items-center gap-3">
-            <CheckCircle className="w-5 h-5 text-emerald-400 shrink-0" />
-            <div>
-              <p className="text-emerald-400 text-sm font-bold">Cererea a fost trimisă!</p>
-              <p className="text-white/40 text-xs mt-0.5">Vei fi contactat în cel mai scurt timp.</p>
+          <div className="bg-emerald-500/10 border border-emerald-500/20 p-4">
+            <div className="flex items-center gap-3 mb-3">
+              <CheckCircle className="w-5 h-5 text-emerald-400 shrink-0" />
+              <div>
+                <p className="text-emerald-400 text-sm font-bold">Cererea a fost trimisă!</p>
+                <p className="text-white/40 text-xs mt-0.5">Vei fi contactat în cel mai scurt timp.</p>
+              </div>
             </div>
+            <button
+              onClick={() => {
+                setFormSent(false);
+                setShowForm(true);
+                setFormData((d) => ({ ...d, message: "" }));
+              }}
+              className="w-full flex items-center justify-center gap-2 bg-[#C9AB81]/20 border border-[#C9AB81]/30 text-[#C9AB81] py-2.5 font-bold text-xs tracking-[0.1em] uppercase active:opacity-80 transition-opacity"
+            >
+              <Send className="w-3.5 h-3.5" />
+              Solicită altă ofertă
+            </button>
           </div>
         </div>
       )}
