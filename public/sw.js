@@ -1,5 +1,5 @@
 const CACHE_NAME = "kuziini-v1";
-const PRECACHE_URLS = ["/", "/offline"];
+const PRECACHE_URLS = ["/"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
