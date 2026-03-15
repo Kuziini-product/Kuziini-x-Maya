@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, CreditCard, Banknote, Hotel, CheckCircle2, AlertCircle, ChevronRight } from "lucide-react";
 import { PageHeader, EmptyState, Divider, Spinner } from "@/components/ui";
-import { useSessionStore } from "@/store";
+import { useSessionStore, useCartStore } from "@/store";
 import { formatPrice } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import type { PaymentOptions, PaymentMethod } from "@/types";
@@ -22,6 +22,7 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
   const { umbrellaId } = params;
   const router = useRouter();
   const { userSession, orders, clearSession } = useSessionStore();
+  const clearCart = useCartStore((s) => s.clearCart);
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethod | null>(null);
   const [confirming, setConfirming] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -56,6 +57,9 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
       });
       const json = await res.json();
       if (!json.success) throw new Error(json.error);
+      // Auto-logout: clear session + cart, then show success
+      clearCart();
+      clearSession();
       setDone(true);
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Eroare la trimiterea notei.");
@@ -90,10 +94,7 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
           Mulțumim că ai ales LOFT
         </p>
         <button
-          onClick={() => {
-            clearSession();
-            router.push("/");
-          }}
+          onClick={() => router.push("/")}
           className="bg-[#C9AB81] text-[#0A0A0A] px-6 py-3 font-bold text-sm tracking-[0.1em] uppercase"
         >
           Înapoi la pagina principală
