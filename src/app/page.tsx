@@ -549,107 +549,16 @@ function Lightbox({
         </button>
       </div>
 
-      {/* Image area — relative so CTA can overlay on desktop */}
-      <div className="flex-1 flex items-center justify-center px-4 min-h-0 relative md:pb-0">
-        {current > 0 && (
-          <button
-            onClick={goPrev}
-            className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-white/10 active:bg-white/20 transition-colors z-10"
-          >
-            <ChevronLeft className="w-5 h-5 text-white/70" />
-          </button>
-        )}
-
-        <div className="relative">
-          <img
-            key={current}
-            src={images[current]}
-            alt=""
-            className="max-w-full max-h-full object-contain animate-fade-in"
-          />
-          {isKuziini && (
-            <button
-              onClick={toggleLike}
-              className="absolute bottom-3 right-3 flex items-center gap-1.5 bg-black/60 backdrop-blur-sm px-3 py-2 active:scale-110 transition-transform"
-            >
-              <Heart
-                className={`w-5 h-5 transition-colors ${
-                  likes[`kuziini-${current}`]?.liked
-                    ? "text-red-500 fill-red-500"
-                    : "text-white/70"
-                } ${likeAnimating === current ? "animate-ping-once" : ""}`}
-              />
-              {(likes[`kuziini-${current}`]?.likes || 0) > 0 && (
-                <span className="text-white/80 text-xs font-bold">
-                  {likes[`kuziini-${current}`].likes}
-                </span>
-              )}
-            </button>
-          )}
-        </div>
-
-        {current < images.length - 1 && (
-          <button
-            onClick={goNext}
-            className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-white/10 active:bg-white/20 transition-colors z-10"
-          >
-            <ChevronRight className="w-5 h-5 text-white/70" />
-          </button>
-        )}
-
-        {/* CTA overlay — positioned at bottom of image area */}
-        {isKuziini && !showForm && !formSent && (
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20">
-            <button
-              onClick={() => {
-                setSelectedPhotos(new Set([current]));
-                setShowForm(true);
-              }}
-              className="flex items-center gap-2 bg-[#C9AB81] text-[#0A0A0A] py-2 px-5 font-bold text-[11px] tracking-[0.1em] uppercase active:opacity-80 transition-opacity shadow-lg shadow-black/40"
-            >
-              <Send className="w-3.5 h-3.5" />
-              Solicită ofertă
-            </button>
-          </div>
-        )}
-
-        {/* Success message overlay */}
-        {isKuziini && formSent && (
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 w-[90%] max-w-[360px]">
-            <div className="bg-emerald-500/10 border border-emerald-500/20 p-3 backdrop-blur-md shadow-2xl">
-              <div className="flex items-center gap-3 mb-2">
-                <CheckCircle className="w-5 h-5 text-emerald-400 shrink-0" />
-                <div>
-                  <p className="text-emerald-400 text-sm font-bold">Cererea a fost trimisă!</p>
-                  <p className="text-white/40 text-xs mt-0.5">Vei fi contactat în cel mai scurt timp.</p>
-                </div>
-              </div>
-              <button
-                onClick={() => {
-                  setFormSent(false);
-                  setSelectedPhotos(new Set());
-                  setShowForm(true);
-                  setFormData((d) => ({ ...d, message: "" }));
-                }}
-                className="w-full flex items-center justify-center gap-2 bg-[#C9AB81]/20 border border-[#C9AB81]/30 text-[#C9AB81] py-2 font-bold text-xs tracking-[0.1em] uppercase active:opacity-80 transition-opacity"
-              >
-                <Send className="w-3.5 h-3.5" />
-                Solicită altă ofertă
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Offer form — full panel below image when active, otherwise thumbnail strip */}
-      {isKuziini && showForm && !formSent ? (
-        <div className="shrink-0 max-h-[55vh] overflow-y-auto bg-black/95 border-t border-white/[0.1]">
-          {/* Scrollable photo selector */}
-          <div className="px-4 pt-3 pb-2">
-            <p className="text-[#C9AB81] text-[10px] font-bold tracking-[0.2em] uppercase mb-2">
+      {/* Main content area */}
+      {showForm && !formSent ? (
+        /* ── Offer form mode: gallery grid + contact form ── */
+        <div className="flex-1 overflow-y-auto px-4 pb-4">
+          {/* Gallery grid for selection */}
+          <div className="mb-4">
+            <p className="text-[#C9AB81] text-[10px] font-bold tracking-[0.2em] uppercase mb-3">
               Selectează produsele ({selectedPhotos.size} {selectedPhotos.size === 1 ? "selectat" : "selectate"})
             </p>
-            <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
+            <div className="grid grid-cols-3 gap-1.5">
               {images.map((url, i) => (
                 <button
                   key={i}
@@ -661,45 +570,26 @@ function Lightbox({
                       return next;
                     });
                   }}
-                  className={`relative w-16 h-16 shrink-0 overflow-hidden border-2 transition-all ${
+                  className={`relative aspect-square overflow-hidden border-2 transition-all ${
                     selectedPhotos.has(i)
                       ? "border-[#C9AB81] opacity-100"
-                      : "border-white/10 opacity-50"
+                      : "border-white/[0.08] opacity-60"
                   }`}
                 >
                   <img src={url} alt="" className="w-full h-full object-cover" />
                   {selectedPhotos.has(i) && (
                     <div className="absolute inset-0 bg-[#C9AB81]/20 flex items-center justify-center">
-                      <CheckCircle className="w-5 h-5 text-[#C9AB81]" />
+                      <CheckCircle className="w-7 h-7 text-[#C9AB81] drop-shadow-lg" />
                     </div>
                   )}
+                  <span className="absolute bottom-1 left-1 bg-black/60 text-white text-[9px] px-1 rounded-sm">#{i + 1}</span>
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Selected photos preview */}
-          {selectedPhotos.size > 0 && (
-            <div className="px-4 pb-2">
-              <div className="flex gap-1.5 flex-wrap">
-                {Array.from(selectedPhotos).sort((a, b) => a - b).map((idx) => (
-                  <div key={idx} className="relative w-20 h-20 border border-[#C9AB81]/30">
-                    <img src={images[idx]} alt="" className="w-full h-full object-cover" />
-                    <button
-                      onClick={() => setSelectedPhotos((prev) => { const n = new Set(prev); n.delete(idx); return n; })}
-                      className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 flex items-center justify-center"
-                    >
-                      <X className="w-3 h-3 text-white" />
-                    </button>
-                    <span className="absolute bottom-0 left-0 bg-black/70 text-white text-[9px] px-1">#{idx + 1}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
           {/* Contact form */}
-          <div className="px-4 pb-4 space-y-2">
+          <div className="space-y-2">
             <p className="text-white/40 text-[10px] font-bold tracking-[0.2em] uppercase">Date de contact</p>
             <input
               type="text"
@@ -748,26 +638,122 @@ function Lightbox({
             </div>
           </div>
         </div>
-      ) : !showForm && !formSent ? (
-        /* Thumbnail strip — only when form is NOT open */
-        <div className="shrink-0 px-4 py-3 overflow-x-auto">
-          <div className="flex gap-2 justify-center">
-            {images.map((url, i) => (
+      ) : (
+        /* ── Normal lightbox mode: large photo + navigation ── */
+        <>
+          <div className="flex-1 flex items-center justify-center px-4 min-h-0 relative">
+            {current > 0 && (
               <button
-                key={i}
-                onClick={() => setCurrent(i)}
-                className={`w-12 h-12 shrink-0 overflow-hidden border-2 transition-all ${
-                  i === current
-                    ? "border-[#C9AB81] opacity-100"
-                    : "border-transparent opacity-40"
-                }`}
+                onClick={goPrev}
+                className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-white/10 active:bg-white/20 transition-colors z-10"
               >
-                <img src={url} alt="" className="w-full h-full object-cover" />
+                <ChevronLeft className="w-5 h-5 text-white/70" />
               </button>
-            ))}
+            )}
+
+            <div className="relative">
+              <img
+                key={current}
+                src={images[current]}
+                alt=""
+                className="max-w-full max-h-full object-contain animate-fade-in"
+              />
+              {isKuziini && (
+                <button
+                  onClick={toggleLike}
+                  className="absolute bottom-3 right-3 flex items-center gap-1.5 bg-black/60 backdrop-blur-sm px-3 py-2 active:scale-110 transition-transform"
+                >
+                  <Heart
+                    className={`w-5 h-5 transition-colors ${
+                      likes[`kuziini-${current}`]?.liked
+                        ? "text-red-500 fill-red-500"
+                        : "text-white/70"
+                    } ${likeAnimating === current ? "animate-ping-once" : ""}`}
+                  />
+                  {(likes[`kuziini-${current}`]?.likes || 0) > 0 && (
+                    <span className="text-white/80 text-xs font-bold">
+                      {likes[`kuziini-${current}`].likes}
+                    </span>
+                  )}
+                </button>
+              )}
+            </div>
+
+            {current < images.length - 1 && (
+              <button
+                onClick={goNext}
+                className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-white/10 active:bg-white/20 transition-colors z-10"
+              >
+                <ChevronRight className="w-5 h-5 text-white/70" />
+              </button>
+            )}
+
+            {/* CTA overlay */}
+            {isKuziini && !formSent && (
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20">
+                <button
+                  onClick={() => {
+                    setSelectedPhotos(new Set([current]));
+                    setShowForm(true);
+                  }}
+                  className="flex items-center gap-2 bg-[#C9AB81] text-[#0A0A0A] py-2 px-5 font-bold text-[11px] tracking-[0.1em] uppercase active:opacity-80 transition-opacity shadow-lg shadow-black/40"
+                >
+                  <Send className="w-3.5 h-3.5" />
+                  Solicită ofertă
+                </button>
+              </div>
+            )}
+
+            {/* Success message overlay */}
+            {isKuziini && formSent && (
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 w-[90%] max-w-[360px]">
+                <div className="bg-emerald-500/10 border border-emerald-500/20 p-3 backdrop-blur-md shadow-2xl">
+                  <div className="flex items-center gap-3 mb-2">
+                    <CheckCircle className="w-5 h-5 text-emerald-400 shrink-0" />
+                    <div>
+                      <p className="text-emerald-400 text-sm font-bold">Cererea a fost trimisă!</p>
+                      <p className="text-white/40 text-xs mt-0.5">Vei fi contactat în cel mai scurt timp.</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setFormSent(false);
+                      setSelectedPhotos(new Set());
+                      setShowForm(true);
+                      setFormData((d) => ({ ...d, message: "" }));
+                    }}
+                    className="w-full flex items-center justify-center gap-2 bg-[#C9AB81]/20 border border-[#C9AB81]/30 text-[#C9AB81] py-2 font-bold text-xs tracking-[0.1em] uppercase active:opacity-80 transition-opacity"
+                  >
+                    <Send className="w-3.5 h-3.5" />
+                    Solicită altă ofertă
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
-        </div>
-      ) : null}
+
+          {/* Thumbnail strip */}
+          {!formSent && (
+            <div className="shrink-0 px-4 py-3 overflow-x-auto">
+              <div className="flex gap-2 justify-center">
+                {images.map((url, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setCurrent(i)}
+                    className={`w-12 h-12 shrink-0 overflow-hidden border-2 transition-all ${
+                      i === current
+                        ? "border-[#C9AB81] opacity-100"
+                        : "border-transparent opacity-40"
+                    }`}
+                  >
+                    <img src={url} alt="" className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }
