@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Lock, Users, ShoppingBag, Receipt, DollarSign, RefreshCw, Umbrella, ImageIcon, LayoutGrid, FileText, Eye, Trash2, Heart, BarChart3, ArrowUpDown, ExternalLink } from "lucide-react";
+import { Lock, Users, ShoppingBag, Receipt, DollarSign, RefreshCw, Umbrella, ImageIcon, LayoutGrid, FileText, Eye, Trash2, Heart, BarChart3, ArrowUpDown, ExternalLink, Bell, ChevronRight, ArrowLeft, Clock, Smartphone, Monitor } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
 import type { PromoBanner } from "@/types";
 import type { GalleryImage, GalleryAspect, LibraryPhoto } from "@/lib/mock-data";
@@ -106,7 +106,23 @@ interface AnalyticsData {
 type ClientSort = "spent" | "visits" | "recent" | "orders" | "name";
 type ClientFilter = "all" | "receptie" | "oferta";
 
-type Tab = "overview" | "logins" | "orders" | "bills" | "umbrellas" | "banners" | "gallery" | "offers" | "clients";
+interface AccessUser {
+  name: string;
+  phone: string;
+  email: string;
+  totalAccess: number;
+  firstAccess: string;
+  lastAccess: string;
+  pages: { page: string; action: string; umbrellaId: string; timestamp: string }[];
+}
+
+interface AccessData {
+  unread: number;
+  totalEntries: number;
+  users: AccessUser[];
+}
+
+type Tab = "overview" | "logins" | "orders" | "bills" | "umbrellas" | "banners" | "gallery" | "offers" | "clients" | "rapoarte";
 
 const SESSION_KEY = "kuziini_admin_session";
 const SESSION_HOURS = 1;
@@ -145,7 +161,31 @@ export default function AdminPage() {
   const [clientSort, setClientSort] = useState<ClientSort>("spent");
   const [clientSearch, setClientSearch] = useState("");
   const [clientFilter, setClientFilter] = useState<ClientFilter>("all");
+  const [accessData, setAccessData] = useState<AccessData | null>(null);
+  const [accessUnread, setAccessUnread] = useState(0);
+  const [selectedAccessUser, setSelectedAccessUser] = useState<AccessUser | null>(null);
   const autoLoginDone = useRef(false);
+
+  // Clear unread when viewing Rapoarte tab
+  useEffect(() => {
+    if (tab !== "rapoarte" || !authenticated || accessUnread === 0) return;
+    fetch("/api/access-log", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password, action: "markRead" }),
+    })
+      .then((r) => r.json())
+      .then((j) => {
+        if (j.success) {
+          setAccessUnread(0);
+          // Clear PWA badge
+          const nav = navigator as Navigator & { clearAppBadge?: () => Promise<void> };
+          nav.clearAppBadge?.();
+        }
+      })
+      .catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab]);
 
   useEffect(() => {
     if (autoLoginDone.current) return;
@@ -216,6 +256,17 @@ export default function AdminPage() {
       });
       const aJson = await aRes.json();
       if (aJson.success) setAnalyticsData(aJson.data);
+      // Fetch access log
+      const acRes = await fetch("/api/access-log", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: pw || password, action: "getLog" }),
+      });
+      const acJson = await acRes.json();
+      if (acJson.success) {
+        setAccessData(acJson.data);
+        setAccessUnread(acJson.data.unread);
+      }
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Eroare.");
       if (!authenticated) setAuthenticated(false);
@@ -299,6 +350,7 @@ export default function AdminPage() {
     { key: "gallery", label: "Galerie", icon: <LayoutGrid className="w-4 h-4" /> },
     { key: "offers", label: "Oferte", icon: <FileText className="w-4 h-4" /> },
     { key: "clients", label: "Clienți", icon: <BarChart3 className="w-4 h-4" /> },
+    { key: "rapoarte", label: "Rapoarte", icon: <Bell className="w-4 h-4" /> },
   ];
 
   return (
@@ -334,7 +386,7 @@ export default function AdminPage() {
             <button
               key={t.key}
               onClick={() => setTab(t.key)}
-              className={`flex items-center gap-1.5 px-3 py-2 text-[10px] font-bold tracking-wider uppercase whitespace-nowrap transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-2 text-[10px] font-bold tracking-wider uppercase whitespace-nowrap transition-all relative ${
                 tab === t.key
                   ? "bg-[#C9AB81] text-[#0A0A0A]"
                   : "bg-white/[0.06] text-white/40"
@@ -342,6 +394,11 @@ export default function AdminPage() {
             >
               {t.icon}
               {t.label}
+              {t.key === "rapoarte" && accessUnread > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] flex items-center justify-center bg-red-500 text-white text-[9px] font-bold rounded-full px-1">
+                  {accessUnread}
+                </span>
+              )}
             </button>
           ))}
         </div>
@@ -868,6 +925,122 @@ export default function AdminPage() {
                   ))}
                   </>);
                 })()}
+              </>
+            )}
+          </>
+        )}
+
+        {/* Rapoarte / Access Log */}
+        {tab === "rapoarte" && (
+          <>
+            {!accessData ? (
+              <EmptyMsg text="Se încarcă datele..." />
+            ) : selectedAccessUser ? (
+              /* ── Detail view: user access history ── */
+              <div>
+                <button
+                  onClick={() => setSelectedAccessUser(null)}
+                  className="flex items-center gap-1.5 text-[#C9AB81] text-xs font-bold tracking-wider uppercase mb-4"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  Înapoi la lista
+                </button>
+                <div className="bg-white/[0.03] border border-white/[0.06] p-4 mb-4">
+                  <p className="font-bold text-lg text-white tracking-wide">{selectedAccessUser.name || "—"}</p>
+                  <p className="text-xs text-white/50">{selectedAccessUser.phone}</p>
+                  {selectedAccessUser.email && <p className="text-xs text-[#C9AB81]/70">{selectedAccessUser.email}</p>}
+                  <div className="grid grid-cols-2 gap-3 mt-3">
+                    <div className="bg-white/[0.03] px-3 py-2 text-center">
+                      <p className="text-[9px] text-white/30 uppercase tracking-wider">Total accesări</p>
+                      <p className="text-xl font-bold text-white">{selectedAccessUser.totalAccess}</p>
+                    </div>
+                    <div className="bg-white/[0.03] px-3 py-2 text-center">
+                      <p className="text-[9px] text-white/30 uppercase tracking-wider">Prima accesare</p>
+                      <p className="text-xs font-bold text-white mt-1">{formatTime(selectedAccessUser.firstAccess)}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <p className="text-[#C9AB81] text-[10px] font-bold tracking-[0.2em] uppercase mb-3">
+                  Istoric accesări ({selectedAccessUser.pages.length})
+                </p>
+                <div className="space-y-2">
+                  {[...selectedAccessUser.pages].reverse().map((p, i) => (
+                    <div key={i} className="bg-white/[0.03] border border-white/[0.06] p-3 flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-8 h-8 flex items-center justify-center shrink-0 ${
+                          p.action === "scan" ? "bg-emerald-500/20" :
+                          p.action === "menu" ? "bg-blue-500/20" :
+                          p.action === "menu-return" ? "bg-purple-500/20" :
+                          "bg-white/10"
+                        }`}>
+                          {p.action === "scan" ? <Smartphone className="w-4 h-4 text-emerald-400" /> :
+                           p.action === "menu" ? <Monitor className="w-4 h-4 text-blue-400" /> :
+                           <Clock className="w-4 h-4 text-purple-400" />}
+                        </div>
+                        <div>
+                          <p className="text-xs text-white font-bold">{p.page}</p>
+                          <div className="flex items-center gap-2 text-[10px] text-white/40">
+                            <span className={`px-1.5 py-0.5 font-bold tracking-wider uppercase ${
+                              p.action === "scan" ? "bg-emerald-500/20 text-emerald-400" :
+                              p.action === "menu" ? "bg-blue-500/20 text-blue-400" :
+                              "bg-purple-500/20 text-purple-400"
+                            }`}>
+                              {p.action === "scan" ? "Scanare QR" :
+                               p.action === "menu" ? "Acces meniu" :
+                               p.action === "menu-return" ? "Revenire meniu" :
+                               p.action}
+                            </span>
+                            {p.umbrellaId && <span className="text-[#C9AB81]">⛱️ {p.umbrellaId}</span>}
+                          </div>
+                        </div>
+                      </div>
+                      <span className="text-[10px] text-white/30 shrink-0">{formatTime(p.timestamp)}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              /* ── User list view ── */
+              <>
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-white/30 text-xs">
+                    {accessData.users.length} utilizatori · {accessData.totalEntries} accesări totale
+                    {accessUnread > 0 && (
+                      <span className="ml-2 text-red-400 font-bold">({accessUnread} noi)</span>
+                    )}
+                  </p>
+                </div>
+
+                {accessData.users.length === 0 ? (
+                  <EmptyMsg text="Nicio accesare înregistrată." />
+                ) : (
+                  accessData.users.map((u) => (
+                    <button
+                      key={u.phone}
+                      onClick={() => setSelectedAccessUser(u)}
+                      className="w-full bg-white/[0.03] border border-white/[0.06] p-4 mb-3 text-left active:bg-white/[0.06] transition-colors"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <p className="font-bold text-sm text-white tracking-wide">{u.name || "—"}</p>
+                            <span className="text-[9px] bg-[#C9AB81]/20 text-[#C9AB81] px-1.5 py-0.5 font-bold">
+                              {u.totalAccess}×
+                            </span>
+                          </div>
+                          <p className="text-xs text-white/40">{u.phone}</p>
+                          {u.email && <p className="text-xs text-[#C9AB81]/60">{u.email}</p>}
+                          <div className="flex items-center gap-3 mt-1.5 text-[10px] text-white/20">
+                            <span>Prima: {formatTime(u.firstAccess)}</span>
+                            <span>Ultima: {formatTime(u.lastAccess)}</span>
+                          </div>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-white/20 shrink-0 ml-2" />
+                      </div>
+                    </button>
+                  ))
+                )}
               </>
             )}
           </>

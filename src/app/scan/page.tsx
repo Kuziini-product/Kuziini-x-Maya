@@ -108,6 +108,20 @@ export default function ScanPage() {
         isRegistered: json.data.isRegistered ?? true,
         joinedAt: json.data.joinedAt,
       });
+      // Track access
+      fetch("/api/access-log", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "track",
+          name: userSession?.name || "",
+          phone: userSession?.phone || "",
+          email: userSession?.email || "",
+          umbrellaId,
+          page: `/u/${umbrellaId}`,
+          accessType: "scan",
+        }),
+      }).catch(() => {});
       router.push(`/u/${umbrellaId}`);
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Eroare la înregistrare.");

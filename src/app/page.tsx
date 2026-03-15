@@ -179,6 +179,20 @@ export default function HomePage() {
               }
               // Then navigate
               if (userSession?.umbrellaId) {
+                // Track returning user access
+                fetch("/api/access-log", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    action: "track",
+                    name: userSession.name || "",
+                    phone: userSession.phone || "",
+                    email: userSession.email || "",
+                    umbrellaId: userSession.umbrellaId,
+                    page: `/u/${userSession.umbrellaId}`,
+                    accessType: "menu-return",
+                  }),
+                }).catch(() => {});
                 router.push(`/u/${userSession.umbrellaId}`);
               } else {
                 router.push("/scan");

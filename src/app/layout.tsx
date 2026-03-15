@@ -5,6 +5,7 @@ import { Providers } from "@/components/layout/Providers";
 import { ServiceWorkerRegister } from "@/components/layout/ServiceWorkerRegister";
 import { InstallPrompt } from "@/components/layout/InstallPrompt";
 import { AmbientSound } from "@/components/layout/AmbientSound";
+import { BadgeUpdater } from "@/components/layout/BadgeUpdater";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -42,6 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Providers>{children}</Providers>
         <InstallPrompt />
         <AmbientSound />
+        <BadgeUpdater />
       </body>
     </html>
   );

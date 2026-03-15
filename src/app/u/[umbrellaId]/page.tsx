@@ -45,6 +45,26 @@ export default function LandingPage({
     queryFn: () => fetchUmbrella(umbrellaId),
   });
 
+  // Track access on mount
+  useEffect(() => {
+    if (userSession?.phone) {
+      fetch("/api/access-log", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "track",
+          name: userSession.name || "",
+          phone: userSession.phone,
+          email: userSession.email || "",
+          umbrellaId,
+          page: `/u/${umbrellaId}`,
+          accessType: "menu",
+        }),
+      }).catch(() => {});
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [umbrellaId]);
+
   // Fetch banners + menu items
   useEffect(() => {
     fetch("/api/banners?category=loft")
