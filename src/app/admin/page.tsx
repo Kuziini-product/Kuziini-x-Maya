@@ -879,8 +879,8 @@ export default function AdminPage() {
                     </div>
 
                     {/* Hourly distribution */}
-                    <p className="text-white/30 text-[10px] font-bold tracking-wider uppercase mb-2">Vizualizări pe ore</p>
-                    <div className="flex items-end gap-0.5 h-16 mb-1">
+                    <p className="text-white/30 text-[10px] font-bold tracking-wider uppercase mb-2 text-center">Vizualizări pe ore</p>
+                    <div className="flex items-end justify-center gap-0.5 h-16 mb-1 mx-auto max-w-full">
                       {galleryStats.hourlyViews.map((count, hour) => {
                         const max = Math.max(...galleryStats.hourlyViews, 1);
                         const h = Math.max((count / max) * 100, count > 0 ? 8 : 2);
@@ -894,12 +894,16 @@ export default function AdminPage() {
                         );
                       })}
                     </div>
-                    <div className="flex justify-between text-[8px] text-white/20">
-                      <span>00:00</span>
-                      <span>06:00</span>
-                      <span>12:00</span>
-                      <span>18:00</span>
-                      <span>23:00</span>
+                    <div className="flex justify-between text-[8px] text-white/20 px-0">
+                      <span>00</span>
+                      <span>03</span>
+                      <span>06</span>
+                      <span>09</span>
+                      <span>12</span>
+                      <span>15</span>
+                      <span>18</span>
+                      <span>21</span>
+                      <span>23</span>
                     </div>
 
                     {/* Per-user gallery stats */}
