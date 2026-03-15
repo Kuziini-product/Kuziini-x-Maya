@@ -136,17 +136,6 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Ad slots - 2 columns */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="bg-white/[0.03] border border-white/[0.06] p-4 text-center">
-              <p className="text-[10px] text-[#C9AB81]/40 tracking-[0.2em] uppercase mb-2">Ad Space</p>
-              <p className="text-white/20 text-[10px]">Spațiu publicitar disponibil</p>
-            </div>
-            <div className="bg-white/[0.03] border border-white/[0.06] p-4 text-center">
-              <p className="text-[10px] text-[#C9AB81]/40 tracking-[0.2em] uppercase mb-2">Ad Space</p>
-              <p className="text-white/20 text-[10px]">Spațiu publicitar disponibil</p>
-            </div>
-          </div>
         </div>
       </section>
 
@@ -250,10 +239,10 @@ export default function HomePage() {
       {/* Credit bar - white background */}
       <div className="border-t-2 border-[#C9AB81]/30">
         <div className="bg-white py-5 px-5">
-          <p className="text-[#0A0A0A]/70 text-[10px] text-center tracking-wider mb-1">
+          <p className="text-[#0A0A0A]/70 text-[15px] text-center tracking-wider mb-1">
             &copy; 2026 Kuziini &times; LOFT. Toate drepturile rezervate.
           </p>
-          <p className="text-[#0A0A0A] text-[10px] text-center tracking-wider font-medium">
+          <p className="text-[#0A0A0A] text-[15px] text-center tracking-wider font-medium">
             Dezvoltat de Kuziini Furniture Luxuri and More.
           </p>
         </div>
