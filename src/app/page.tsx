@@ -237,16 +237,16 @@ export default function HomePage() {
             <Image
               src="/kuziini-logo.png"
               alt="Kuziini"
-              width={64}
-              height={64}
-              className="rounded-lg border border-white/10 invert brightness-200"
+              width={40}
+              height={40}
+              className="h-10 w-10 rounded-lg border border-white/10 invert brightness-200"
             />
           </a>
-          <span className="text-[#C9AB81] font-bold">×</span>
+          <span className="text-[#C9AB81]/40 text-lg font-bold">×</span>
           <img
             src="https://loftlounge.ro/wp-content/uploads/2025/07/LOFT-White-Transparent-LOGO-1024x330.png"
             alt="LOFT"
-            className="h-8 object-contain"
+            className="h-10 object-contain opacity-80"
           />
         </div>
 
@@ -269,16 +269,18 @@ export default function HomePage() {
           </div>
         </div>
 
-        <p className="text-white/10 text-[10px] text-center tracking-wider">
-          &copy; 2026 Kuziini &times; LOFT. Toate drepturile rezervate.
-        </p>
       </footer>
 
-      {/* Developer credit bar */}
-      <div className="bg-white py-3 px-5">
-        <p className="text-[#0A0A0A] text-[10px] text-center tracking-wider font-medium">
-          Dezvoltat de Kuziini Furniture Luxuri and More.
-        </p>
+      {/* Credit bar - white background */}
+      <div className="border-t-2 border-[#C9AB81]/30">
+        <div className="bg-white py-5 px-5">
+          <p className="text-[#0A0A0A]/70 text-[10px] text-center tracking-wider mb-1">
+            &copy; 2026 Kuziini &times; LOFT. Toate drepturile rezervate.
+          </p>
+          <p className="text-[#0A0A0A] text-[10px] text-center tracking-wider font-medium">
+            Dezvoltat de Kuziini Furniture Luxuri and More.
+          </p>
+        </div>
       </div>
 
       {/* Lightbox */}
