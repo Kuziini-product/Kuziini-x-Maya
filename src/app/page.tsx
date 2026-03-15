@@ -86,9 +86,11 @@ export default function HomePage() {
           </a>
 
           {/* Brand names */}
-          <p className="text-xl font-bold tracking-[0.2em] uppercase mb-5">
-            KUZIINI <span className="text-[#C9AB81] mx-1">x</span> LOFT
-          </p>
+          <div className="flex items-center justify-center gap-3 text-xl font-bold uppercase mb-5">
+            <span>KUZIINI</span>
+            <span className="text-[#C9AB81]">x</span>
+            <span>LOFT</span>
+          </div>
 
           <p className="text-white/40 text-xs mb-1 italic tracking-wide leading-relaxed">
             &ldquo;The best restaurant is a club, and the best club is a restaurant.&rdquo;
