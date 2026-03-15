@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronRight, ChevronLeft, MapPin, Phone, Mail, AtSign, X } from "lucide-react";
+import { ChevronRight, ChevronLeft, MapPin, Phone, Mail, AtSign, X, Send, CheckCircle } from "lucide-react";
 import type { GalleryImage, GalleryAspect } from "@/lib/mock-data";
 
 interface GalleryData {
@@ -34,10 +34,10 @@ function getAspectClass(aspect: GalleryAspect): string {
 export default function HomePage() {
   const [loftGallery, setLoftGallery] = useState<GalleryData | null>(null);
   const [kuziiniGallery, setKuziiniGallery] = useState<GalleryData | null>(null);
-  const [lightbox, setLightbox] = useState<{ images: string[]; index: number } | null>(null);
+  const [lightbox, setLightbox] = useState<{ images: string[]; index: number; isKuziini: boolean } | null>(null);
 
-  const openLightbox = useCallback((allImages: string[], clickedIndex: number) => {
-    setLightbox({ images: allImages, index: clickedIndex });
+  const openLightbox = useCallback((allImages: string[], clickedIndex: number, isKuziini = false) => {
+    setLightbox({ images: allImages, index: clickedIndex, isKuziini });
   }, []);
 
   useEffect(() => {
@@ -200,7 +200,7 @@ export default function HomePage() {
             </div>
             <ScrollableGallery
               gallery={kuziiniGallery}
-              onImageClick={(allUrls, idx) => openLightbox(allUrls, idx)}
+              onImageClick={(allUrls, idx) => openLightbox(allUrls, idx, true)}
             />
           </div>
         )}
@@ -267,6 +267,7 @@ export default function HomePage() {
         <Lightbox
           images={lightbox.images}
           index={lightbox.index}
+          isKuziini={lightbox.isKuziini}
           onClose={() => setLightbox(null)}
         />
       )}
@@ -348,15 +349,22 @@ function ScrollableGallery({
 function Lightbox({
   images,
   index,
+  isKuziini,
   onClose,
 }: {
   images: string[];
   index: number;
+  isKuziini: boolean;
   onClose: () => void;
 }) {
   const [current, setCurrent] = useState(index);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [showForm, setShowForm] = useState(false);
+  const [formSent, setFormSent] = useState(false);
+  const [formLoading, setFormLoading] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [formData, setFormData] = useState({ name: "", phone: "", email: "", message: "" });
 
   const goNext = useCallback(() => {
     setCurrent((c) => (c < images.length - 1 ? c + 1 : c));
@@ -383,6 +391,33 @@ function Lightbox({
     return () => { document.body.style.overflow = ""; };
   }, []);
 
+  async function submitOffer() {
+    if (!formData.name || !formData.phone || !formData.email) {
+      setFormError("Completează numele, telefonul și emailul.");
+      return;
+    }
+    setFormLoading(true);
+    setFormError(null);
+    try {
+      const res = await fetch("/api/offers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "submit",
+          ...formData,
+          photoUrl: images[current],
+        }),
+      });
+      const json = await res.json();
+      if (!json.success) throw new Error(json.error);
+      setFormSent(true);
+    } catch (e: unknown) {
+      setFormError(e instanceof Error ? e.message : "Eroare la trimitere.");
+    } finally {
+      setFormLoading(false);
+    }
+  }
+
   function handleTouchStart(e: React.TouchEvent) {
     touchStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
   }
@@ -391,7 +426,6 @@ function Lightbox({
     if (!touchStart.current) return;
     const dx = e.changedTouches[0].clientX - touchStart.current.x;
     const dy = e.changedTouches[0].clientY - touchStart.current.y;
-    // Only handle horizontal swipes (not vertical scroll)
     if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
       if (dx < 0) goNext();
       else goPrev();
@@ -421,7 +455,6 @@ function Lightbox({
 
       {/* Image area */}
       <div className="flex-1 flex items-center justify-center px-4 min-h-0 relative">
-        {/* Previous button */}
         {current > 0 && (
           <button
             onClick={goPrev}
@@ -438,7 +471,6 @@ function Lightbox({
           className="max-w-full max-h-full object-contain animate-fade-in"
         />
 
-        {/* Next button */}
         {current < images.length - 1 && (
           <button
             onClick={goNext}
@@ -448,6 +480,88 @@ function Lightbox({
           </button>
         )}
       </div>
+
+      {/* CTA for Kuziini */}
+      {isKuziini && !showForm && !formSent && (
+        <div className="shrink-0 px-4 py-2">
+          <button
+            onClick={() => setShowForm(true)}
+            className="w-full flex items-center justify-center gap-2 bg-[#C9AB81] text-[#0A0A0A] py-3 font-bold text-sm tracking-[0.1em] uppercase active:opacity-80 transition-opacity"
+          >
+            <Send className="w-4 h-4" />
+            Solicită ofertă
+          </button>
+        </div>
+      )}
+
+      {/* Offer form */}
+      {isKuziini && showForm && !formSent && (
+        <div className="shrink-0 px-4 py-3 max-h-[50vh] overflow-y-auto">
+          <div className="bg-white/[0.05] border border-white/[0.1] p-4 space-y-3">
+            <p className="text-[#C9AB81] text-[10px] font-bold tracking-[0.2em] uppercase">
+              Solicită ofertă pentru acest produs
+            </p>
+            <input
+              type="text"
+              placeholder="Nume *"
+              value={formData.name}
+              onChange={(e) => setFormData((d) => ({ ...d, name: e.target.value }))}
+              className="w-full bg-white/[0.06] border border-white/[0.1] px-3 py-2.5 text-white text-sm placeholder:text-white/30 outline-none focus:border-[#C9AB81]/50"
+            />
+            <input
+              type="tel"
+              placeholder="Telefon *"
+              value={formData.phone}
+              onChange={(e) => setFormData((d) => ({ ...d, phone: e.target.value }))}
+              className="w-full bg-white/[0.06] border border-white/[0.1] px-3 py-2.5 text-white text-sm placeholder:text-white/30 outline-none focus:border-[#C9AB81]/50"
+            />
+            <input
+              type="email"
+              placeholder="Email *"
+              value={formData.email}
+              onChange={(e) => setFormData((d) => ({ ...d, email: e.target.value }))}
+              className="w-full bg-white/[0.06] border border-white/[0.1] px-3 py-2.5 text-white text-sm placeholder:text-white/30 outline-none focus:border-[#C9AB81]/50"
+            />
+            <textarea
+              placeholder="Mesaj suplimentar (opțional)"
+              value={formData.message}
+              onChange={(e) => setFormData((d) => ({ ...d, message: e.target.value }))}
+              rows={2}
+              className="w-full bg-white/[0.06] border border-white/[0.1] px-3 py-2.5 text-white text-sm placeholder:text-white/30 outline-none focus:border-[#C9AB81]/50 resize-none"
+            />
+            {formError && <p className="text-red-400 text-xs">{formError}</p>}
+            <div className="flex gap-2">
+              <button
+                onClick={submitOffer}
+                disabled={formLoading}
+                className="flex-1 flex items-center justify-center gap-2 bg-[#C9AB81] text-[#0A0A0A] py-3 font-bold text-xs tracking-[0.1em] uppercase disabled:opacity-50"
+              >
+                <Send className="w-3.5 h-3.5" />
+                {formLoading ? "Se trimite..." : "Trimite"}
+              </button>
+              <button
+                onClick={() => setShowForm(false)}
+                className="px-4 py-3 bg-white/[0.06] border border-white/[0.1] text-white/60 text-xs font-bold tracking-wider uppercase"
+              >
+                Anulează
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Success message */}
+      {isKuziini && formSent && (
+        <div className="shrink-0 px-4 py-3">
+          <div className="bg-emerald-500/10 border border-emerald-500/20 p-4 flex items-center gap-3">
+            <CheckCircle className="w-5 h-5 text-emerald-400 shrink-0" />
+            <div>
+              <p className="text-emerald-400 text-sm font-bold">Cererea a fost trimisă!</p>
+              <p className="text-white/40 text-xs mt-0.5">Vei fi contactat în cel mai scurt timp.</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Thumbnail strip */}
       <div className="shrink-0 px-4 py-3 overflow-x-auto">

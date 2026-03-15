@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Lock, Users, ShoppingBag, Receipt, DollarSign, RefreshCw, Umbrella, ImageIcon, LayoutGrid } from "lucide-react";
+import { Lock, Users, ShoppingBag, Receipt, DollarSign, RefreshCw, Umbrella, ImageIcon, LayoutGrid, FileText, Eye, Trash2 } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
 import type { PromoBanner } from "@/types";
 import type { GalleryImage, GalleryAspect, LibraryPhoto } from "@/lib/mock-data";
@@ -58,7 +58,18 @@ interface AdminData {
   billRequests: BillEntry[];
 }
 
-type Tab = "overview" | "logins" | "orders" | "bills" | "umbrellas" | "banners" | "gallery";
+interface OfferEntry {
+  id: string;
+  name: string;
+  phone: string;
+  email: string;
+  message: string;
+  photoUrl: string;
+  timestamp: string;
+  read: boolean;
+}
+
+type Tab = "overview" | "logins" | "orders" | "bills" | "umbrellas" | "banners" | "gallery" | "offers";
 
 export default function AdminPage() {
   const [password, setPassword] = useState("");
@@ -72,6 +83,7 @@ export default function AdminPage() {
   const [galleryAspect, setGalleryAspect] = useState<GalleryAspect>("square");
   const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
   const [galleryLibrary, setGalleryLibrary] = useState<LibraryPhoto[]>([]);
+  const [offers, setOffers] = useState<OfferEntry[]>([]);
 
   async function fetchData(pw?: string) {
     setLoading(true);
@@ -107,6 +119,14 @@ export default function AdminPage() {
         setGalleryImages(gJson.data.images);
         if (gJson.data.library) setGalleryLibrary(gJson.data.library);
       }
+      // Fetch offers
+      const oRes = await fetch("/api/offers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: pw || password, action: "list" }),
+      });
+      const oJson = await oRes.json();
+      if (oJson.success) setOffers(oJson.data);
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Eroare.");
       if (!authenticated) setAuthenticated(false);
@@ -188,6 +208,7 @@ export default function AdminPage() {
     { key: "umbrellas", label: "Umbrele", icon: <Umbrella className="w-4 h-4" /> },
     { key: "banners", label: "Bannere", icon: <ImageIcon className="w-4 h-4" /> },
     { key: "gallery", label: "Galerie", icon: <LayoutGrid className="w-4 h-4" /> },
+    { key: "offers", label: "Oferte", icon: <FileText className="w-4 h-4" /> },
   ];
 
   return (
@@ -437,6 +458,96 @@ export default function AdminPage() {
                 if (d.library) setGalleryLibrary(d.library);
               }}
             />
+          </>
+        )}
+
+        {/* Offers */}
+        {tab === "offers" && (
+          <>
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-white/30 text-xs">
+                {offers.length} solicitări
+                {offers.filter((o) => !o.read).length > 0 && (
+                  <span className="ml-2 text-[#C9AB81] font-bold">
+                    ({offers.filter((o) => !o.read).length} noi)
+                  </span>
+                )}
+              </p>
+            </div>
+            {offers.length === 0 ? (
+              <EmptyMsg text="Nicio solicitare de ofertă." />
+            ) : (
+              offers.map((o) => (
+                <div
+                  key={o.id}
+                  className={`bg-white/[0.03] border p-4 ${
+                    o.read ? "border-white/[0.06]" : "border-[#C9AB81]/30"
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+                    {o.photoUrl && (
+                      <img
+                        src={o.photoUrl}
+                        alt=""
+                        className="w-16 h-16 object-cover shrink-0 border border-white/[0.08]"
+                      />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <p className="font-bold text-sm text-white tracking-wide">
+                          {o.name}
+                          {!o.read && (
+                            <span className="ml-2 text-[8px] bg-[#C9AB81] text-[#0A0A0A] px-1.5 py-0.5 font-bold tracking-wider uppercase">
+                              NOU
+                            </span>
+                          )}
+                        </p>
+                        <span className="text-[10px] text-white/30 shrink-0">{formatTime(o.timestamp)}</span>
+                      </div>
+                      <p className="text-xs text-white/50">{o.phone}</p>
+                      <p className="text-xs text-[#C9AB81]/70">{o.email}</p>
+                      {o.message && (
+                        <p className="text-xs text-white/40 mt-1 italic">&ldquo;{o.message}&rdquo;</p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex gap-2 mt-3">
+                    {!o.read && (
+                      <button
+                        onClick={async () => {
+                          const res = await fetch("/api/offers", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ password, action: "markRead", offerId: o.id }),
+                          });
+                          const json = await res.json();
+                          if (json.success) setOffers(json.data);
+                        }}
+                        className="flex items-center gap-1.5 bg-white/[0.06] px-3 py-1.5 text-[10px] font-bold tracking-wider uppercase text-white/60"
+                      >
+                        <Eye className="w-3 h-3" />
+                        Marchează citit
+                      </button>
+                    )}
+                    <button
+                      onClick={async () => {
+                        const res = await fetch("/api/offers", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ password, action: "delete", offerId: o.id }),
+                        });
+                        const json = await res.json();
+                        if (json.success) setOffers(json.data);
+                      }}
+                      className="flex items-center gap-1.5 bg-red-500/10 px-3 py-1.5 text-[10px] font-bold tracking-wider uppercase text-red-400"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                      Șterge
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
           </>
         )}
 
