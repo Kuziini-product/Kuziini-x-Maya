@@ -113,11 +113,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ success: false, error: "Numar de ferestre invalid (1,2,3,4,6)." }, { status: 400 });
       }
       gallery.slots = slots;
-      if (gallery.images.length > slots) {
-        const sorted = [...gallery.images].sort((a, b) => a.order - b.order).slice(0, slots);
-        sorted.forEach((img, i) => (img.order = i));
-        gallery.images = sorted;
-      }
+      // Slots now only controls how many images show per scroll page, no trimming
       await saveGallery(category, gallery);
       return NextResponse.json(galleryResponse(gallery, library));
     }
@@ -127,8 +123,8 @@ export async function POST(req: NextRequest) {
       if (!url) {
         return NextResponse.json({ success: false, error: "URL imagine lipsa." }, { status: 400 });
       }
-      if (slotIndex < 0 || slotIndex >= gallery.slots) {
-        return NextResponse.json({ success: false, error: "Index fereastra invalid." }, { status: 400 });
+      if (slotIndex < 0 || slotIndex >= 12) {
+        return NextResponse.json({ success: false, error: "Index fereastra invalid (max 12)." }, { status: 400 });
       }
       ensureInLibrary(library, url, category);
       await saveLibrary(category, library);
@@ -151,8 +147,8 @@ export async function POST(req: NextRequest) {
       if (!url) {
         return NextResponse.json({ success: false, error: "URL imagine lipsa." }, { status: 400 });
       }
-      if (gallery.images.length >= gallery.slots) {
-        return NextResponse.json({ success: false, error: "Toate ferestrele sunt ocupate." }, { status: 400 });
+      if (gallery.images.length >= 12) {
+        return NextResponse.json({ success: false, error: "Maxim 12 poze în galerie." }, { status: 400 });
       }
       ensureInLibrary(library, url, category);
       await saveLibrary(category, library);

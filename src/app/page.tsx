@@ -184,22 +184,10 @@ export default function HomePage() {
               />
               <div className="flex-1 h-px bg-white/[0.06]" />
             </div>
-            <div className={`grid ${getGridCols(loftGallery.slots)} gap-1.5`}>
-              {loftGallery.images.slice(0, loftGallery.slots).map((img, i) => (
-                <div
-                  key={img.id}
-                  className={`relative ${getAspectClass(loftGallery.aspect)} overflow-hidden border border-white/[0.08] cursor-pointer active:opacity-80 transition-opacity`}
-                  onClick={() => openLightbox(loftGallery.images.map((m) => m.url), i)}
-                >
-                  <img
-                    src={img.url}
-                    alt=""
-                    loading="lazy"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ))}
-            </div>
+            <ScrollableGallery
+              gallery={loftGallery}
+              onImageClick={(allUrls, idx) => openLightbox(allUrls, idx)}
+            />
           </div>
         )}
 
@@ -210,22 +198,10 @@ export default function HomePage() {
               <span className="text-sm font-bold tracking-[0.15em] uppercase text-white/60">Kuziini</span>
               <div className="flex-1 h-px bg-white/[0.06]" />
             </div>
-            <div className={`grid ${getGridCols(kuziiniGallery.slots)} gap-1.5`}>
-              {kuziiniGallery.images.slice(0, kuziiniGallery.slots).map((img, i) => (
-                <div
-                  key={img.id}
-                  className={`relative ${getAspectClass(kuziiniGallery.aspect)} overflow-hidden border border-white/[0.08] cursor-pointer active:opacity-80 transition-opacity`}
-                  onClick={() => openLightbox(kuziiniGallery.images.map((m) => m.url), i)}
-                >
-                  <img
-                    src={img.url}
-                    alt=""
-                    loading="lazy"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ))}
-            </div>
+            <ScrollableGallery
+              gallery={kuziiniGallery}
+              onImageClick={(allUrls, idx) => openLightbox(allUrls, idx)}
+            />
           </div>
         )}
       </section>
@@ -293,6 +269,77 @@ export default function HomePage() {
           index={lightbox.index}
           onClose={() => setLightbox(null)}
         />
+      )}
+    </div>
+  );
+}
+
+function ScrollableGallery({
+  gallery,
+  onImageClick,
+}: {
+  gallery: GalleryData;
+  onImageClick: (allUrls: string[], idx: number) => void;
+}) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const allUrls = gallery.images.map((m) => m.url);
+  const aspectClass = getAspectClass(gallery.aspect);
+
+  // Group images into pages based on slots
+  const pages: GalleryImage[][] = [];
+  for (let i = 0; i < gallery.images.length; i += gallery.slots) {
+    pages.push(gallery.images.slice(i, i + gallery.slots));
+  }
+
+  return (
+    <div className="relative">
+      <div
+        ref={scrollRef}
+        className="flex gap-3 overflow-x-auto snap-x snap-mandatory scrollbar-hide"
+        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+      >
+        {pages.map((page, pageIdx) => (
+          <div
+            key={pageIdx}
+            className={`grid ${getGridCols(gallery.slots)} gap-1.5 snap-center shrink-0 w-full`}
+          >
+            {page.map((img, i) => {
+              const globalIdx = pageIdx * gallery.slots + i;
+              return (
+                <div
+                  key={img.id}
+                  className={`relative ${aspectClass} overflow-hidden border border-white/[0.08] cursor-pointer active:opacity-80 transition-opacity`}
+                  onClick={() => onImageClick(allUrls, globalIdx)}
+                >
+                  <img
+                    src={img.url}
+                    alt=""
+                    loading="lazy"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+      {/* Dots indicator */}
+      {pages.length > 1 && (
+        <div className="flex justify-center gap-1.5 mt-3">
+          {pages.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => {
+                scrollRef.current?.children[i]?.scrollIntoView({
+                  behavior: "smooth",
+                  block: "nearest",
+                  inline: "center",
+                });
+              }}
+              className="w-1.5 h-1.5 rounded-full bg-white/20 hover:bg-[#C9AB81]/60 transition-colors"
+            />
+          ))}
+        </div>
       )}
     </div>
   );

@@ -270,11 +270,11 @@ export default function GalleryManager({
       {/* Grid - draggable clickable slots */}
       <div className="bg-white/[0.03] border border-white/[0.06] p-4">
         <p className="text-[#C9AB81] text-[10px] font-bold tracking-[0.2em] uppercase mb-1">
-          Ferestre ({images.length}/{slots})
+          Poze galerie ({images.length}/12) — Chenare active: {slots}
         </p>
-        <p className="text-white/20 text-[9px] mb-3">Trage și plasează pentru a schimba ordinea</p>
+        <p className="text-white/20 text-[9px] mb-3">Trage și plasează pentru a schimba ordinea. Chenare = câte poze pe pagină</p>
         <div className={`grid ${getGridPreview()} gap-2`}>
-          {Array.from({ length: slots }).map((_, i) => {
+          {Array.from({ length: Math.max(images.length + 1, slots, 1) }).slice(0, 12).map((_, i) => {
             const img = images[i];
             const isDragTarget = dragOver === i;
             return (
