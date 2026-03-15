@@ -30,12 +30,13 @@ function getAspectClass(aspect: GalleryAspect): string {
   }
 }
 
-/** Resize image client-side: max 1200px longest side, JPEG quality 0.8 */
+/** Resize image client-side: max 600px longest side, JPEG quality 0.55
+ *  Keeps base64 small enough for Vercel KV (Upstash) storage limits */
 function resizeImage(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => {
-      const MAX = 1200;
+      const MAX = 600;
       let w = img.width;
       let h = img.height;
       if (w > MAX || h > MAX) {
@@ -53,7 +54,13 @@ function resizeImage(file: File): Promise<string> {
       const ctx = canvas.getContext("2d");
       if (!ctx) { reject(new Error("Canvas not supported")); return; }
       ctx.drawImage(img, 0, 0, w, h);
-      resolve(canvas.toDataURL("image/jpeg", 0.8));
+      const dataUrl = canvas.toDataURL("image/jpeg", 0.55);
+      // Safety check: if still over 100KB base64, reduce quality further
+      if (dataUrl.length > 100_000) {
+        resolve(canvas.toDataURL("image/jpeg", 0.35));
+      } else {
+        resolve(dataUrl);
+      }
     };
     img.onerror = () => reject(new Error("Failed to load image"));
     img.src = URL.createObjectURL(file);

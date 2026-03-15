@@ -28,11 +28,16 @@ export async function kvGet<T>(key: string, fallback: T): Promise<T> {
 
 export async function kvSet<T>(key: string, value: T): Promise<void> {
   if (isKvConfigured()) {
+    const serialized = JSON.stringify(value);
+    const sizeKB = Math.round(serialized.length / 1024);
+    if (serialized.length > 900_000) {
+      throw new Error(`Datele sunt prea mari pentru stocare (${sizeKB}KB). Redu dimensiunea imaginilor.`);
+    }
     try {
       await kv.set(key, value);
-    } catch {
-      // silently fall back to memory
-      memoryStore.set(key, value);
+    } catch (err) {
+      console.error(`[KV] Failed to set "${key}" (${sizeKB}KB):`, err);
+      throw new Error(`Eroare la salvare: datele sunt prea mari (${sizeKB}KB). Încearcă cu imagini mai mici.`);
     }
     return;
   }
