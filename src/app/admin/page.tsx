@@ -194,6 +194,7 @@ export default function AdminPage() {
   const [galleryStats, setGalleryStats] = useState<GalleryStatsData | null>(null);
   const [selectedGalleryUser, setSelectedGalleryUser] = useState<GalleryUserStat | null>(null);
   const [onlineCount, setOnlineCount] = useState(0);
+  const [onlinePhones, setOnlinePhones] = useState<Set<string>>(new Set());
   const autoLoginDone = useRef(false);
 
   // Poll online users count
@@ -206,7 +207,12 @@ export default function AdminPage() {
         body: JSON.stringify({ action: "getOnline" }),
       })
         .then((r) => r.json())
-        .then((j) => { if (j.success) setOnlineCount(j.online); })
+        .then((j) => {
+          if (j.success) {
+            setOnlineCount(j.online);
+            if (j.phones) setOnlinePhones(new Set(j.phones));
+          }
+        })
         .catch(() => {});
     }
     fetchOnline();
@@ -1036,12 +1042,25 @@ export default function AdminPage() {
                       {filtered.length} clienți
                       {clientFilter !== "all" && ` (filtru: ${clientFilter === "receptie" ? "recepție" : "cereri ofertă"})`}
                     </p>
-                    {filtered.map((c) => (
-                    <div key={c.phone} className="bg-white/[0.03] border border-white/[0.06] p-4 mb-3">
+                    {filtered.map((c) => {
+                      const isOnline = onlinePhones.has(c.phone);
+                      return (
+                    <div key={c.phone} className={`p-4 mb-3 border ${isOnline ? "bg-emerald-500/[0.06] border-emerald-500/30" : "bg-white/[0.03] border-white/[0.06]"}`}>
                       {/* Header */}
                       <div className="flex items-start justify-between mb-2">
                         <div>
-                          <p className="font-bold text-sm text-white tracking-wide">{c.name}</p>
+                          <div className="flex items-center gap-2">
+                            {isOnline && (
+                              <span className="relative flex h-2 w-2 shrink-0">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                              </span>
+                            )}
+                            <p className={`font-bold text-sm tracking-wide ${isOnline ? "text-emerald-400" : "text-white"}`}>{c.name}</p>
+                            {isOnline && (
+                              <span className="text-[9px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 font-bold tracking-wider uppercase">Online</span>
+                            )}
+                          </div>
                           <p className="text-xs text-white/40">{c.phone}</p>
                           {c.email && <p className="text-xs text-[#C9AB81]/70">{c.email}</p>}
                         </div>
@@ -1202,7 +1221,8 @@ export default function AdminPage() {
                         Generează raport complet
                       </button>
                     </div>
-                  ))}
+                      );
+                    })}
                   </>);
                 })()}
               </>
@@ -1225,8 +1245,16 @@ export default function AdminPage() {
                   <ArrowLeft className="w-3.5 h-3.5" />
                   Înapoi la lista
                 </button>
-                <div className="bg-white/[0.03] border border-white/[0.06] p-4 mb-4">
-                  <p className="font-bold text-lg text-white tracking-wide">{selectedAccessUser.name || "—"}</p>
+                <div className={`bg-white/[0.03] border p-4 mb-4 ${onlinePhones.has(selectedAccessUser.phone) ? "border-emerald-500/40" : "border-white/[0.06]"}`}>
+                  <div className="flex items-center gap-2">
+                    <p className="font-bold text-lg text-white tracking-wide">{selectedAccessUser.name || "—"}</p>
+                    {onlinePhones.has(selectedAccessUser.phone) && (
+                      <span className="flex items-center gap-1 text-[9px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 font-bold tracking-wider uppercase">
+                        <span className="relative flex h-1.5 w-1.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span></span>
+                        Online
+                      </span>
+                    )}
+                  </div>
                   <p className="text-xs text-white/50">{selectedAccessUser.phone}</p>
                   {selectedAccessUser.email && <p className="text-xs text-[#C9AB81]/70">{selectedAccessUser.email}</p>}
                   <div className="grid grid-cols-2 gap-3 mt-3">
@@ -1295,19 +1323,36 @@ export default function AdminPage() {
                 {accessData.users.length === 0 ? (
                   <EmptyMsg text="Nicio accesare înregistrată." />
                 ) : (
-                  accessData.users.map((u) => (
+                  accessData.users.map((u) => {
+                    const isOnline = onlinePhones.has(u.phone);
+                    return (
                     <button
                       key={u.phone}
                       onClick={() => setSelectedAccessUser(u)}
-                      className="w-full bg-white/[0.03] border border-white/[0.06] p-4 mb-3 text-left active:bg-white/[0.06] transition-colors"
+                      className={`w-full p-4 mb-3 text-left active:bg-white/[0.06] transition-colors border ${
+                        isOnline
+                          ? "bg-emerald-500/[0.06] border-emerald-500/30"
+                          : "bg-white/[0.03] border-white/[0.06]"
+                      }`}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
-                            <p className="font-bold text-sm text-white tracking-wide">{u.name || "—"}</p>
+                            {isOnline && (
+                              <span className="relative flex h-2 w-2 shrink-0">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                              </span>
+                            )}
+                            <p className={`font-bold text-sm tracking-wide ${isOnline ? "text-emerald-400" : "text-white"}`}>{u.name || "—"}</p>
                             <span className="text-[9px] bg-[#C9AB81]/20 text-[#C9AB81] px-1.5 py-0.5 font-bold">
                               {u.totalAccess}×
                             </span>
+                            {isOnline && (
+                              <span className="text-[9px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 font-bold tracking-wider uppercase">
+                                Online
+                              </span>
+                            )}
                           </div>
                           <p className="text-xs text-white/40">{u.phone}</p>
                           {u.email && <p className="text-xs text-[#C9AB81]/60">{u.email}</p>}
@@ -1316,10 +1361,11 @@ export default function AdminPage() {
                             <span>Ultima: {formatTime(u.lastAccess)}</span>
                           </div>
                         </div>
-                        <ChevronRight className="w-4 h-4 text-white/20 shrink-0 ml-2" />
+                        <ChevronRight className={`w-4 h-4 shrink-0 ml-2 ${isOnline ? "text-emerald-400/40" : "text-white/20"}`} />
                       </div>
                     </button>
-                  ))
+                    );
+                  })
                 )}
               </>
             )}

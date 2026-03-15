@@ -92,16 +92,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true, online: Object.keys(online).length });
   }
 
-  // ── Public/Admin: get online count ──
+  // ── Public/Admin: get online count + phones ──
   if (action === "getOnline") {
     const online = await kvGet<Record<string, number>>(ONLINE_USERS_KEY, {});
-    // Clean stale
     const cutoff = Date.now() - 5 * 60 * 1000;
-    let count = 0;
-    for (const [, t] of Object.entries(online)) {
-      if (t >= cutoff) count++;
+    const activePhones: string[] = [];
+    for (const [phone, t] of Object.entries(online)) {
+      if (t >= cutoff) activePhones.push(phone);
     }
-    return NextResponse.json({ success: true, online: count });
+    return NextResponse.json({ success: true, online: activePhones.length, phones: activePhones });
   }
 
   // ── Admin: get log & unread count ──
