@@ -421,14 +421,15 @@ export default function AdminPage() {
               ]} />
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <StatCard label="Total logări" value={data.stats.totalLogins} />
-              <StatCard label="Utilizatori unici" value={data.stats.uniquePhones} />
-              <StatCard label="Total comenzi" value={data.stats.totalOrders} />
-              <StatCard label="Venit total" value={formatPrice(data.stats.totalRevenue)} gold />
-              <StatCard label="Note solicitate" value={data.stats.totalBillRequests} />
+              <StatCard label="Total logări" value={data.stats.totalLogins} onClick={() => setTab("logins")} />
+              <StatCard label="Utilizatori unici" value={data.stats.uniquePhones} onClick={() => setTab("rapoarte")} />
+              <StatCard label="Total comenzi" value={data.stats.totalOrders} onClick={() => setTab("orders")} />
+              <StatCard label="Venit total" value={formatPrice(data.stats.totalRevenue)} gold onClick={() => setTab("bills")} />
+              <StatCard label="Note solicitate" value={data.stats.totalBillRequests} onClick={() => setTab("bills")} />
               <StatCard
                 label="Umbrele active"
                 value={data.umbrellas.filter((u) => u.hasSession).length}
+                onClick={() => setTab("umbrellas")}
               />
             </div>
 
@@ -1094,14 +1095,21 @@ export default function AdminPage() {
   );
 }
 
-function StatCard({ label, value, gold }: { label: string; value: string | number; gold?: boolean }) {
+function StatCard({ label, value, gold, onClick }: { label: string; value: string | number; gold?: boolean; onClick?: () => void }) {
+  const Tag = onClick ? "button" : "div";
   return (
-    <div className="bg-white/[0.03] border border-white/[0.06] p-4">
-      <p className="text-[10px] text-white/30 font-bold tracking-[0.15em] uppercase mb-1">{label}</p>
+    <Tag
+      onClick={onClick}
+      className={`bg-white/[0.03] border border-white/[0.06] p-4 text-left ${onClick ? "active:bg-white/[0.06] transition-colors cursor-pointer" : ""}`}
+    >
+      <p className="text-[10px] text-white/30 font-bold tracking-[0.15em] uppercase mb-1">
+        {label}
+        {onClick && <ChevronRight className="w-3 h-3 inline ml-1 opacity-40" />}
+      </p>
       <p className={`text-2xl font-bold tracking-wide ${gold ? "text-[#C9AB81]" : "text-white"}`}>
         {value}
       </p>
-    </div>
+    </Tag>
   );
 }
 
