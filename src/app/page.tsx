@@ -50,27 +50,12 @@ export default function HomePage() {
     if (isStandalone) setIsInstalled(true);
   }, []);
 
-  // Capture beforeinstallprompt and auto-trigger install on desktop/Android
+  // Capture beforeinstallprompt for native install
   useEffect(() => {
-    const handler = async (e: Event) => {
+    const handler = (e: Event) => {
       e.preventDefault();
       deferredPromptRef.current = e;
       setCanInstall(true);
-
-      // Auto-trigger install prompt immediately on first visit
-      const dismissed = sessionStorage.getItem("install_dismissed");
-      if (!dismissed) {
-        const p = e as Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: string }> };
-        await p.prompt();
-        const { outcome } = await p.userChoice;
-        if (outcome === "accepted") {
-          deferredPromptRef.current = null;
-          setCanInstall(false);
-        } else {
-          // Don't re-prompt during this browser session
-          sessionStorage.setItem("install_dismissed", "1");
-        }
-      }
     };
     window.addEventListener("beforeinstallprompt", handler);
 
@@ -86,6 +71,30 @@ export default function HomePage() {
       window.removeEventListener("beforeinstallprompt", handler);
       window.removeEventListener("appinstalled", installed);
     };
+  }, []);
+
+  // Auto-trigger install on first user click anywhere (Chrome requires user gesture)
+  useEffect(() => {
+    const triggerInstall = async () => {
+      const prompt = deferredPromptRef.current as (Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: string }> }) | null;
+      if (!prompt) return;
+      // Only auto-prompt once per browser session
+      if (sessionStorage.getItem("install_prompted")) return;
+      sessionStorage.setItem("install_prompted", "1");
+
+      try {
+        await prompt.prompt();
+        const { outcome } = await prompt.userChoice;
+        if (outcome === "accepted") {
+          deferredPromptRef.current = null;
+          setCanInstall(false);
+        }
+      } catch { /* prompt already used */ }
+      // Remove listener after first attempt
+      document.removeEventListener("click", triggerInstall, true);
+    };
+    document.addEventListener("click", triggerInstall, true);
+    return () => document.removeEventListener("click", triggerInstall, true);
   }, []);
 
   const handleInstallClick = async () => {
