@@ -62,19 +62,8 @@ export default function HomePage() {
         </div>
 
         <div className="relative z-10 text-center px-5 w-full max-w-lg">
-          {/* Logo Kuziini */}
-          <a href="https://www.instagram.com/kuziiniconceptstore/" target="_blank" rel="noopener noreferrer" className="block mx-auto mb-6 w-fit">
-            <Image
-              src="/kuziini-logo.png"
-              alt="Kuziini Furniture & More"
-              width={140}
-              height={140}
-              className="rounded-2xl shadow-2xl shadow-black/60 border border-white/10 invert brightness-200"
-            />
-          </a>
-
           {/* LOFT + Mamaia centered */}
-          <div className="mb-8">
+          <div className="mb-6">
             <img
               src="https://loftlounge.ro/wp-content/uploads/2025/07/LOFT-White-Transparent-LOGO-1024x330.png"
               alt="LOFT"
@@ -84,6 +73,17 @@ export default function HomePage() {
               Mamaia
             </p>
           </div>
+
+          {/* Logo Kuziini */}
+          <a href="https://www.instagram.com/kuziiniconceptstore/" target="_blank" rel="noopener noreferrer" className="block mx-auto mb-8 w-fit">
+            <Image
+              src="/kuziini-logo.png"
+              alt="Kuziini Furniture & More"
+              width={140}
+              height={140}
+              className="rounded-2xl shadow-2xl shadow-black/60 border border-white/10 invert brightness-200"
+            />
+          </a>
 
           {/* Brand names */}
           <div className="flex items-center justify-center gap-4 mb-5">
