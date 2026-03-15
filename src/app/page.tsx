@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronRight, ChevronLeft, MapPin, Phone, Mail, AtSign, X, Send, CheckCircle } from "lucide-react";
+import { ChevronRight, ChevronLeft, MapPin, Phone, Mail, AtSign, X, Send, CheckCircle, Heart } from "lucide-react";
 import type { GalleryImage, GalleryAspect } from "@/lib/mock-data";
 
 interface GalleryData {
@@ -364,6 +364,63 @@ function Lightbox({
   const [formSent, setFormSent] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [likes, setLikes] = useState<Record<string, { likes: number; liked: boolean }>>({});
+  const [likeAnimating, setLikeAnimating] = useState<number | null>(null);
+  const trackedViews = useRef<Set<number>>(new Set());
+
+  // Get or create anonymous session ID
+  const sessionId = useRef("");
+  useEffect(() => {
+    let sid = localStorage.getItem("kuziini_session");
+    if (!sid) {
+      sid = `s-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      localStorage.setItem("kuziini_session", sid);
+    }
+    sessionId.current = sid;
+
+    // Fetch current like states
+    if (isKuziini) {
+      fetch("/api/analytics", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "getPhotoStats", sessionId: sid }),
+      })
+        .then((r) => r.json())
+        .then((j) => { if (j.success) setLikes(j.data); });
+    }
+  }, [isKuziini]);
+
+  // Track photo view
+  useEffect(() => {
+    if (!isKuziini || !sessionId.current || trackedViews.current.has(current)) return;
+    trackedViews.current.add(current);
+    fetch("/api/analytics", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "trackView", photoIndex: current, sessionId: sessionId.current }),
+    }).catch(() => {});
+  }, [current, isKuziini]);
+
+  async function toggleLike() {
+    if (!sessionId.current) return;
+    setLikeAnimating(current);
+    setTimeout(() => setLikeAnimating(null), 600);
+    try {
+      const res = await fetch("/api/analytics", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "toggleLike", photoIndex: current, sessionId: sessionId.current }),
+      });
+      const json = await res.json();
+      if (json.success) {
+        setLikes((prev) => ({
+          ...prev,
+          [`kuziini-${current}`]: { likes: json.likes, liked: json.liked },
+        }));
+      }
+    } catch { /* ignore */ }
+  }
+
   const [formData, setFormData] = useState(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("kuziini_contact");
@@ -482,12 +539,33 @@ function Lightbox({
           </button>
         )}
 
-        <img
-          key={current}
-          src={images[current]}
-          alt=""
-          className="max-w-full max-h-full object-contain animate-fade-in"
-        />
+        <div className="relative">
+          <img
+            key={current}
+            src={images[current]}
+            alt=""
+            className="max-w-full max-h-full object-contain animate-fade-in"
+          />
+          {isKuziini && (
+            <button
+              onClick={toggleLike}
+              className="absolute bottom-3 right-3 flex items-center gap-1.5 bg-black/60 backdrop-blur-sm px-3 py-2 active:scale-110 transition-transform"
+            >
+              <Heart
+                className={`w-5 h-5 transition-colors ${
+                  likes[`kuziini-${current}`]?.liked
+                    ? "text-red-500 fill-red-500"
+                    : "text-white/70"
+                } ${likeAnimating === current ? "animate-ping-once" : ""}`}
+              />
+              {(likes[`kuziini-${current}`]?.likes || 0) > 0 && (
+                <span className="text-white/80 text-xs font-bold">
+                  {likes[`kuziini-${current}`].likes}
+                </span>
+              )}
+            </button>
+          )}
+        </div>
 
         {current < images.length - 1 && (
           <button

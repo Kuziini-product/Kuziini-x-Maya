@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Lock, Users, ShoppingBag, Receipt, DollarSign, RefreshCw, Umbrella, ImageIcon, LayoutGrid, FileText, Eye, Trash2 } from "lucide-react";
+import { Lock, Users, ShoppingBag, Receipt, DollarSign, RefreshCw, Umbrella, ImageIcon, LayoutGrid, FileText, Eye, Trash2, Heart, BarChart3, ArrowUpDown } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
 import type { PromoBanner } from "@/types";
 import type { GalleryImage, GalleryAspect, LibraryPhoto } from "@/lib/mock-data";
@@ -69,7 +69,38 @@ interface OfferEntry {
   read: boolean;
 }
 
-type Tab = "overview" | "logins" | "orders" | "bills" | "umbrellas" | "banners" | "gallery" | "offers";
+interface ClientProfile {
+  phone: string;
+  name: string;
+  totalVisits: number;
+  firstVisit: string;
+  lastVisit: string;
+  totalSpent: number;
+  totalOrders: number;
+  avgPerVisit: number;
+  paymentMethods: Record<string, number>;
+  kuziiniPhotosViewed: number;
+  kuziiniPhotoLikes: number;
+  offerRequests: number;
+  umbrellas: string[];
+}
+
+interface PhotoStatEntry {
+  index: number;
+  likes: number;
+  views: number;
+}
+
+interface AnalyticsData {
+  clients: ClientProfile[];
+  photoStats: PhotoStatEntry[];
+  totalPhotoViews: number;
+  uniqueViewers: number;
+}
+
+type ClientSort = "spent" | "visits" | "recent" | "orders" | "name";
+
+type Tab = "overview" | "logins" | "orders" | "bills" | "umbrellas" | "banners" | "gallery" | "offers" | "clients";
 
 export default function AdminPage() {
   const [password, setPassword] = useState("");
@@ -84,6 +115,9 @@ export default function AdminPage() {
   const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
   const [galleryLibrary, setGalleryLibrary] = useState<LibraryPhoto[]>([]);
   const [offers, setOffers] = useState<OfferEntry[]>([]);
+  const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
+  const [clientSort, setClientSort] = useState<ClientSort>("spent");
+  const [clientSearch, setClientSearch] = useState("");
 
   async function fetchData(pw?: string) {
     setLoading(true);
@@ -127,6 +161,21 @@ export default function AdminPage() {
       });
       const oJson = await oRes.json();
       if (oJson.success) setOffers(oJson.data);
+      // Fetch analytics/client profiles
+      const aRes = await fetch("/api/analytics", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          password: pw || password,
+          action: "getClientProfiles",
+          logins: json.data.logins,
+          orders: json.data.orders,
+          billRequests: json.data.billRequests,
+          offers: oJson.success ? oJson.data : [],
+        }),
+      });
+      const aJson = await aRes.json();
+      if (aJson.success) setAnalyticsData(aJson.data);
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Eroare.");
       if (!authenticated) setAuthenticated(false);
@@ -209,6 +258,7 @@ export default function AdminPage() {
     { key: "banners", label: "Bannere", icon: <ImageIcon className="w-4 h-4" /> },
     { key: "gallery", label: "Galerie", icon: <LayoutGrid className="w-4 h-4" /> },
     { key: "offers", label: "Oferte", icon: <FileText className="w-4 h-4" /> },
+    { key: "clients", label: "Clienți", icon: <BarChart3 className="w-4 h-4" /> },
   ];
 
   return (
@@ -547,6 +597,159 @@ export default function AdminPage() {
                   </div>
                 </div>
               ))
+            )}
+          </>
+        )}
+
+        {/* Clients / Analytics */}
+        {tab === "clients" && (
+          <>
+            {!analyticsData ? (
+              <EmptyMsg text="Se încarcă datele..." />
+            ) : (
+              <>
+                {/* Summary cards */}
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                  <StatCard label="Total clienți" value={analyticsData.clients.length} />
+                  <StatCard label="Vizualizări poze" value={analyticsData.totalPhotoViews} />
+                  <StatCard label="Vizitatori unici galerie" value={analyticsData.uniqueViewers} />
+                  <StatCard
+                    label="Total cheltuieli"
+                    value={formatPrice(analyticsData.clients.reduce((s, c) => s + c.totalSpent, 0))}
+                    gold
+                  />
+                </div>
+
+                {/* Photo stats */}
+                {analyticsData.photoStats.length > 0 && (
+                  <div className="bg-white/[0.03] border border-white/[0.06] p-4 mb-4">
+                    <h3 className="text-[#C9AB81] text-[10px] font-bold tracking-[0.2em] uppercase mb-3 flex items-center gap-2">
+                      <Heart className="w-3.5 h-3.5" />
+                      Popularitate poze Kuziini
+                    </h3>
+                    <div className="space-y-2">
+                      {analyticsData.photoStats.map((p) => (
+                        <div key={p.index} className="flex items-center justify-between text-sm">
+                          <span className="text-white/60">Poza {p.index + 1}</span>
+                          <div className="flex items-center gap-4">
+                            <span className="text-white/40 text-xs">{p.views} vizualizări</span>
+                            <span className="flex items-center gap-1 text-red-400 text-xs font-bold">
+                              <Heart className="w-3 h-3 fill-red-400" />
+                              {p.likes}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Sort & search */}
+                <div className="flex gap-2 mb-3">
+                  <input
+                    type="text"
+                    placeholder="Caută client..."
+                    value={clientSearch}
+                    onChange={(e) => setClientSearch(e.target.value)}
+                    className="flex-1 bg-white/[0.06] border border-white/[0.1] px-3 py-2 text-white text-xs placeholder:text-white/30 outline-none focus:border-[#C9AB81]/50"
+                  />
+                  <button
+                    onClick={() => {
+                      const sorts: ClientSort[] = ["spent", "visits", "recent", "orders", "name"];
+                      const idx = sorts.indexOf(clientSort);
+                      setClientSort(sorts[(idx + 1) % sorts.length]);
+                    }}
+                    className="flex items-center gap-1.5 bg-white/[0.06] border border-white/[0.1] px-3 py-2 text-[10px] font-bold tracking-wider uppercase text-white/60"
+                  >
+                    <ArrowUpDown className="w-3 h-3" />
+                    {clientSort === "spent" && "Cheltuieli"}
+                    {clientSort === "visits" && "Vizite"}
+                    {clientSort === "recent" && "Recenți"}
+                    {clientSort === "orders" && "Comenzi"}
+                    {clientSort === "name" && "Nume"}
+                  </button>
+                </div>
+
+                <p className="text-white/30 text-xs mb-3">
+                  {analyticsData.clients.length} clienți
+                </p>
+
+                {/* Client list */}
+                {(() => {
+                  let filtered = [...analyticsData.clients];
+                  if (clientSearch.trim()) {
+                    const q = clientSearch.toLowerCase();
+                    filtered = filtered.filter(
+                      (c) => c.name.toLowerCase().includes(q) || c.phone.includes(q)
+                    );
+                  }
+                  switch (clientSort) {
+                    case "spent": filtered.sort((a, b) => b.totalSpent - a.totalSpent); break;
+                    case "visits": filtered.sort((a, b) => b.totalVisits - a.totalVisits); break;
+                    case "recent": filtered.sort((a, b) => b.lastVisit.localeCompare(a.lastVisit)); break;
+                    case "orders": filtered.sort((a, b) => b.totalOrders - a.totalOrders); break;
+                    case "name": filtered.sort((a, b) => a.name.localeCompare(b.name)); break;
+                  }
+                  return filtered.map((c) => (
+                    <div key={c.phone} className="bg-white/[0.03] border border-white/[0.06] p-4 mb-3">
+                      <div className="flex items-start justify-between mb-2">
+                        <div>
+                          <p className="font-bold text-sm text-white tracking-wide">{c.name}</p>
+                          <p className="text-xs text-white/40">{c.phone}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm font-bold text-[#C9AB81]">{formatPrice(c.totalSpent)}</p>
+                          <p className="text-[10px] text-white/30">{c.totalVisits} vizite</p>
+                        </div>
+                      </div>
+
+                      {/* Stats grid */}
+                      <div className="grid grid-cols-3 gap-2 mb-2">
+                        <div className="bg-white/[0.03] px-2 py-1.5 text-center">
+                          <p className="text-[9px] text-white/30 uppercase tracking-wider">Comenzi</p>
+                          <p className="text-sm font-bold text-white">{c.totalOrders}</p>
+                        </div>
+                        <div className="bg-white/[0.03] px-2 py-1.5 text-center">
+                          <p className="text-[9px] text-white/30 uppercase tracking-wider">Medie/vizită</p>
+                          <p className="text-sm font-bold text-white">{formatPrice(c.avgPerVisit)}</p>
+                        </div>
+                        <div className="bg-white/[0.03] px-2 py-1.5 text-center">
+                          <p className="text-[9px] text-white/30 uppercase tracking-wider">Oferte</p>
+                          <p className="text-sm font-bold text-white">{c.offerRequests}</p>
+                        </div>
+                      </div>
+
+                      {/* Payment methods */}
+                      {Object.keys(c.paymentMethods).length > 0 && (
+                        <div className="flex gap-2 mb-2">
+                          {Object.entries(c.paymentMethods).map(([method, count]) => (
+                            <span key={method} className="text-[10px] bg-white/[0.06] px-2 py-1 text-white/50 capitalize">
+                              {method}: {count}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Umbrellas used */}
+                      {c.umbrellas.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mb-2">
+                          {c.umbrellas.map((u) => (
+                            <span key={u} className="text-[10px] bg-[#C9AB81]/10 text-[#C9AB81]/70 px-1.5 py-0.5">
+                              ⛱️ {u}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Timeline */}
+                      <div className="flex justify-between text-[10px] text-white/20">
+                        <span>Prima vizită: {new Date(c.firstVisit).toLocaleDateString("ro-RO")}</span>
+                        <span>Ultima: {new Date(c.lastVisit).toLocaleDateString("ro-RO")}</span>
+                      </div>
+                    </div>
+                  ));
+                })()}
+              </>
             )}
           </>
         )}
