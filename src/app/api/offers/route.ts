@@ -117,8 +117,8 @@ async function sendEmailNotification(offer: OfferRequest) {
     return;
   }
 
-  // NOTIFY_EMAIL can be set in env vars; defaults to my@kuziini.ro
-  const toEmail = process.env.NOTIFY_EMAIL || "my@kuziini.ro";
+  // NOTIFY_EMAIL can be set in env vars; defaults to madalintomescu@gmail.com
+  const toEmail = process.env.NOTIFY_EMAIL || "madalintomescu@gmail.com";
 
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
