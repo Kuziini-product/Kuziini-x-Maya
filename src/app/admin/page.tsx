@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Lock, Users, ShoppingBag, Receipt, DollarSign, RefreshCw, Umbrella, ImageIcon, LayoutGrid, FileText, Eye, Trash2, Heart, BarChart3, ArrowUpDown } from "lucide-react";
+import { Lock, Users, ShoppingBag, Receipt, DollarSign, RefreshCw, Umbrella, ImageIcon, LayoutGrid, FileText, Eye, Trash2, Heart, BarChart3, ArrowUpDown, ExternalLink } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
 import type { PromoBanner } from "@/types";
 import type { GalleryImage, GalleryAspect, LibraryPhoto } from "@/lib/mock-data";
@@ -109,7 +109,7 @@ type ClientFilter = "all" | "receptie" | "oferta";
 type Tab = "overview" | "logins" | "orders" | "bills" | "umbrellas" | "banners" | "gallery" | "offers" | "clients";
 
 const SESSION_KEY = "kuziini_admin_session";
-const SESSION_HOURS = 12;
+const SESSION_HOURS = 1;
 
 function getSavedSession(): string | null {
   try {
@@ -310,13 +310,22 @@ export default function AdminPage() {
             <h1 className="text-lg font-bold tracking-wide">Kuziini Panel</h1>
             <p className="text-[#C9AB81] text-[10px] tracking-[0.2em] uppercase">Kuziini × LOFT</p>
           </div>
-          <button
-            onClick={() => fetchData()}
-            disabled={loading}
-            className="w-9 h-9 flex items-center justify-center bg-white/10 active:bg-white/20 transition-colors"
-          >
-            <RefreshCw className={`w-4 h-4 text-white/60 ${loading ? "animate-spin" : ""}`} />
-          </button>
+          <div className="flex items-center gap-2">
+            <a
+              href="/"
+              className="h-9 flex items-center gap-1.5 px-3 bg-[#C9AB81]/20 border border-[#C9AB81]/30 text-[#C9AB81] text-[10px] font-bold tracking-wider uppercase active:bg-[#C9AB81]/30 transition-colors"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+              Live App
+            </a>
+            <button
+              onClick={() => fetchData()}
+              disabled={loading}
+              className="w-9 h-9 flex items-center justify-center bg-white/10 active:bg-white/20 transition-colors"
+            >
+              <RefreshCw className={`w-4 h-4 text-white/60 ${loading ? "animate-spin" : ""}`} />
+            </button>
+          </div>
         </div>
 
         {/* Tabs */}

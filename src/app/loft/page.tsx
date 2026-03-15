@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Lock, RefreshCw, ImageIcon, QrCode, Plus, Trash2, Download, Printer, LayoutGrid } from "lucide-react";
+import { Lock, RefreshCw, ImageIcon, QrCode, Plus, Trash2, Download, Printer, LayoutGrid, ExternalLink } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import type { PromoBanner } from "@/types";
 import type { GalleryImage, GalleryAspect, LibraryPhoto } from "@/lib/mock-data";
@@ -17,7 +17,7 @@ interface UmbrellaQR {
 }
 
 const SESSION_KEY = "kuziini_loft_session";
-const SESSION_HOURS = 12;
+const SESSION_HOURS = 1;
 
 function getSavedSession(): string | null {
   try {
@@ -315,15 +315,24 @@ export default function LoftPage() {
               Bannere & QR Codes
             </p>
           </div>
-          <button
-            onClick={refresh}
-            disabled={loading}
-            className="w-9 h-9 flex items-center justify-center bg-white/10 active:bg-white/20 transition-colors"
-          >
-            <RefreshCw
-              className={`w-4 h-4 text-white/60 ${loading ? "animate-spin" : ""}`}
-            />
-          </button>
+          <div className="flex items-center gap-2">
+            <a
+              href="/"
+              className="h-9 flex items-center gap-1.5 px-3 bg-[#C9AB81]/20 border border-[#C9AB81]/30 text-[#C9AB81] text-[10px] font-bold tracking-wider uppercase active:bg-[#C9AB81]/30 transition-colors"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+              Live App
+            </a>
+            <button
+              onClick={refresh}
+              disabled={loading}
+              className="w-9 h-9 flex items-center justify-center bg-white/10 active:bg-white/20 transition-colors"
+            >
+              <RefreshCw
+                className={`w-4 h-4 text-white/60 ${loading ? "animate-spin" : ""}`}
+              />
+            </button>
+          </div>
         </div>
 
         {/* Tabs */}

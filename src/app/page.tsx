@@ -38,16 +38,54 @@ export default function HomePage() {
   const [kuziiniGallery, setKuziiniGallery] = useState<GalleryData | null>(null);
   const [lightbox, setLightbox] = useState<{ images: string[]; index: number; isKuziini: boolean } | null>(null);
   const [showInstall, setShowInstall] = useState(false);
+  const [isInstalled, setIsInstalled] = useState(false);
+  const [canInstall, setCanInstall] = useState(false);
   const deferredPromptRef = useRef<Event | null>(null);
 
-  // Capture beforeinstallprompt for native install on desktop/Android
+  // Detect if already running as installed PWA
   useEffect(() => {
-    const handler = (e: Event) => {
+    const isStandalone =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      (navigator as unknown as { standalone?: boolean }).standalone === true;
+    if (isStandalone) setIsInstalled(true);
+  }, []);
+
+  // Capture beforeinstallprompt and auto-trigger install on desktop/Android
+  useEffect(() => {
+    const handler = async (e: Event) => {
       e.preventDefault();
       deferredPromptRef.current = e;
+      setCanInstall(true);
+
+      // Auto-trigger install prompt immediately on first visit
+      const dismissed = sessionStorage.getItem("install_dismissed");
+      if (!dismissed) {
+        const p = e as Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: string }> };
+        await p.prompt();
+        const { outcome } = await p.userChoice;
+        if (outcome === "accepted") {
+          deferredPromptRef.current = null;
+          setCanInstall(false);
+        } else {
+          // Don't re-prompt during this browser session
+          sessionStorage.setItem("install_dismissed", "1");
+        }
+      }
     };
     window.addEventListener("beforeinstallprompt", handler);
-    return () => window.removeEventListener("beforeinstallprompt", handler);
+
+    // Listen for successful install
+    const installed = () => {
+      setIsInstalled(true);
+      setCanInstall(false);
+      deferredPromptRef.current = null;
+    };
+    window.addEventListener("appinstalled", installed);
+
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handler);
+      window.removeEventListener("appinstalled", installed);
+    };
   }, []);
 
   const handleInstallClick = async () => {
@@ -58,6 +96,7 @@ export default function HomePage() {
       const { outcome } = await prompt.userChoice;
       if (outcome === "accepted") {
         deferredPromptRef.current = null;
+        setCanInstall(false);
       }
     } else {
       // iOS/Safari — show manual instructions
@@ -129,13 +168,15 @@ export default function HomePage() {
             <ChevronRight className="w-4 h-4" />
           </button>
 
-          <button
-            onClick={handleInstallClick}
-            className="mt-3 inline-flex items-center justify-center gap-2 text-white/50 text-xs tracking-[0.1em] uppercase hover:text-white/80 transition-colors py-2"
-          >
-            <Download className="w-3.5 h-3.5" />
-            Instalează aplicația
-          </button>
+          {!isInstalled && (
+            <button
+              onClick={handleInstallClick}
+              className="mt-3 inline-flex items-center justify-center gap-2 text-white/50 text-xs tracking-[0.1em] uppercase hover:text-white/80 transition-colors py-2"
+            >
+              <Download className="w-3.5 h-3.5" />
+              {canInstall ? "Instalează aplicația" : "Instalează aplicația"}
+            </button>
+          )}
         </div>
 
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce">
