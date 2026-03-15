@@ -125,7 +125,7 @@ async function sendEmailNotification(offer: OfferRequest) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: "Kuziini App <noreply@kuziini.app>",
+      from: "Kuziini App <onboarding@resend.dev>",
       to: "my@kuziini.ro",
       subject: `Solicitare oferta - ${offer.name}`,
       html: `
