@@ -246,7 +246,7 @@ export default function HomePage() {
       <div className="border-t-2 border-[#C9AB81]/30">
         <div className="bg-white py-5 px-5">
           <p className="text-[#0A0A0A]/70 text-[15px] text-center tracking-wider mb-1">
-            &copy; 2026 Kuziini &times; LOFT. Toate drepturile rezervate.
+            &copy; 2026 Kuziini x LOFT. Toate drepturile rezervate.
           </p>
           <p className="text-[#0A0A0A] text-[15px] text-center tracking-wider font-medium">
             Kuziini Furniture Luxuri and More.
