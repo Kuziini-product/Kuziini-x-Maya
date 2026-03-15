@@ -61,27 +61,29 @@ export default function HomePage() {
           <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-[#0A0A0A]" />
         </div>
 
-        <div className="relative z-10 text-center px-5 w-full max-w-lg flex flex-col flex-1 pb-12 pt-16">
-          {/* Logos centered between top and CTA */}
-          <div className="flex-1 flex flex-col items-center justify-center">
-            <div className="flex items-center justify-center gap-5">
-              <a href="https://www.instagram.com/kuziiniconceptstore/" target="_blank" rel="noopener noreferrer" className="shrink-0">
-                <Image
-                  src="/kuziini-logo.png"
-                  alt="Kuziini Furniture & More"
-                  width={100}
-                  height={100}
-                  className="rounded-2xl shadow-2xl shadow-black/60 border border-white/10 invert brightness-200"
-                />
-              </a>
-              <span className="text-[#C9AB81] text-2xl font-bold">x</span>
-              <img
-                src="https://loftlounge.ro/wp-content/uploads/2025/07/LOFT-White-Transparent-LOGO-1024x330.png"
-                alt="LOFT"
-                className="h-8 object-contain shrink-0"
-              />
-            </div>
+        <div className="relative z-10 text-center px-5 w-full max-w-lg">
+          {/* LOFT + Mamaia centered */}
+          <div className="mb-6">
+            <img
+              src="https://loftlounge.ro/wp-content/uploads/2025/07/LOFT-White-Transparent-LOGO-1024x330.png"
+              alt="LOFT"
+              className="h-10 object-contain mx-auto mb-1"
+            />
+            <p className="text-white text-sm font-light tracking-[0.5em] uppercase">
+              Mamaia
+            </p>
           </div>
+
+          {/* Logo Kuziini */}
+          <a href="https://www.instagram.com/kuziiniconceptstore/" target="_blank" rel="noopener noreferrer" className="block mx-auto mb-10 w-fit">
+            <Image
+              src="/kuziini-logo.png"
+              alt="Kuziini Furniture & More"
+              width={140}
+              height={140}
+              className="rounded-2xl shadow-2xl shadow-black/60 border border-white/10 invert brightness-200"
+            />
+          </a>
 
           <Link
             href="/scan"
