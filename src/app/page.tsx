@@ -66,7 +66,7 @@ export default function HomePage() {
             {/* LOFT + Mamaia */}
             <div className="mb-6">
               <img
-                src="https://loftlounge.ro/wp-content/uploads/2025/07/LOFT-White-Transparent-LOGO-1024x330.png"
+                src="/loft-logo.png"
                 alt="LOFT"
                 className="h-10 object-contain mx-auto mb-1"
               />
@@ -80,9 +80,7 @@ export default function HomePage() {
               <img
                 src="/kuziini-logo.png"
                 alt="Kuziini Furniture & More"
-                width={140}
-                height={140}
-                className="rounded-2xl shadow-2xl shadow-black/60 border border-white/10 invert brightness-200"
+                className="w-[140px] h-auto rounded-2xl shadow-2xl shadow-black/60 border border-white/10 invert brightness-200"
               />
             </a>
           </div>
@@ -162,7 +160,7 @@ export default function HomePage() {
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-4">
               <img
-                src="https://loftlounge.ro/wp-content/uploads/2025/07/LOFT-White-Transparent-LOGO-1024x330.png"
+                src="/loft-logo.png"
                 alt="LOFT"
                 className="h-5 object-contain opacity-60"
               />
@@ -198,14 +196,12 @@ export default function HomePage() {
             <img
               src="/kuziini-logo.png"
               alt="Kuziini"
-              width={136}
-              height={136}
-              className="rounded-2xl border border-white/10 invert brightness-200 object-contain"
+              className="w-[100px] h-auto rounded-2xl border border-white/10 invert brightness-200 object-contain"
             />
           </a>
           <span className="text-[#C9AB81]/40 text-lg font-bold">x</span>
           <img
-            src="https://loftlounge.ro/wp-content/uploads/2025/07/LOFT-White-Transparent-LOGO-1024x330.png"
+            src="/loft-logo.png"
             alt="LOFT"
             className="h-[26px] object-contain opacity-80"
           />
