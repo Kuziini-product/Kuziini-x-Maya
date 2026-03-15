@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sleep } from "@/lib/utils";
 import { BILL_REQUESTS_LOG, MOCK_UMBRELLAS, MOCK_SESSIONS } from "@/lib/mock-data";
+import { sendPushToAll } from "@/lib/push";
 
 export async function POST(req: NextRequest) {
   await sleep(500);
@@ -21,6 +22,13 @@ export async function POST(req: NextRequest) {
     amount,
     timestamp: new Date().toISOString(),
   });
+
+  // Push notification
+  sendPushToAll(
+    "Plată confirmată",
+    `Umbrela ${umbrellaId} · ${amount} RON · ${paymentMethod}`,
+    "payment"
+  ).catch(() => {});
 
   // Auto-close bill after 2 minutes (no POS connected)
   setTimeout(() => {

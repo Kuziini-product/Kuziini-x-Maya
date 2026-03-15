@@ -1,4 +1,4 @@
-const CACHE_NAME = "kuziini-v2";
+const CACHE_NAME = "kuziini-v3";
 
 self.addEventListener("install", (event) => {
   self.skipWaiting();
@@ -37,5 +37,51 @@ self.addEventListener("fetch", (event) => {
         return cached || fetched;
       })
     )
+  );
+});
+
+// ── Push Notifications ──
+self.addEventListener("push", (event) => {
+  if (!event.data) return;
+
+  let data;
+  try {
+    data = event.data.json();
+  } catch {
+    data = { title: "Kuziini", body: event.data.text() };
+  }
+
+  const options = {
+    body: data.body || "",
+    icon: data.icon || "/icons/icon-192.png",
+    badge: "/icons/icon-192.png",
+    tag: data.tag || "kuziini-notification",
+    renotify: true,
+    vibrate: [200, 100, 200],
+    data: { url: data.url || "/" },
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(data.title || "Kuziini x LOFT", options)
+  );
+});
+
+// Click on notification → open/focus app
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+
+  const url = event.notification.data?.url || "/admin";
+
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clients) => {
+      // Focus existing window if open
+      for (const client of clients) {
+        if (client.url.includes("/admin") && "focus" in client) {
+          return client.focus();
+        }
+      }
+      // Otherwise open new window
+      return self.clients.openWindow(url);
+    })
   );
 });

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { kvGet, kvSet } from "@/lib/kv";
+import { sendPushToAll } from "@/lib/push";
 
 const ADMIN_PASSWORD = "Kuziini1";
 
@@ -69,6 +70,13 @@ export async function POST(req: NextRequest) {
       // Email is best-effort, don't fail the request
       console.error("[Offers] Failed to send email notification");
     }
+
+    // Push notification
+    sendPushToAll(
+      "Cerere ofertă nouă",
+      `${name} (${phone}) a solicitat o ofertă`,
+      "offer"
+    ).catch(() => {});
 
     return NextResponse.json({ success: true });
   }

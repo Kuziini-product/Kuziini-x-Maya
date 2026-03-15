@@ -274,6 +274,7 @@ export default function AdminPage() {
   const [onlineCount, setOnlineCount] = useState(0);
   const [onlinePhones, setOnlinePhones] = useState<Set<string>>(new Set());
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const [pushEnabled, setPushEnabled] = useState(false);
   const prevStatsRef = useRef<{ logins: number; orders: number; bills: number; offers: number; likes: number; accessEntries: number } | null>(null);
   const autoLoginDone = useRef(false);
 
@@ -331,6 +332,59 @@ export default function AdminPage() {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Check push notification status
+  useEffect(() => {
+    if (!authenticated) return;
+    if ("Notification" in window && Notification.permission === "granted") {
+      setPushEnabled(true);
+    }
+  }, [authenticated]);
+
+  async function subscribePush() {
+    try {
+      const permission = await Notification.requestPermission();
+      if (permission !== "granted") return;
+
+      const reg = await navigator.serviceWorker.ready;
+      // Get VAPID public key
+      const keyRes = await fetch("/api/push");
+      const keyJson = await keyRes.json();
+      const vapidKey = keyJson.publicKey;
+
+      // Convert VAPID key to Uint8Array
+      const urlBase64ToUint8Array = (base64String: string) => {
+        const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+        const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+        const rawData = atob(base64);
+        const output = new Uint8Array(rawData.length);
+        for (let i = 0; i < rawData.length; i++) output[i] = rawData.charCodeAt(i);
+        return output;
+      };
+
+      const sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(vapidKey),
+      });
+
+      const subJson = sub.toJSON();
+      await fetch("/api/push", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "subscribe",
+          subscription: {
+            endpoint: subJson.endpoint,
+            keys: subJson.keys,
+          },
+        }),
+      });
+
+      setPushEnabled(true);
+    } catch (e) {
+      console.error("Push subscription failed:", e);
+    }
+  }
 
   // Auto-refresh all data every 15 seconds for live updates
   useEffect(() => {
@@ -555,6 +609,21 @@ export default function AdminPage() {
             <p className="text-[#C9AB81] text-[10px] tracking-[0.2em] uppercase">Kuziini × LOFT</p>
           </div>
           <div className="flex items-center gap-2">
+            {/* Push notifications toggle */}
+            {!pushEnabled && (
+              <button
+                onClick={subscribePush}
+                className="h-9 flex items-center gap-1.5 px-3 bg-red-500/15 border border-red-500/30 text-red-400 text-[10px] font-bold tracking-wider uppercase active:bg-red-500/25 transition-colors"
+              >
+                <Bell className="w-3.5 h-3.5" />
+                Push
+              </button>
+            )}
+            {pushEnabled && (
+              <div className="h-9 flex items-center gap-1.5 px-2 bg-emerald-500/15 border border-emerald-500/30 text-emerald-400" title="Notificări push active">
+                <Bell className="w-3.5 h-3.5" />
+              </div>
+            )}
             {/* Sound toggle */}
             <button
               onClick={() => {

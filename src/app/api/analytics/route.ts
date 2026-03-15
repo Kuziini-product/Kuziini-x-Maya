@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { kvGet, kvSet } from "@/lib/kv";
+import { sendPushToAll } from "@/lib/push";
 
 const ADMIN_PASSWORD = "Kuziini1";
 
@@ -84,6 +85,14 @@ export async function POST(req: NextRequest) {
       stats[key].likes--;
     }
     await savePhotoStats(stats);
+    // Push notification on new like
+    if (idx === -1) {
+      sendPushToAll(
+        "Like nou",
+        `Cineva a dat inimioara la poza #${photoIndex + 1}`,
+        "heart"
+      ).catch(() => {});
+    }
     return NextResponse.json({ success: true, liked: idx === -1, likes: stats[key].likes });
   }
 

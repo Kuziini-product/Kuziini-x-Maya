@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<style>
+  @page {
+    size: A4;
+    margin: 0;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #0A0A0A;
+    color: #e0e0e0;
+    width: 210mm;
+    min-height: 297mm;
+    padding: 18mm 22mm 15mm 22mm;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .logos {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: 10px;
+  }
+  .logos img.loft-logo {
+    height: 69px;
+    object-fit: contain;
+  }
+  .logos img.kuziini-logo {
+    height: 90px;
+    width: auto;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.1);
+    filter: invert(1) brightness(2);
+  }
+  .logos .separator {
+    color: rgba(255,255,255,0.3);
+    font-size: 28px;
+    font-weight: 100;
+  }
+  .subtitle-mamaia {
+    color: rgba(255,255,255,0.6);
+    font-size: 10px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    margin-top: -8px;
+    margin-bottom: 8px;
+  }
+  h1 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #ffffff;
+    letter-spacing: 0.5px;
+  }
+  h1 span {
+    color: #d4a855;
+  }
+  .section {
+    margin-bottom: 14px;
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+  .section-number {
+    background: linear-gradient(135deg, #d4a855, #b8922e);
+    color: #0A0A0A;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #ffffff;
+  }
+  .section-title .device {
+    color: #d4a855;
+  }
+  .steps {
+    margin-left: 40px;
+    list-style: none;
+  }
+  .steps li {
+    position: relative;
+    padding: 3px 0 3px 18px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #c0c0c0;
+  }
+  .steps li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 10px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #d4a855;
+  }
+  .steps li strong {
+    color: #ffffff;
+    font-weight: 500;
+  }
+  .steps li em {
+    color: #d4a855;
+    font-style: normal;
+    font-weight: 500;
+  }
+  .admin-features {
+    margin-left: 58px;
+    margin-top: 4px;
+  }
+  .admin-features li {
+    padding: 2px 0 2px 18px;
+    font-size: 11px;
+  }
+  .admin-features li::before {
+    top: 10px;
+    width: 5px;
+    height: 5px;
+    background: rgba(212,168,85,0.5);
+  }
+  .footer {
+    margin-top: 18px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    text-align: center;
+  }
+  .footer .url {
+    color: #d4a855;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 1px;
+  }
+  .footer .tagline {
+    color: rgba(255,255,255,0.4);
+    font-size: 11px;
+    margin-top: 6px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .icon-hint {
+    display: inline-block;
+    background: rgba(212,168,85,0.15);
+    color: #d4a855;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 500;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logos">
+    <img src="public/loft-logo.png" alt="LOFT" class="loft-logo">
+    <span class="separator">×</span>
+    <img src="public/kuziini-logo.png" alt="Kuziini" class="kuziini-logo">
+  </div>
+  <div class="subtitle-mamaia">Mamaia Nord</div>
+  <h1>Ghid rapid de instalare – <span>Loft powered by Kuziini</span></h1>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <div class="section-number">1</div>
+    <div class="section-title">Instalare pe <span class="device">telefon</span></div>
+  </div>
+  <ul class="steps">
+    <li>Deschide linkul aplicației <strong>Loft – Kuziini</strong> în browserul telefonului.</li>
+    <li>Apasă butonul <em>Share</em> <span class="icon-hint">⎙</span> (lângă bara de adresă a browserului).</li>
+    <li>Alege opțiunea <em>„Add to Home Screen"</em> (adaugă pe ecranul principal).</li>
+    <li>Confirmă adăugarea. Aplicația <strong>Loft</strong> va apărea pe ecranul principal al telefonului.</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <div class="section-number">2</div>
+    <div class="section-title">Activarea aplicației pe <span class="device">telefon</span></div>
+  </div>
+  <ul class="steps">
+    <li>Salvează <strong>QR code-ul</strong> primit în galeria telefonului.</li>
+    <li>Deschide aplicația <strong>Loft</strong>.</li>
+    <li>Apasă butonul <em>„Scanează QR"</em>.</li>
+    <li>Selectează QR code-ul din galeria telefonului. După scanare, aplicația va fi activă.</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <div class="section-number">3</div>
+    <div class="section-title">Instalare pe <span class="device">calculator</span></div>
+  </div>
+  <ul class="steps">
+    <li>Accesează linkul de descărcare <strong>Loft – Kuziini</strong>.</li>
+    <li>Descarcă și rulează instalarea (sau acceptă dialogul de instalare din browser).</li>
+    <li>După instalare, va apărea un <strong>shortcut pe desktop</strong>.</li>
+    <li>Poți închide browserul; aplicația va rula independent.</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <div class="section-number">4</div>
+    <div class="section-title">Activare pe <span class="device">calculator</span></div>
+  </div>
+  <ul class="steps">
+    <li>Salvează <strong>QR code-ul</strong> pe desktop.</li>
+    <li>Deschide aplicația <strong>Loft</strong>.</li>
+    <li>Apasă <em>„Scanează QR"</em> și selectează imaginea QR. Aplicația va fi activată.</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <div class="section-number">5</div>
+    <div class="section-title">Administrarea <span class="device">aplicației</span></div>
+  </div>
+  <ul class="steps">
+    <li>Pe prima pagină a aplicației, apasă pe <strong>logo-ul LOFT</strong> (pentru administrare LOFT) sau pe <strong>logo-ul Kuziini</strong> (pentru administrare Kuziini).</li>
+    <li>Introdu parola de acces pentru panoul de administrare.</li>
+    <li>Din panoul de administrare poți:</li>
+  </ul>
+  <ul class="steps admin-features">
+    <li><strong>Genera QR coduri</strong> pentru umbrele / zone.</li>
+    <li><strong>Gestiona imagini</strong> pentru landing page.</li>
+    <li><strong>Selecta 3 produse recomandate</strong> pe home screen.</li>
+  </ul>
+</div>
+
+<div class="footer">
+  <div class="url">kuziini.app</div>
+  <div class="tagline">Comanda direct de la sezlong</div>
+</div>
+
+</body>
+</html>

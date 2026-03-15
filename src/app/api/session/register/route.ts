@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { MOCK_UMBRELLAS, MOCK_SESSIONS, LOGIN_LOG } from "@/lib/mock-data";
 import { sleep, generateId } from "@/lib/utils";
+import { sendPushToAll } from "@/lib/push";
 
 export async function POST(req: NextRequest) {
   await sleep(400);
@@ -72,6 +73,13 @@ export async function POST(req: NextRequest) {
     umbrellaId,
     timestamp: new Date().toISOString(),
   });
+
+  // Send push notification
+  sendPushToAll(
+    "Utilizator nou",
+    `${name || phone} s-a înregistrat la umbrela ${umbrellaId}`,
+    "new-user"
+  ).catch(() => {});
 
   return NextResponse.json({
     success: true,
