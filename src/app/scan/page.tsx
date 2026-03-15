@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Phone, User, Camera, ImageIcon, QrCode, ArrowLeft } from "lucide-react";
 import { useSessionStore } from "@/store";
@@ -12,7 +12,14 @@ type Step = "auth" | "scan";
 export default function ScanPage() {
   const router = useRouter();
   const { userSession, setUserSession } = useSessionStore();
-  const [step, setStep] = useState<Step>(userSession ? "scan" : "auth");
+  const [step, setStep] = useState<Step>("auth");
+
+  // After hydration, check if user already has a session (zustand persist)
+  useEffect(() => {
+    if (userSession) {
+      setStep("scan");
+    }
+  }, [userSession]);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("+40");
   const [error, setError] = useState<string | null>(null);
