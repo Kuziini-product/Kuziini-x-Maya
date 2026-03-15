@@ -1,19 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { LOFT_BANNERS, KUZIINI_BANNERS } from "@/lib/mock-data";
+import { kvGet, kvSet } from "@/lib/kv";
 import type { PromoBanner, BannerCategory } from "@/types";
 
 const ADMIN_PASSWORD = "Kuziini1";
 const LOFT_PASSWORD = "Loft2025";
 
-function getBanners(category: BannerCategory): PromoBanner[] {
-  const arr = category === "loft" ? LOFT_BANNERS : KUZIINI_BANNERS;
+async function getBanners(category: BannerCategory): Promise<PromoBanner[]> {
+  const key = `banners:${category}`;
+  const fallback = category === "loft" ? [...LOFT_BANNERS] : [...KUZIINI_BANNERS];
+  const arr = await kvGet<PromoBanner[]>(key, fallback);
   return [...arr].sort((a, b) => a.order - b.order);
 }
 
-function setBanners(category: BannerCategory, banners: PromoBanner[]) {
-  const target = category === "loft" ? LOFT_BANNERS : KUZIINI_BANNERS;
-  target.length = 0;
-  banners.forEach((b) => target.push(b));
+async function setBanners(category: BannerCategory, banners: PromoBanner[]) {
+  await kvSet(`banners:${category}`, banners);
 }
 
 function validatePassword(password: string, category: BannerCategory): boolean {
@@ -25,9 +26,9 @@ function validatePassword(password: string, category: BannerCategory): boolean {
 export async function GET(req: NextRequest) {
   const category = (req.nextUrl.searchParams.get("category") || "loft") as BannerCategory;
   if (category !== "loft" && category !== "kuziini") {
-    return NextResponse.json({ success: false, error: "Categorie invalidă." }, { status: 400 });
+    return NextResponse.json({ success: false, error: "Categorie invalida." }, { status: 400 });
   }
-  return NextResponse.json({ success: true, data: getBanners(category) });
+  return NextResponse.json({ success: true, data: await getBanners(category) });
 }
 
 // POST - authenticated, manage banners
@@ -40,14 +41,14 @@ export async function POST(req: NextRequest) {
   };
 
   if (!category || (category !== "loft" && category !== "kuziini")) {
-    return NextResponse.json({ success: false, error: "Categorie invalidă." }, { status: 400 });
+    return NextResponse.json({ success: false, error: "Categorie invalida." }, { status: 400 });
   }
 
   if (!validatePassword(password, category)) {
-    return NextResponse.json({ success: false, error: "Parolă incorectă." }, { status: 401 });
+    return NextResponse.json({ success: false, error: "Parola incorecta." }, { status: 401 });
   }
 
-  const banners = getBanners(category);
+  const banners = await getBanners(category);
 
   switch (action) {
     case "list":
@@ -77,7 +78,7 @@ export async function POST(req: NextRequest) {
         menuItemId: menuItemId || undefined,
       };
       banners.push(newBanner);
-      setBanners(category, banners);
+      await setBanners(category, banners);
       return NextResponse.json({ success: true, data: banners });
     }
 
@@ -93,7 +94,7 @@ export async function POST(req: NextRequest) {
       };
       const idx = banners.findIndex((b) => b.id === bannerId);
       if (idx === -1) {
-        return NextResponse.json({ success: false, error: "Banner negăsit." }, { status: 404 });
+        return NextResponse.json({ success: false, error: "Banner negasit." }, { status: 404 });
       }
       if (title !== undefined) banners[idx].title = title;
       if (subtitle !== undefined) banners[idx].subtitle = subtitle;
@@ -101,7 +102,7 @@ export async function POST(req: NextRequest) {
       if (image !== undefined) banners[idx].image = image || undefined;
       if (instagramUrl !== undefined) banners[idx].instagramUrl = instagramUrl || undefined;
       if (menuItemId !== undefined) banners[idx].menuItemId = menuItemId || undefined;
-      setBanners(category, banners);
+      await setBanners(category, banners);
       return NextResponse.json({ success: true, data: banners });
     }
 
@@ -109,14 +110,14 @@ export async function POST(req: NextRequest) {
       const { bannerId } = body as { bannerId: string };
       const filtered = banners.filter((b) => b.id !== bannerId);
       filtered.forEach((b, i) => (b.order = i));
-      setBanners(category, filtered);
+      await setBanners(category, filtered);
       return NextResponse.json({ success: true, data: filtered });
     }
 
     case "reorder": {
       const { orderedIds } = body as { orderedIds: string[] };
       if (!orderedIds?.length) {
-        return NextResponse.json({ success: false, error: "Lista de ordine este goală." }, { status: 400 });
+        return NextResponse.json({ success: false, error: "Lista de ordine este goala." }, { status: 400 });
       }
       const reordered: PromoBanner[] = [];
       orderedIds.forEach((id, i) => {
@@ -126,11 +127,11 @@ export async function POST(req: NextRequest) {
           reordered.push(banner);
         }
       });
-      setBanners(category, reordered);
+      await setBanners(category, reordered);
       return NextResponse.json({ success: true, data: reordered });
     }
 
     default:
-      return NextResponse.json({ success: false, error: "Acțiune invalidă." }, { status: 400 });
+      return NextResponse.json({ success: false, error: "Actiune invalida." }, { status: 400 });
   }
 }

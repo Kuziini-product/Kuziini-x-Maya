@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.51.1",
+    "@vercel/kv": "^3.0.0",
     "clsx": "^2.1.1",
     "framer-motion": "^11.3.8",
     "jsqr": "^1.4.0",

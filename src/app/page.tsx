@@ -230,8 +230,8 @@ export default function HomePage() {
             <Image
               src="/kuziini-logo.png"
               alt="Kuziini"
-              width={44}
-              height={44}
+              width={64}
+              height={64}
               className="rounded-lg border border-white/10 invert brightness-200"
             />
           </a>
@@ -239,7 +239,7 @@ export default function HomePage() {
           <img
             src="https://loftlounge.ro/wp-content/uploads/2025/07/LOFT-White-Transparent-LOGO-1024x330.png"
             alt="LOFT"
-            className="h-6 object-contain"
+            className="h-8 object-contain"
           />
         </div>
 

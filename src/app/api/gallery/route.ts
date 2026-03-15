@@ -1,27 +1,41 @@
 import { NextRequest, NextResponse } from "next/server";
 import { LOFT_GALLERY, KUZIINI_GALLERY, LOFT_LIBRARY, KUZIINI_LIBRARY } from "@/lib/mock-data";
-import type { GalleryConfig, GalleryImage, LibraryPhoto } from "@/lib/mock-data";
+import type { GalleryImage, GalleryAspect, LibraryPhoto } from "@/lib/mock-data";
 import type { BannerCategory } from "@/types";
+import { kvGet, kvSet } from "@/lib/kv";
 
 const ADMIN_PASSWORD = "Kuziini1";
 const LOFT_PASSWORD = "Loft2025";
 
-function getGallery(category: BannerCategory): GalleryConfig {
-  return category === "loft" ? LOFT_GALLERY : KUZIINI_GALLERY;
+interface StoredGallery {
+  slots: number;
+  aspect: GalleryAspect;
+  images: GalleryImage[];
 }
 
-function getLibrary(category: BannerCategory): LibraryPhoto[] {
-  return category === "loft" ? LOFT_LIBRARY : KUZIINI_LIBRARY;
+async function getGallery(category: BannerCategory): Promise<StoredGallery> {
+  const key = `gallery:${category}`;
+  const mem = category === "loft" ? LOFT_GALLERY : KUZIINI_GALLERY;
+  const fallback: StoredGallery = {
+    slots: mem.slots,
+    aspect: mem.aspect,
+    images: [...mem.images],
+  };
+  return kvGet<StoredGallery>(key, fallback);
 }
 
-function setGallery(category: BannerCategory, config: Partial<GalleryConfig>) {
-  const target = category === "loft" ? LOFT_GALLERY : KUZIINI_GALLERY;
-  if (config.slots !== undefined) target.slots = config.slots;
-  if (config.aspect !== undefined) target.aspect = config.aspect;
-  if (config.images !== undefined) {
-    target.images.length = 0;
-    config.images.forEach((img) => target.images.push(img));
-  }
+async function saveGallery(category: BannerCategory, data: StoredGallery) {
+  await kvSet(`gallery:${category}`, data);
+}
+
+async function getLibrary(category: BannerCategory): Promise<LibraryPhoto[]> {
+  const key = `library:${category}`;
+  const fallback = category === "loft" ? [...LOFT_LIBRARY] : [...KUZIINI_LIBRARY];
+  return kvGet<LibraryPhoto[]>(key, fallback);
+}
+
+async function saveLibrary(category: BannerCategory, library: LibraryPhoto[]) {
+  await kvSet(`library:${category}`, library);
 }
 
 function validatePassword(password: string, category: BannerCategory): boolean {
@@ -29,7 +43,7 @@ function validatePassword(password: string, category: BannerCategory): boolean {
   return password === ADMIN_PASSWORD;
 }
 
-function galleryResponse(gallery: GalleryConfig, library: LibraryPhoto[]) {
+function galleryResponse(gallery: StoredGallery, library: LibraryPhoto[]) {
   return {
     success: true,
     data: {
@@ -41,7 +55,6 @@ function galleryResponse(gallery: GalleryConfig, library: LibraryPhoto[]) {
   };
 }
 
-// Ensure a URL exists in the library, add if not
 function ensureInLibrary(library: LibraryPhoto[], url: string, category: BannerCategory) {
   const exists = library.some((p) => p.url === url);
   if (!exists) {
@@ -57,9 +70,9 @@ function ensureInLibrary(library: LibraryPhoto[], url: string, category: BannerC
 export async function GET(req: NextRequest) {
   const category = (req.nextUrl.searchParams.get("category") || "loft") as BannerCategory;
   if (category !== "loft" && category !== "kuziini") {
-    return NextResponse.json({ success: false, error: "Categorie invalidă." }, { status: 400 });
+    return NextResponse.json({ success: false, error: "Categorie invalida." }, { status: 400 });
   }
-  const gallery = getGallery(category);
+  const gallery = await getGallery(category);
   return NextResponse.json({
     success: true,
     data: {
@@ -80,15 +93,15 @@ export async function POST(req: NextRequest) {
   };
 
   if (!category || (category !== "loft" && category !== "kuziini")) {
-    return NextResponse.json({ success: false, error: "Categorie invalidă." }, { status: 400 });
+    return NextResponse.json({ success: false, error: "Categorie invalida." }, { status: 400 });
   }
 
   if (!validatePassword(password, category)) {
-    return NextResponse.json({ success: false, error: "Parolă incorectă." }, { status: 401 });
+    return NextResponse.json({ success: false, error: "Parola incorecta." }, { status: 401 });
   }
 
-  const gallery = getGallery(category);
-  const library = getLibrary(category);
+  const gallery = await getGallery(category);
+  const library = await getLibrary(category);
 
   switch (action) {
     case "get":
@@ -97,31 +110,29 @@ export async function POST(req: NextRequest) {
     case "setSlots": {
       const { slots } = body as { slots: number };
       if (![1, 2, 3, 4, 6].includes(slots)) {
-        return NextResponse.json({ success: false, error: "Număr de ferestre invalid (1,2,3,4,6)." }, { status: 400 });
+        return NextResponse.json({ success: false, error: "Numar de ferestre invalid (1,2,3,4,6)." }, { status: 400 });
       }
-      setGallery(category, { slots });
+      gallery.slots = slots;
       if (gallery.images.length > slots) {
         const sorted = [...gallery.images].sort((a, b) => a.order - b.order).slice(0, slots);
         sorted.forEach((img, i) => (img.order = i));
-        setGallery(category, { images: sorted });
+        gallery.images = sorted;
       }
+      await saveGallery(category, gallery);
       return NextResponse.json(galleryResponse(gallery, library));
     }
 
     case "setSlotImage": {
-      // Set image at a specific slot index (add or replace)
       const { slotIndex, url } = body as { slotIndex: number; url: string };
       if (!url) {
-        return NextResponse.json({ success: false, error: "URL imagine lipsă." }, { status: 400 });
+        return NextResponse.json({ success: false, error: "URL imagine lipsa." }, { status: 400 });
       }
       if (slotIndex < 0 || slotIndex >= gallery.slots) {
-        return NextResponse.json({ success: false, error: "Index fereastră invalid." }, { status: 400 });
+        return NextResponse.json({ success: false, error: "Index fereastra invalid." }, { status: 400 });
       }
-      // Save to library
       ensureInLibrary(library, url, category);
-      // Check if slot already has an image
-      const sorted = [...gallery.images].sort((a, b) => a.order - b.order);
-      const existing = sorted.find((img) => img.order === slotIndex);
+      await saveLibrary(category, library);
+      const existing = gallery.images.find((img) => img.order === slotIndex);
       if (existing) {
         existing.url = url;
       } else {
@@ -131,42 +142,43 @@ export async function POST(req: NextRequest) {
           order: slotIndex,
         });
       }
+      await saveGallery(category, gallery);
       return NextResponse.json(galleryResponse(gallery, library));
     }
 
     case "addImage": {
       const { url } = body as { url: string };
       if (!url) {
-        return NextResponse.json({ success: false, error: "URL imagine lipsă." }, { status: 400 });
+        return NextResponse.json({ success: false, error: "URL imagine lipsa." }, { status: 400 });
       }
       if (gallery.images.length >= gallery.slots) {
         return NextResponse.json({ success: false, error: "Toate ferestrele sunt ocupate." }, { status: 400 });
       }
       ensureInLibrary(library, url, category);
+      await saveLibrary(category, library);
       const newImg: GalleryImage = {
         id: `${category[0]}g-${Date.now()}`,
         url,
         order: gallery.images.length,
       };
       gallery.images.push(newImg);
+      await saveGallery(category, gallery);
       return NextResponse.json(galleryResponse(gallery, library));
     }
 
     case "removeImage": {
       const { imageId } = body as { imageId: string };
-      const filtered = gallery.images.filter((img) => img.id !== imageId);
-      filtered.sort((a, b) => a.order - b.order).forEach((img, i) => (img.order = i));
-      setGallery(category, { images: filtered });
+      gallery.images = gallery.images.filter((img) => img.id !== imageId);
+      gallery.images.sort((a, b) => a.order - b.order).forEach((img, i) => (img.order = i));
+      await saveGallery(category, gallery);
       return NextResponse.json(galleryResponse(gallery, library));
     }
 
     case "removeSlotImage": {
-      // Remove image at a specific slot index
       const { slotIndex: removeIdx } = body as { slotIndex: number };
-      const filt = gallery.images.filter((img) => img.order !== removeIdx);
-      // Re-index: shift down orders above removed slot
-      filt.sort((a, b) => a.order - b.order).forEach((img, i) => (img.order = i));
-      setGallery(category, { images: filt });
+      gallery.images = gallery.images.filter((img) => img.order !== removeIdx);
+      gallery.images.sort((a, b) => a.order - b.order).forEach((img, i) => (img.order = i));
+      await saveGallery(category, gallery);
       return NextResponse.json(galleryResponse(gallery, library));
     }
 
@@ -180,7 +192,8 @@ export async function POST(req: NextRequest) {
           reordered.push(img);
         }
       });
-      setGallery(category, { images: reordered });
+      gallery.images = reordered;
+      await saveGallery(category, gallery);
       return NextResponse.json(galleryResponse(gallery, library));
     }
 
@@ -189,16 +202,18 @@ export async function POST(req: NextRequest) {
       if (!["square", "portrait", "landscape"].includes(aspect)) {
         return NextResponse.json({ success: false, error: "Aspect invalid." }, { status: 400 });
       }
-      gallery.aspect = aspect as GalleryConfig["aspect"];
+      gallery.aspect = aspect as GalleryAspect;
+      await saveGallery(category, gallery);
       return NextResponse.json(galleryResponse(gallery, library));
     }
 
     case "addToLibrary": {
       const { url: libUrl } = body as { url: string };
       if (!libUrl) {
-        return NextResponse.json({ success: false, error: "URL imagine lipsă." }, { status: 400 });
+        return NextResponse.json({ success: false, error: "URL imagine lipsa." }, { status: 400 });
       }
       ensureInLibrary(library, libUrl, category);
+      await saveLibrary(category, library);
       return NextResponse.json(galleryResponse(gallery, library));
     }
 
@@ -206,10 +221,11 @@ export async function POST(req: NextRequest) {
       const { photoId } = body as { photoId: string };
       const idx = library.findIndex((p) => p.id === photoId);
       if (idx !== -1) library.splice(idx, 1);
+      await saveLibrary(category, library);
       return NextResponse.json(galleryResponse(gallery, library));
     }
 
     default:
-      return NextResponse.json({ success: false, error: "Acțiune invalidă." }, { status: 400 });
+      return NextResponse.json({ success: false, error: "Actiune invalida." }, { status: 400 });
   }
 }
