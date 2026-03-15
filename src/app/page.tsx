@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef, useCallback } from "react";
 import Link from "next/link";
-import { ChevronRight, ChevronLeft, MapPin, Phone, Mail, AtSign, X, Send, CheckCircle, Heart } from "lucide-react";
+import { ChevronRight, ChevronLeft, MapPin, Phone, Mail, AtSign, X, Send, CheckCircle, Heart, Download, Share } from "lucide-react";
 import type { GalleryImage, GalleryAspect } from "@/lib/mock-data";
 
 interface GalleryData {
@@ -34,6 +34,7 @@ export default function HomePage() {
   const [loftGallery, setLoftGallery] = useState<GalleryData | null>(null);
   const [kuziiniGallery, setKuziiniGallery] = useState<GalleryData | null>(null);
   const [lightbox, setLightbox] = useState<{ images: string[]; index: number; isKuziini: boolean } | null>(null);
+  const [showInstall, setShowInstall] = useState(false);
 
   const openLightbox = useCallback((allImages: string[], clickedIndex: number, isKuziini = false) => {
     setLightbox({ images: allImages, index: clickedIndex, isKuziini });
@@ -92,6 +93,14 @@ export default function HomePage() {
             Scanează QR & Comandă
             <ChevronRight className="w-4 h-4" />
           </Link>
+
+          <button
+            onClick={() => setShowInstall(true)}
+            className="mt-3 inline-flex items-center justify-center gap-2 text-white/50 text-xs tracking-[0.1em] uppercase hover:text-white/80 transition-colors py-2"
+          >
+            <Download className="w-3.5 h-3.5" />
+            Instalează aplicația
+          </button>
         </div>
 
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce">
@@ -100,6 +109,44 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Install modal */}
+      {showInstall && (
+        <div className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm flex items-center justify-center p-6" onClick={() => setShowInstall(false)}>
+          <div className="bg-[#1a1a1a] border border-[#C9AB81]/30 rounded-2xl p-6 max-w-sm w-full" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-5">
+              <h3 className="text-white font-bold text-lg">Instalează Kuziini</h3>
+              <button onClick={() => setShowInstall(false)} className="text-white/40 hover:text-white/80">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <p className="text-white/50 text-xs mb-4">Adaugă aplicația pe ecranul principal pentru acces rapid:</p>
+
+            <div className="space-y-3 mb-5">
+              <div className="flex items-center gap-3 text-white/80 text-sm">
+                <span className="w-6 h-6 rounded-full bg-[#C9AB81] text-[#0A0A0A] flex items-center justify-center text-xs font-bold shrink-0">1</span>
+                <span className="flex items-center gap-1.5">Apasă <Share className="w-4 h-4 text-[#C9AB81]" /> din bara Safari</span>
+              </div>
+              <div className="flex items-center gap-3 text-white/80 text-sm">
+                <span className="w-6 h-6 rounded-full bg-[#C9AB81] text-[#0A0A0A] flex items-center justify-center text-xs font-bold shrink-0">2</span>
+                <span>Alege <span className="text-[#C9AB81] font-semibold">Add to Home Screen</span></span>
+              </div>
+              <div className="flex items-center gap-3 text-white/80 text-sm">
+                <span className="w-6 h-6 rounded-full bg-[#C9AB81] text-[#0A0A0A] flex items-center justify-center text-xs font-bold shrink-0">3</span>
+                <span>Apasă <span className="text-[#C9AB81] font-semibold">Add</span></span>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setShowInstall(false)}
+              className="w-full bg-[#C9AB81] text-[#0A0A0A] py-3 font-bold text-sm tracking-[0.1em] uppercase rounded-lg"
+            >
+              Am înțeles
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* ═══ Advertising Zone ═══ */}
       <section className="py-10 px-5 border-b border-white/5">
