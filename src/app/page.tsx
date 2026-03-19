@@ -126,7 +126,7 @@ export default function HomePage() {
       .then((j) => { if (j.success) setKuziiniGallery(j.data); });
   }, []);
   return (
-    <div className="min-h-dvh bg-[#f5f5f5] text-[#1a1a1a] overflow-x-hidden">
+    <div className="min-h-dvh bg-[#0A0A0A] text-white overflow-x-hidden">
       {/* Hero - full screen mobile */}
       <section className="relative h-[100dvh] flex flex-col items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
@@ -135,7 +135,7 @@ export default function HomePage() {
             alt="LOFT Mamaia"
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-[#f5f5f5]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-[#0A0A0A]" />
         </div>
 
         <div className="relative z-10 text-center px-5 w-full max-w-lg flex flex-col flex-1 pb-16 pt-8">
@@ -198,7 +198,7 @@ export default function HomePage() {
                 router.push("/scan");
               }
             }}
-            className="inline-flex items-center justify-center gap-2 bg-purple-600 text-white px-8 py-3.5 font-bold text-sm tracking-[0.15em] uppercase transition-all active:bg-purple-700 shadow-lg shadow-purple-600/30 rounded-full"
+            className="inline-flex items-center justify-center gap-2 bg-[#C9AB81] text-[#0A0A0A] px-8 py-3.5 font-bold text-sm tracking-[0.15em] uppercase transition-all active:opacity-80"
           >
             {userSession?.umbrellaId ? "Deschide meniul" : "Scanează QR & Comandă"}
             <ChevronRight className="w-4 h-4" />
@@ -228,34 +228,34 @@ export default function HomePage() {
           <div className="absolute top-2 right-3 w-[280px]" onClick={(e) => e.stopPropagation()}>
             {/* Arrow pointing up-right toward Safari bar */}
             <div className="flex justify-end pr-4 mb-[-1px]">
-              <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-b-[10px] border-b-white" />
+              <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-b-[10px] border-b-[#1a1a1a]" />
             </div>
-            <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-2xl shadow-black/10">
+            <div className="bg-[#1a1a1a] border border-[#C9AB81]/30 rounded-2xl p-5 shadow-2xl shadow-black/80">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-[#1a1a1a] font-bold text-base">Instalează Kuziini</h3>
-                <button onClick={() => setShowInstall(false)} className="text-gray-400 hover:text-gray-600">
+                <h3 className="text-white font-bold text-base">Instalează Kuziini</h3>
+                <button onClick={() => setShowInstall(false)} className="text-white/40 hover:text-white/80">
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
               <div className="space-y-2.5 mb-4">
-                <div className="flex items-center gap-2.5 text-gray-600 text-xs">
-                  <span className="w-5 h-5 rounded-full bg-[#C9AB81] text-white flex items-center justify-center text-[10px] font-bold shrink-0">1</span>
+                <div className="flex items-center gap-2.5 text-white/80 text-xs">
+                  <span className="w-5 h-5 rounded-full bg-[#C9AB81] text-[#0A0A0A] flex items-center justify-center text-[10px] font-bold shrink-0">1</span>
                   <span className="flex items-center gap-1.5">Apasă <Share className="w-3.5 h-3.5 text-[#C9AB81]" /> din bara Safari</span>
                 </div>
-                <div className="flex items-center gap-2.5 text-gray-600 text-xs">
-                  <span className="w-5 h-5 rounded-full bg-[#C9AB81] text-white flex items-center justify-center text-[10px] font-bold shrink-0">2</span>
+                <div className="flex items-center gap-2.5 text-white/80 text-xs">
+                  <span className="w-5 h-5 rounded-full bg-[#C9AB81] text-[#0A0A0A] flex items-center justify-center text-[10px] font-bold shrink-0">2</span>
                   <span>Alege <span className="text-[#C9AB81] font-semibold">Add to Home Screen</span></span>
                 </div>
-                <div className="flex items-center gap-2.5 text-gray-600 text-xs">
-                  <span className="w-5 h-5 rounded-full bg-[#C9AB81] text-white flex items-center justify-center text-[10px] font-bold shrink-0">3</span>
+                <div className="flex items-center gap-2.5 text-white/80 text-xs">
+                  <span className="w-5 h-5 rounded-full bg-[#C9AB81] text-[#0A0A0A] flex items-center justify-center text-[10px] font-bold shrink-0">3</span>
                   <span>Apasă <span className="text-[#C9AB81] font-semibold">Add</span></span>
                 </div>
               </div>
 
               <button
                 onClick={() => setShowInstall(false)}
-                className="w-full bg-[#C9AB81] text-white py-2.5 font-bold text-xs tracking-[0.1em] uppercase rounded-lg"
+                className="w-full bg-[#C9AB81] text-[#0A0A0A] py-2.5 font-bold text-xs tracking-[0.1em] uppercase rounded-lg"
               >
                 Am înțeles
               </button>
@@ -265,18 +265,18 @@ export default function HomePage() {
       )}
 
       {/* ═══ Advertising Zone ═══ */}
-      <section className="py-10 px-5 border-b border-gray-200">
+      <section className="py-10 px-5 border-b border-white/5">
         <div className="max-w-md mx-auto space-y-4">
           {/* Featured Ad */}
-          <div className="relative overflow-hidden border border-[#C9AB81]/30 rounded-lg bg-white">
+          <div className="relative overflow-hidden border border-[#C9AB81]/20">
             <div className="bg-gradient-to-br from-[#C9AB81]/10 to-transparent p-6 text-center">
-              <p className="text-[10px] font-bold text-[#C9AB81] tracking-[0.3em] uppercase mb-2">
+              <p className="text-[10px] font-bold text-[#C9AB81]/60 tracking-[0.3em] uppercase mb-2">
                 Sponsor
               </p>
-              <h3 className="text-xl font-bold text-[#1a1a1a] tracking-wide mb-2">
+              <h3 className="text-xl font-bold text-white tracking-wide mb-2">
                 Kuziini Furniture & More
               </h3>
-              <p className="text-gray-500 text-xs leading-relaxed mb-4">
+              <p className="text-white/40 text-xs leading-relaxed mb-4">
                 Mobilier premium pentru terase, restaurante și beach clubs.
                 Design italian, calitate germană.
               </p>
@@ -284,7 +284,7 @@ export default function HomePage() {
                 href="https://www.instagram.com/kuziiniconceptstore/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-[#C9AB81] text-white px-5 py-2.5 font-bold text-[10px] tracking-[0.15em] uppercase active:opacity-80 transition-opacity rounded-md"
+                className="inline-flex items-center gap-2 bg-[#C9AB81] text-[#0A0A0A] px-5 py-2.5 font-bold text-[10px] tracking-[0.15em] uppercase active:opacity-80 transition-opacity"
               >
                 Descoperă colecția
                 <ChevronRight className="w-3 h-3" />
@@ -304,7 +304,7 @@ export default function HomePage() {
           <h2 className="text-2xl font-bold tracking-wide mb-1">
             Design <span className="text-[#C9AB81]">&</span> Lifestyle
           </h2>
-          <div className="w-12 h-px bg-[#C9AB81] mx-auto mt-3" />
+          <div className="w-12 h-px bg-[#C9AB81]/40 mx-auto mt-3" />
         </div>
 
         {/* LOFT Gallery */}
@@ -314,9 +314,9 @@ export default function HomePage() {
               <img
                 src="/loft-logo.png"
                 alt="LOFT"
-                className="h-5 object-contain opacity-80 mt-0.5 shrink-0 invert"
+                className="h-5 object-contain opacity-60 mt-0.5 shrink-0"
               />
-              <p className="text-gray-500 text-sm leading-relaxed">
+              <p className="text-white/40 text-sm leading-relaxed">
                 — primul day party din România. 10 ani de gastronomie, băuturi craft și entertainment 360°.
               </p>
             </div>
@@ -333,8 +333,8 @@ export default function HomePage() {
         {kuziiniGallery && kuziiniGallery.images.length > 0 && (
           <div>
             <div className="flex items-start gap-3 mb-4">
-              <span className="text-sm font-bold tracking-[0.15em] uppercase text-gray-700 shrink-0 mt-0.5">Kuziini</span>
-              <p className="text-gray-500 text-sm leading-relaxed">
+              <span className="text-sm font-bold tracking-[0.15em] uppercase text-white/60 shrink-0 mt-0.5">Kuziini</span>
+              <p className="text-white/40 text-sm leading-relaxed">
                 — inovație, rafinament și design sofisticat. Mobilier premium, interioare personalizate.
               </p>
             </div>
@@ -349,40 +349,40 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 px-5 border-t border-gray-200">
+      <footer className="py-12 px-5 border-t border-white/[0.06]">
         <div className="flex items-center justify-center gap-4 mb-6">
           <button onClick={() => router.push("/admin")}>
             <img
               src="/kuziini-logo.png"
               alt="Kuziini"
-              className="w-[100px] h-auto rounded-2xl border border-gray-200 object-contain"
+              className="w-[100px] h-auto rounded-2xl border border-white/10 invert brightness-200 object-contain"
             />
           </button>
-          <span className="text-[#C9AB81] text-lg font-bold">x</span>
+          <span className="text-[#C9AB81]/40 text-lg font-bold">x</span>
           <button onClick={() => router.push("/loft")}>
             <img
               src="/loft-logo.png"
               alt="LOFT"
-              className="h-[26px] object-contain opacity-80 invert"
+              className="h-[26px] object-contain opacity-80"
             />
           </button>
         </div>
 
         <div className="space-y-2.5 mb-8 text-center">
-          <div className="flex items-center justify-center gap-2 text-gray-400 text-xs">
-            <MapPin className="w-3 h-3 text-[#C9AB81] shrink-0" />
+          <div className="flex items-center justify-center gap-2 text-white/30 text-xs">
+            <MapPin className="w-3 h-3 text-[#C9AB81]/60 shrink-0" />
             Bd Mamaia Nord nr. 564, Mamaia
           </div>
-          <div className="flex items-center justify-center gap-2 text-gray-400 text-xs">
-            <Phone className="w-3 h-3 text-[#C9AB81] shrink-0" />
+          <div className="flex items-center justify-center gap-2 text-white/30 text-xs">
+            <Phone className="w-3 h-3 text-[#C9AB81]/60 shrink-0" />
             +40 756 385 638
           </div>
-          <div className="flex items-center justify-center gap-2 text-gray-400 text-xs">
-            <Mail className="w-3 h-3 text-[#C9AB81] shrink-0" />
+          <div className="flex items-center justify-center gap-2 text-white/30 text-xs">
+            <Mail className="w-3 h-3 text-[#C9AB81]/60 shrink-0" />
             concierge@loftlounge.ro
           </div>
-          <div className="flex items-center justify-center gap-2 text-gray-400 text-xs">
-            <AtSign className="w-3 h-3 text-[#C9AB81] shrink-0" />
+          <div className="flex items-center justify-center gap-2 text-white/30 text-xs">
+            <AtSign className="w-3 h-3 text-[#C9AB81]/60 shrink-0" />
             @kuziiniconceptstore
           </div>
         </div>
@@ -402,7 +402,7 @@ export default function HomePage() {
       </div>
 
       {/* Bottom black band */}
-      <div className="bg-[#f5f5f5] h-6" />
+      <div className="bg-[#0A0A0A] h-6" />
 
       {/* Lightbox */}
       {lightbox && (
@@ -515,7 +515,7 @@ function ScrollableGallery({
               return (
                 <div
                   key={img.id}
-                  className={`relative ${aspectClass} overflow-hidden border border-gray-200 rounded-md cursor-pointer active:opacity-80 transition-opacity`}
+                  className={`relative ${aspectClass} overflow-hidden border border-white/[0.08] cursor-pointer active:opacity-80 transition-opacity`}
                   onClick={() => onImageClick(allUrls, globalIdx)}
                 >
                   <img
@@ -576,7 +576,7 @@ function ScrollableGallery({
                   inline: "center",
                 });
               }}
-              className="w-1.5 h-1.5 rounded-full bg-gray-300 hover:bg-[#C9AB81] transition-colors"
+              className="w-1.5 h-1.5 rounded-full bg-white/20 hover:bg-[#C9AB81]/60 transition-colors"
             />
           ))}
         </div>
@@ -847,7 +847,7 @@ function Lightbox({
         <div className="flex-1 overflow-y-auto px-4 pb-4">
           {/* Gallery grid for selection */}
           <div className="mb-4">
-            <p className="text-purple-400 text-[10px] font-bold tracking-[0.2em] uppercase mb-3">
+            <p className="text-[#C9AB81] text-[10px] font-bold tracking-[0.2em] uppercase mb-3">
               Selectează produsele ({selectedPhotos.size} {selectedPhotos.size === 1 ? "selectat" : "selectate"})
             </p>
             <div className="grid grid-cols-3 gap-1.5">
@@ -888,21 +888,21 @@ function Lightbox({
               placeholder="Nume *"
               value={formData.name}
               onChange={(e) => setFormData((d) => ({ ...d, name: e.target.value }))}
-              className="w-full bg-white/[0.06] border border-white/[0.1] px-3 py-2 text-white text-sm placeholder:text-white/30 outline-none focus:border-purple-500/50"
+              className="w-full bg-white/[0.06] border border-white/[0.1] px-3 py-2 text-white text-sm placeholder:text-white/30 outline-none focus:border-[#C9AB81]/50"
             />
             <input
               type="tel"
               placeholder="Telefon *"
               value={formData.phone}
               onChange={(e) => setFormData((d) => ({ ...d, phone: e.target.value }))}
-              className="w-full bg-white/[0.06] border border-white/[0.1] px-3 py-2 text-white text-sm placeholder:text-white/30 outline-none focus:border-purple-500/50"
+              className="w-full bg-white/[0.06] border border-white/[0.1] px-3 py-2 text-white text-sm placeholder:text-white/30 outline-none focus:border-[#C9AB81]/50"
             />
             <input
               type="email"
               placeholder="Email *"
               value={formData.email}
               onChange={(e) => setFormData((d) => ({ ...d, email: e.target.value }))}
-              className="w-full bg-white/[0.06] border border-white/[0.1] px-3 py-2 text-white text-sm placeholder:text-white/30 outline-none focus:border-purple-500/50"
+              className="w-full bg-white/[0.06] border border-white/[0.1] px-3 py-2 text-white text-sm placeholder:text-white/30 outline-none focus:border-[#C9AB81]/50"
             />
             <textarea
               placeholder="Mesaj (opțional)"
@@ -916,7 +916,7 @@ function Lightbox({
               <button
                 onClick={submitOffer}
                 disabled={formLoading || selectedPhotos.size === 0}
-                className="flex-1 flex items-center justify-center gap-2 bg-purple-600 text-white py-2.5 font-bold text-xs tracking-[0.1em] uppercase disabled:opacity-50 active:bg-purple-700 transition-all shadow-lg shadow-purple-600/30"
+                className="flex-1 flex items-center justify-center gap-2 bg-[#C9AB81] text-[#0A0A0A] py-2.5 font-bold text-xs tracking-[0.1em] uppercase disabled:opacity-50"
               >
                 <Send className="w-3.5 h-3.5" />
                 {formLoading ? "Se trimite..." : `Trimite (${selectedPhotos.size})`}
@@ -1013,7 +1013,7 @@ function Lightbox({
                     setSelectedPhotos(new Set([current]));
                     setShowForm(true);
                   }}
-                  className="flex items-center gap-2 bg-purple-600 text-white py-2 px-5 font-bold text-[11px] tracking-[0.1em] uppercase active:bg-purple-700 transition-all shadow-lg shadow-purple-600/30 rounded-md"
+                  className="flex items-center gap-2 bg-[#C9AB81] text-[#0A0A0A] py-2 px-5 font-bold text-[11px] tracking-[0.1em] uppercase active:opacity-80 transition-opacity shadow-lg shadow-black/40"
                 >
                   <Send className="w-3.5 h-3.5" />
                   Solicită ofertă
@@ -1039,7 +1039,7 @@ function Lightbox({
                       setShowForm(true);
                       setFormData((d) => ({ ...d, message: "" }));
                     }}
-                    className="w-full flex items-center justify-center gap-2 bg-purple-600/20 border border-purple-500/30 text-purple-300 py-2 font-bold text-xs tracking-[0.1em] uppercase active:opacity-80 transition-opacity"
+                    className="w-full flex items-center justify-center gap-2 bg-[#C9AB81]/20 border border-[#C9AB81]/30 text-[#C9AB81] py-2 font-bold text-xs tracking-[0.1em] uppercase active:opacity-80 transition-opacity"
                   >
                     <Send className="w-3.5 h-3.5" />
                     Solicită altă ofertă
