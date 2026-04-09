@@ -144,7 +144,7 @@ export default function HomePage() {
             {/* LOFT + Mamaia — tap to access LOFT admin */}
             <button onClick={() => router.push("/loft")} className="mb-6 block mx-auto">
               <img
-                src="/loft-logo.png"
+                src="/Maya.png"
                 alt="LOFT"
                 className="h-10 object-contain mx-auto mb-1"
               />
@@ -312,7 +312,7 @@ export default function HomePage() {
           <div className="mb-8">
             <div className="flex items-start gap-3 mb-4">
               <img
-                src="/loft-logo.png"
+                src="/Maya.png"
                 alt="LOFT"
                 className="h-5 object-contain opacity-60 mt-0.5 shrink-0"
               />
@@ -361,7 +361,7 @@ export default function HomePage() {
           <span className="text-[#C9AB81]/40 text-lg font-bold">x</span>
           <button onClick={() => router.push("/loft")}>
             <img
-              src="/loft-logo.png"
+              src="/Maya.png"
               alt="LOFT"
               className="h-[26px] object-contain opacity-80"
             />
@@ -1074,3 +1074,4 @@ function Lightbox({
     </div>
   );
 }
+

@@ -133,3 +133,4 @@ export function MenuItemCard({ item }: MenuItemCardProps) {
     </div>
   );
 }
+

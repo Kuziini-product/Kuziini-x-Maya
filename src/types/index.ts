@@ -199,3 +199,4 @@ export interface PromoBanner {
 }
 
 export type BannerCategory = "loft" | "kuziini";
+

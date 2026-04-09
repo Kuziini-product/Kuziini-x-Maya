@@ -165,3 +165,4 @@ async function sendEmailNotification(offer: OfferRequest) {
     console.log("[Offers] Email sent successfully to", toEmail, "id:", result.id);
   }
 }
+

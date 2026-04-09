@@ -43,3 +43,4 @@ export function BadgeUpdater() {
 
   return null;
 }
+
