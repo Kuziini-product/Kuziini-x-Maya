@@ -32,9 +32,9 @@ export default function LandingPage({
   const { umbrellaId } = params;
   const router = useRouter();
   const { userSession } = useSessionStore();
-  const [loftIdx, setLoftIdx] = useState(0);
+  const [mayaIdx, setmayaIdx] = useState(0);
   const [kuziiniIdx, setKuziiniIdx] = useState(0);
-  const [loftBanners, setLoftBanners] = useState<PromoBanner[]>([]);
+  const [mayaBanners, setmayaBanners] = useState<PromoBanner[]>([]);
   const [kuziiniBanners, setKuziiniBanners] = useState<PromoBanner[]>([]);
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [addedToast, setAddedToast] = useState<string | null>(null);
@@ -67,9 +67,9 @@ export default function LandingPage({
 
   // Fetch banners + menu items
   useEffect(() => {
-    fetch("/api/banners?category=loft")
+    fetch("/api/banners?category=Maya")
       .then((r) => r.json())
-      .then((j) => { if (j.success && j.data.length) setLoftBanners(j.data); });
+      .then((j) => { if (j.success && j.data.length) setmayaBanners(j.data); });
     fetch("/api/banners?category=kuziini")
       .then((r) => r.json())
       .then((j) => { if (j.success && j.data.length) setKuziiniBanners(j.data); });
@@ -78,14 +78,14 @@ export default function LandingPage({
       .then((j) => { if (j.success && j.data?.items) setMenuItems(j.data.items); });
   }, [umbrellaId]);
 
-  // Auto-rotate LOFT banners
+  // Auto-rotate Maya banners
   useEffect(() => {
-    if (loftBanners.length <= 1) return;
+    if (mayaBanners.length <= 1) return;
     const t = setInterval(() => {
-      setLoftIdx((i) => (i + 1) % loftBanners.length);
+      setmayaIdx((i) => (i + 1) % mayaBanners.length);
     }, 4000);
     return () => clearInterval(t);
-  }, [loftBanners.length]);
+  }, [mayaBanners.length]);
 
   // Auto-rotate Kuziini banners
   useEffect(() => {
@@ -131,7 +131,7 @@ export default function LandingPage({
   }
 
   const umbrella: Umbrella = data.umbrella;
-  const loftBanner = loftBanners[loftIdx] || null;
+  const mayaBanner = mayaBanners[mayaIdx] || null;
   const kuziiniBanner = kuziiniBanners[kuziiniIdx] || null;
 
   function handleBannerClick(banner: PromoBanner) {
@@ -140,7 +140,7 @@ export default function LandingPage({
       window.open(banner.instagramUrl, "_blank", "noopener,noreferrer");
       return;
     }
-    // LOFT banners: add menu item to cart
+    // Maya banners: add menu item to cart
     if (banner.menuItemId) {
       const item = menuItems.find((m) => m.id === banner.menuItemId);
       if (item) {
@@ -172,19 +172,19 @@ export default function LandingPage({
             )}
           </div>
 
-          {/* LOFT Banners */}
-          {loftBanner && (
+          {/* Maya banners */}
+          {mayaBanner && (
             <div className="w-full max-w-sm mb-3">
               <p className="text-[10px] font-bold text-white/20 tracking-[0.2em] uppercase mb-2">LOFT</p>
-              <BannerSlide banner={loftBanner} onClick={() => handleBannerClick(loftBanner)} />
-              {loftBanners.length > 1 && (
+              <BannerSlide banner={mayaBanner} onClick={() => handleBannerClick(mayaBanner)} />
+              {mayaBanners.length > 1 && (
                 <div className="flex gap-1 mt-2">
-                  {loftBanners.map((_: PromoBanner, i: number) => (
+                  {mayaBanners.map((_: PromoBanner, i: number) => (
                     <div
                       key={i}
                       className={cn(
                         "h-0.5 rounded-full transition-all duration-300",
-                        i === loftIdx ? "w-6 bg-[#C9AB81]" : "w-2 bg-white/15"
+                        i === mayaIdx ? "w-6 bg-[#C9AB81]" : "w-2 bg-white/15"
                       )}
                     />
                   ))}
