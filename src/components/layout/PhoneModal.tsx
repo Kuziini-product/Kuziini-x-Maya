@@ -63,7 +63,7 @@ export function PhoneModal({ umbrellaId, onClose }: PhoneModalProps) {
         onClick={onClose}
       />
 
-      {/* Sheet - dark LOFT style */}
+      {/* Sheet - dark Maya style */}
       <div className="relative w-full max-w-lg bg-[#141414] border-t border-[#C9AB81]/30 p-6 pb-10 animate-slide-up">
         <div className="flex items-center justify-between mb-6">
           <div>

@@ -7,7 +7,7 @@ export const VAPID_PUBLIC_KEY = "BLnl6ShjQq1VJhuCd0ygH4C1hSC-VAltDBqEGr7eRvNRu26
 const VAPID_PRIVATE_KEY = "kIquWC2t__ioMSn-GsIGEU27zhCfmoKZfRff2UJ_Eqg";
 
 webpush.setVapidDetails(
-  "mailto:concierge@loftlounge.ro",
+  "mailto:concierge@Mayalounge.ro",
   VAPID_PUBLIC_KEY,
   VAPID_PRIVATE_KEY
 );

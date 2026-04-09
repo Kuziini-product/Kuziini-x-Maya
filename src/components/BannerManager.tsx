@@ -54,9 +54,9 @@ export default function BannerManager({
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  // Fetch menu items for LOFT banner menu picker
+  // Fetch menu items for Maya banner menu picker
   useEffect(() => {
-    if (category !== "loft") return;
+    if (category !== "Maya") return;
     fetch("/api/menu?umbrellaId=A-01")
       .then((r) => r.json())
       .then((j) => {
@@ -419,8 +419,8 @@ function BannerForm({
         </div>
       )}
 
-      {/* LOFT: Menu item picker */}
-      {category === "loft" && (
+      {/* Maya: Menu item picker */}
+      {category === "Maya" && (
         <div className="border-t border-white/[0.06] pt-2 mt-2">
           <p className="text-emerald-400 text-[10px] font-bold tracking-[0.15em] uppercase mb-1.5 flex items-center gap-1">
             <ShoppingBag className="w-3 h-3" />

@@ -195,8 +195,8 @@ export interface PromoBanner {
   color: string;
   order: number;
   instagramUrl?: string; // Kuziini: link to Instagram post
-  menuItemId?: string;   // LOFT: menu item to add to cart on click
+  menuItemId?: string;   // Maya: menu item to add to cart on click
 }
 
-export type BannerCategory = "loft" | "kuziini";
+export type BannerCategory = "Maya" | "kuziini";
 

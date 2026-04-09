@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { LOFT_BANNERS, KUZIINI_BANNERS } from "@/lib/mock-data";
+import { Maya_BANNERS, KUZIINI_BANNERS } from "@/lib/mock-data";
 import { kvGet, kvSet } from "@/lib/kv";
 import type { PromoBanner, BannerCategory } from "@/types";
 
 const ADMIN_PASSWORD = "Kuziini1";
-const LOFT_PASSWORD = "Loft2025";
+const Maya_PASSWORD = "Maya2025";
 
 async function getBanners(category: BannerCategory): Promise<PromoBanner[]> {
   const key = `banners:${category}`;
-  const fallback = category === "loft" ? [...LOFT_BANNERS] : [...KUZIINI_BANNERS];
+  const fallback = category === "Maya" ? [...Maya_BANNERS] : [...KUZIINI_BANNERS];
   const arr = await kvGet<PromoBanner[]>(key, fallback);
   return [...arr].sort((a, b) => a.order - b.order);
 }
@@ -18,14 +18,14 @@ async function setBanners(category: BannerCategory, banners: PromoBanner[]) {
 }
 
 function validatePassword(password: string, category: BannerCategory): boolean {
-  if (category === "loft") return password === LOFT_PASSWORD;
+  if (category === "Maya") return password === Maya_PASSWORD;
   return password === ADMIN_PASSWORD;
 }
 
 // GET - public, returns banners for display
 export async function GET(req: NextRequest) {
-  const category = (req.nextUrl.searchParams.get("category") || "loft") as BannerCategory;
-  if (category !== "loft" && category !== "kuziini") {
+  const category = (req.nextUrl.searchParams.get("category") || "Maya") as BannerCategory;
+  if (category !== "Maya" && category !== "kuziini") {
     return NextResponse.json({ success: false, error: "Categorie invalida." }, { status: 400 });
   }
   return NextResponse.json({ success: true, data: await getBanners(category) });
@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
     action: "list" | "add" | "update" | "delete" | "reorder";
   };
 
-  if (!category || (category !== "loft" && category !== "kuziini")) {
+  if (!category || (category !== "Maya" && category !== "kuziini")) {
     return NextResponse.json({ success: false, error: "Categorie invalida." }, { status: 400 });
   }
 

@@ -20,8 +20,8 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Kuziini x LOFT",
-  description: "Comanda direct de la sezlong - Kuziini x LOFT Mamaia Nord",
+  title: "Kuziini x Maya",
+  description: "Comanda direct de la sezlong - Kuziini x Maya Mamaia Nord",
   viewport: "width=device-width, initial-scale=1, maximum-scale=1",
   themeColor: "#0A0A0A",
   manifest: "/manifest.json",

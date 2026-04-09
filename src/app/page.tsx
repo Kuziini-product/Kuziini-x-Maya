@@ -34,7 +34,7 @@ function getAspectClass(aspect: GalleryAspect): string {
 export default function HomePage() {
   const router = useRouter();
   const { userSession } = useSessionStore();
-  const [loftGallery, setLoftGallery] = useState<GalleryData | null>(null);
+  const [MayaGallery, setMayaGallery] = useState<GalleryData | null>(null);
   const [kuziiniGallery, setKuziiniGallery] = useState<GalleryData | null>(null);
   const [lightbox, setLightbox] = useState<{ images: string[]; index: number; isKuziini: boolean; category: string } | null>(null);
   const [showInstall, setShowInstall] = useState(false);
@@ -118,9 +118,9 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
-    fetch("/api/gallery?category=loft")
+    fetch("/api/gallery?category=Maya")
       .then((r) => r.json())
-      .then((j) => { if (j.success) setLoftGallery(j.data); });
+      .then((j) => { if (j.success) setMayaGallery(j.data); });
     fetch("/api/gallery?category=kuziini")
       .then((r) => r.json())
       .then((j) => { if (j.success) setKuziiniGallery(j.data); });
@@ -132,7 +132,7 @@ export default function HomePage() {
         <div className="absolute inset-0">
           <img
             src="/hero-bg.jpg"
-            alt="LOFT Mamaia"
+            alt="Maya Mamaia"
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-[#0A0A0A]" />
@@ -141,11 +141,11 @@ export default function HomePage() {
         <div className="relative z-10 text-center px-5 w-full max-w-lg flex flex-col flex-1 pb-16 pt-8">
           {/* Logos centered between top and CTA */}
           <div className="flex-1 flex flex-col items-center justify-center">
-            {/* LOFT + Mamaia — tap to access LOFT admin */}
-            <button onClick={() => router.push("/loft")} className="mb-6 block mx-auto">
+            {/* Maya + Mamaia — tap to access Maya admin */}
+            <button onClick={() => router.push("/Maya")} className="mb-6 block mx-auto">
               <img
                 src="/Maya.png"
-                alt="LOFT"
+                alt="Maya"
                 className="h-10 object-contain mx-auto mb-1"
               />
               <p className="text-white text-sm font-light tracking-[0.5em] uppercase">
@@ -307,13 +307,13 @@ export default function HomePage() {
           <div className="w-12 h-px bg-[#C9AB81]/40 mx-auto mt-3" />
         </div>
 
-        {/* LOFT Gallery */}
-        {loftGallery && loftGallery.images.length > 0 && (
+        {/* Maya Gallery */}
+        {MayaGallery && MayaGallery.images.length > 0 && (
           <div className="mb-8">
             <div className="flex items-start gap-3 mb-4">
               <img
                 src="/Maya.png"
-                alt="LOFT"
+                alt="Maya"
                 className="h-5 object-contain opacity-60 mt-0.5 shrink-0"
               />
               <p className="text-white/40 text-sm leading-relaxed">
@@ -321,10 +321,10 @@ export default function HomePage() {
               </p>
             </div>
             <ScrollableGallery
-              gallery={loftGallery}
-              onImageClick={(allUrls, idx) => openLightbox(allUrls, idx, true, "loft")}
+              gallery={MayaGallery}
+              onImageClick={(allUrls, idx) => openLightbox(allUrls, idx, true, "Maya")}
               showLikes
-              category="loft"
+              category="Maya"
             />
           </div>
         )}
@@ -359,10 +359,10 @@ export default function HomePage() {
             />
           </button>
           <span className="text-[#C9AB81]/40 text-lg font-bold">x</span>
-          <button onClick={() => router.push("/loft")}>
+          <button onClick={() => router.push("/Maya")}>
             <img
               src="/Maya.png"
-              alt="LOFT"
+              alt="Maya"
               className="h-[26px] object-contain opacity-80"
             />
           </button>
@@ -379,7 +379,7 @@ export default function HomePage() {
           </div>
           <div className="flex items-center justify-center gap-2 text-white/30 text-xs">
             <Mail className="w-3 h-3 text-[#C9AB81]/60 shrink-0" />
-            concierge@loftlounge.ro
+            concierge@Mayalounge.ro
           </div>
           <div className="flex items-center justify-center gap-2 text-white/30 text-xs">
             <AtSign className="w-3 h-3 text-[#C9AB81]/60 shrink-0" />
@@ -393,7 +393,7 @@ export default function HomePage() {
       <div className="border-t-2 border-[#C9AB81]/30">
         <div className="bg-white py-5 px-5">
           <p className="text-[#0A0A0A]/70 text-[15px] text-center tracking-wider mb-1">
-            &copy; 2026 Kuziini x LOFT. Toate drepturile rezervate.
+            &copy; 2026 Kuziini x Maya. Toate drepturile rezervate.
           </p>
           <p className="text-[#0A0A0A] text-[15px] text-center tracking-wider font-medium">
             Kuziini Furniture Luxyri and More.

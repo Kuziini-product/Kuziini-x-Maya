@@ -153,7 +153,7 @@ async function sendEmailNotification(offer: OfferRequest) {
         <p><strong>Email:</strong> ${offer.email}</p>
         ${offer.message ? `<p><strong>Mesaj:</strong> ${offer.message}</p>` : ""}
         <hr/>
-        <p style="color:#999;font-size:12px;">Trimis din aplicatia Kuziini × LOFT — vezi foto in panoul admin</p>
+        <p style="color:#999;font-size:12px;">Trimis din aplicatia Kuziini × Maya — vezi foto in panoul admin</p>
       `,
     }),
   });

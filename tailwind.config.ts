@@ -53,7 +53,7 @@ const config: Config = {
         mono: ["var(--font-mono)", "monospace"],
       },
       backgroundImage: {
-        "loft-gradient":
+        "Maya-gradient":
           "linear-gradient(160deg, #f5f3ff 0%, #f8f8f8 40%, #fdf2f8 100%)",
         "beach-gradient":
           "linear-gradient(160deg, #f5f3ff 0%, #f8f8f8 40%, #fdf2f8 100%)",

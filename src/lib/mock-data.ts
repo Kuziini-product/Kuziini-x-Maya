@@ -17,7 +17,7 @@ export const MOCK_UMBRELLAS: Record<string, Umbrella> = {
     id: "A-01",
     number: "A-01",
     zone: "Zona Lounge",
-    locationName: "Kuziini × LOFT",
+    locationName: "Kuziini × Maya",
     active: true,
     sessionId: "sess-a01-001",
   },
@@ -25,7 +25,7 @@ export const MOCK_UMBRELLAS: Record<string, Umbrella> = {
     id: "A-02",
     number: "A-02",
     zone: "Zona Lounge",
-    locationName: "Kuziini × LOFT",
+    locationName: "Kuziini × Maya",
     active: true,
     sessionId: null,
   },
@@ -33,7 +33,7 @@ export const MOCK_UMBRELLAS: Record<string, Umbrella> = {
     id: "B-07",
     number: "B-07",
     zone: "Zona Beach",
-    locationName: "Kuziini × LOFT",
+    locationName: "Kuziini × Maya",
     active: true,
     sessionId: null,
   },
@@ -41,7 +41,7 @@ export const MOCK_UMBRELLAS: Record<string, Umbrella> = {
     id: "VIP-03",
     number: "VIP-03",
     zone: "Zona VIP Premium",
-    locationName: "Kuziini × LOFT",
+    locationName: "Kuziini × Maya",
     active: true,
     sessionId: null,
   },
@@ -145,7 +145,7 @@ export const MOCK_MENU_ITEMS: MenuItem[] = [
   {
     id: "c-003",
     categorySlug: "cocktails",
-    name: "Moft La Loft",
+    name: "Moft La Maya",
     description: "Grey Goose vodka, soda water, fresh lime, fresh mint · 200ml",
     price: 55,
     currency: "RON",
@@ -1481,7 +1481,7 @@ export const MOCK_MENU_ITEMS: MenuItem[] = [
   {
     id: "wine-022",
     categorySlug: "wine",
-    name: "Tarlà LOFT Edition Chardonnay",
+    name: "Tarlà Maya Edition Chardonnay",
     description: "Dealu Mare · România · 1.5L Magnum",
     price: 650,
     currency: "RON",
@@ -1566,7 +1566,7 @@ export const MOCK_MENU_ITEMS: MenuItem[] = [
   {
     id: "wine-031",
     categorySlug: "wine",
-    name: "Tarlà LOFT Edition Rosé",
+    name: "Tarlà Maya Edition Rosé",
     description: "Syrah, Grenache, Cinsault · Côtes de Provence · 1.5L Magnum",
     price: 650,
     currency: "RON",
@@ -1773,9 +1773,9 @@ export const MOCK_CREDIT_STATUS: CreditStatus = {
 
 // ─── Promo Banners ────────────────────────────────────────────────────────────
 
-export const LOFT_BANNERS: PromoBanner[] = [
+export const Maya_BANNERS: PromoBanner[] = [
   {
-    id: "loft-1",
+    id: "Maya-1",
     title: "Happy Hour",
     subtitle: "Cocktailuri 2×1 · 15:00–17:00",
     emoji: "🍹",
@@ -1783,15 +1783,15 @@ export const LOFT_BANNERS: PromoBanner[] = [
     order: 0,
   },
   {
-    id: "loft-2",
-    title: "LOFT Signature",
-    subtitle: "Moft La Loft · Grey Goose & Lime · 55 RON",
+    id: "Maya-2",
+    title: "Maya Signature",
+    subtitle: "Moft La Maya · Grey Goose & Lime · 55 RON",
     emoji: "✨",
     color: "from-ocean-400 to-ocean-600",
     order: 1,
   },
   {
-    id: "loft-3",
+    id: "Maya-3",
     title: "Weekend Special",
     subtitle: "Glazed Octopus + Prosecco la 195 RON",
     emoji: "🐙",
@@ -1828,7 +1828,7 @@ export const KUZIINI_BANNERS: PromoBanner[] = [
 ];
 
 // Keep backward compat reference
-export const PROMO_BANNERS: PromoBanner[] = LOFT_BANNERS;
+export const PROMO_BANNERS: PromoBanner[] = Maya_BANNERS;
 
 // ─── Landing Page Galleries ──────────────────────────────────────────────────
 
@@ -1846,7 +1846,7 @@ export interface GalleryImage {
   order: number;
 }
 
-export const LOFT_GALLERY: GalleryConfig = {
+export const Maya_GALLERY: GalleryConfig = {
   slots: 3,
   aspect: "square",
   images: [],
@@ -1865,7 +1865,7 @@ export interface LibraryPhoto {
   addedAt: string;
 }
 
-export const LOFT_LIBRARY: LibraryPhoto[] = [];
+export const Maya_LIBRARY: LibraryPhoto[] = [];
 
 export const KUZIINI_LIBRARY: LibraryPhoto[] = [];
 

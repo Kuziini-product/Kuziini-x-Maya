@@ -19,12 +19,12 @@ export function BadgeUpdater() {
         const json = await res.json();
         if (json.success && json.unread > 0) {
           // Update page title with notification count
-          const baseTitle = "Kuziini x LOFT";
+          const baseTitle = "Kuziini x Maya";
           document.title = `(${json.unread}) ${baseTitle}`;
           // Try native badge API (works in Chrome desktop + PWA)
           nav.setAppBadge?.(json.unread).catch(() => {});
         } else {
-          document.title = "Kuziini x LOFT";
+          document.title = "Kuziini x Maya";
           nav.clearAppBadge?.().catch(() => {});
         }
       } catch {

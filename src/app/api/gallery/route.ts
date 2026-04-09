@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { LOFT_GALLERY, KUZIINI_GALLERY, LOFT_LIBRARY, KUZIINI_LIBRARY } from "@/lib/mock-data";
+import { Maya_GALLERY, KUZIINI_GALLERY, Maya_LIBRARY, KUZIINI_LIBRARY } from "@/lib/mock-data";
 import type { GalleryImage, GalleryAspect, LibraryPhoto } from "@/lib/mock-data";
 import type { BannerCategory } from "@/types";
 import { kvGet, kvSet } from "@/lib/kv";
 
 const ADMIN_PASSWORD = "Kuziini1";
-const LOFT_PASSWORD = "Loft2025";
+const Maya_PASSWORD = "Maya2025";
 
 interface StoredGallery {
   slots: number;
@@ -15,7 +15,7 @@ interface StoredGallery {
 
 async function getGallery(category: BannerCategory): Promise<StoredGallery> {
   const key = `gallery:${category}`;
-  const mem = category === "loft" ? LOFT_GALLERY : KUZIINI_GALLERY;
+  const mem = category === "Maya" ? Maya_GALLERY : KUZIINI_GALLERY;
   const fallback: StoredGallery = {
     slots: mem.slots,
     aspect: mem.aspect,
@@ -30,7 +30,7 @@ async function saveGallery(category: BannerCategory, data: StoredGallery) {
 
 async function getLibrary(category: BannerCategory): Promise<LibraryPhoto[]> {
   const key = `library:${category}`;
-  const fallback = category === "loft" ? [...LOFT_LIBRARY] : [...KUZIINI_LIBRARY];
+  const fallback = category === "Maya" ? [...Maya_LIBRARY] : [...KUZIINI_LIBRARY];
   return kvGet<LibraryPhoto[]>(key, fallback);
 }
 
@@ -39,7 +39,7 @@ async function saveLibrary(category: BannerCategory, library: LibraryPhoto[]) {
 }
 
 function validatePassword(password: string, category: BannerCategory): boolean {
-  if (category === "loft") return password === LOFT_PASSWORD;
+  if (category === "Maya") return password === Maya_PASSWORD;
   return password === ADMIN_PASSWORD;
 }
 
@@ -68,8 +68,8 @@ function ensureInLibrary(library: LibraryPhoto[], url: string, category: BannerC
 
 // GET - public (no library)
 export async function GET(req: NextRequest) {
-  const category = (req.nextUrl.searchParams.get("category") || "loft") as BannerCategory;
-  if (category !== "loft" && category !== "kuziini") {
+  const category = (req.nextUrl.searchParams.get("category") || "Maya") as BannerCategory;
+  if (category !== "Maya" && category !== "kuziini") {
     return NextResponse.json({ success: false, error: "Categorie invalida." }, { status: 400 });
   }
   const gallery = await getGallery(category);
@@ -92,7 +92,7 @@ export async function POST(req: NextRequest) {
     action: string;
   };
 
-  if (!category || (category !== "loft" && category !== "kuziini")) {
+  if (!category || (category !== "Maya" && category !== "kuziini")) {
     return NextResponse.json({ success: false, error: "Categorie invalida." }, { status: 400 });
   }
 

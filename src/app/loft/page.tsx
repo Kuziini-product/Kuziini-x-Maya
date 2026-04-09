@@ -16,7 +16,7 @@ interface UmbrellaQR {
   zone: string;
 }
 
-const SESSION_KEY = "kuziini_loft_session";
+const SESSION_KEY = "kuziini_Maya_session";
 const SESSION_HOURS = 1;
 
 function getSavedSession(): string | null {
@@ -36,7 +36,7 @@ function saveSession(pw: string) {
   localStorage.setItem(SESSION_KEY, JSON.stringify({ password: pw, timestamp: Date.now() }));
 }
 
-export default function LoftPage() {
+export default function MayaPage() {
   const [password, setPassword] = useState("");
   const [authenticated, setAuthenticated] = useState(false);
   const [storedPassword, setStoredPassword] = useState("");
@@ -74,7 +74,7 @@ export default function LoftPage() {
           const res = await fetch("/api/banners", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ password: saved, category: "loft", action: "list" }),
+            body: JSON.stringify({ password: saved, category: "Maya", action: "list" }),
           });
           const json = await res.json();
           if (json.success) {
@@ -84,7 +84,7 @@ export default function LoftPage() {
             fetch("/api/gallery", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ password: saved, category: "loft", action: "get" }),
+              body: JSON.stringify({ password: saved, category: "Maya", action: "get" }),
             })
               .then((r) => r.json())
               .then((j) => {
@@ -114,7 +114,7 @@ export default function LoftPage() {
       const res = await fetch("/api/banners", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password, category: "loft", action: "list" }),
+        body: JSON.stringify({ password, category: "Maya", action: "list" }),
       });
       const json = await res.json();
       if (!json.success) throw new Error(json.error);
@@ -126,7 +126,7 @@ export default function LoftPage() {
       fetch("/api/gallery", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password, category: "loft", action: "get" }),
+        body: JSON.stringify({ password, category: "Maya", action: "get" }),
       })
         .then((r) => r.json())
         .then((j) => {
@@ -150,7 +150,7 @@ export default function LoftPage() {
       const res = await fetch("/api/banners", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password: storedPassword, category: "loft", action: "list" }),
+        body: JSON.stringify({ password: storedPassword, category: "Maya", action: "list" }),
       });
       const json = await res.json();
       if (json.success) setBanners(json.data);
@@ -235,9 +235,9 @@ export default function LoftPage() {
     printWindow.document.write(`
       <!DOCTYPE html>
       <html>
-      <head><title>QR Codes - LOFT</title></head>
+      <head><title>QR Codes - Maya</title></head>
       <body style="text-align:center;padding:20px;font-family:Arial,sans-serif;">
-        <h2 style="margin-bottom:20px;">QR Codes Umbrele - LOFT × Kuziini</h2>
+        <h2 style="margin-bottom:20px;">QR Codes Umbrele - Maya × Kuziini</h2>
         <div style="display:flex;flex-wrap:wrap;justify-content:center;">
           ${qrCards.join("")}
         </div>
@@ -254,12 +254,12 @@ export default function LoftPage() {
         <div className="w-full max-w-sm">
           <div className="text-center mb-8">
             <img
-              src="https://loftlounge.ro/wp-content/uploads/2025/07/LOFT-White-Transparent-LOGO-1024x330.png"
-              alt="LOFT"
+              src="https://Mayalounge.ro/wp-content/uploads/2025/07/Maya-White-Transparent-LOGO-1024x330.png"
+              alt="Maya"
               className="h-12 object-contain mx-auto mb-4 opacity-80"
             />
             <h1 className="text-2xl font-bold text-white tracking-wide">
-              Manager LOFT
+              Manager Maya
             </h1>
             <p className="text-white/40 text-xs mt-1">Bannere & QR Codes</p>
           </div>
@@ -277,7 +277,7 @@ export default function LoftPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleLogin()}
                   className="flex-1 bg-transparent outline-none text-white text-sm placeholder:text-white/20"
-                  placeholder="Introdu parola LOFT"
+                  placeholder="Introdu parola Maya"
                   autoFocus
                 />
               </div>
@@ -310,7 +310,7 @@ export default function LoftPage() {
       <div className="bg-[#0A0A0A]/95 backdrop-blur-md border-b border-white/[0.06] px-4 py-4 sticky top-0 z-10">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-lg font-bold tracking-wide">Manager LOFT</h1>
+            <h1 className="text-lg font-bold tracking-wide">Manager Maya</h1>
             <p className="text-[#C9AB81] text-[10px] tracking-[0.2em] uppercase">
               Bannere & QR Codes
             </p>
@@ -360,7 +360,7 @@ export default function LoftPage() {
           <>
             <div className="flex items-center justify-between mb-4">
               <p className="text-white/30 text-xs">
-                {banners.length} bannere · Apar pe pagina clienților în secțiunea LOFT
+                {banners.length} bannere · Apar pe pagina clienților în secțiunea Maya
               </p>
               <SectionHelp items={[
                 "Bannerele apar pe pagina clientului (pagina umbrelelei) si se rotesc automat la fiecare 4 secunde.",
@@ -373,7 +373,7 @@ export default function LoftPage() {
               ]} />
             </div>
             <BannerManager
-              category="loft"
+              category="Maya"
               password={storedPassword}
               banners={banners}
               onUpdate={setBanners}
@@ -386,7 +386,7 @@ export default function LoftPage() {
           <>
             <div className="flex items-center justify-between mb-4">
               <p className="text-white/30 text-xs">
-                Pozele apar pe pagina de landing in sectiunea LOFT
+                Pozele apar pe pagina de landing in sectiunea Maya
               </p>
               <SectionHelp items={[
                 "Alege numarul de ferestre (1, 2, 3, 4 sau 6) pentru a seta cate poze apar pe landing page.",
@@ -399,7 +399,7 @@ export default function LoftPage() {
               ]} />
             </div>
             <GalleryManager
-              category="loft"
+              category="Maya"
               password={storedPassword}
               slots={gallerySlots}
               aspect={galleryAspect}

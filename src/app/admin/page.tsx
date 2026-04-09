@@ -547,7 +547,7 @@ export default function AdminPage() {
               <Lock className="w-8 h-8 text-[#C9AB81]" />
             </div>
             <h1 className="text-2xl font-bold text-white tracking-wide">Kuziini</h1>
-            <p className="text-white/40 text-xs mt-1">Kuziini × LOFT</p>
+            <p className="text-white/40 text-xs mt-1">Kuziini × Maya</p>
           </div>
 
           <div className="space-y-4">
@@ -606,7 +606,7 @@ export default function AdminPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-lg font-bold tracking-wide">Kuziini Panel</h1>
-            <p className="text-[#C9AB81] text-[10px] tracking-[0.2em] uppercase">Kuziini × LOFT</p>
+            <p className="text-[#C9AB81] text-[10px] tracking-[0.2em] uppercase">Kuziini × Maya</p>
           </div>
           <div className="flex items-center gap-2">
             {/* Push notifications toggle */}
@@ -1413,7 +1413,7 @@ export default function AdminPage() {
                           }
                           lines.push("═══════════════════════════════════════════");
                           lines.push(`Raport generat: ${new Date().toLocaleString("ro-RO")}`);
-                          lines.push("Kuziini × LOFT — Admin Panel");
+                          lines.push("Kuziini × Maya — Admin Panel");
                           lines.push("═══════════════════════════════════════════");
 
                           const text = lines.join("\n");

@@ -4,7 +4,7 @@ const nextConfig = {
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "**.cloudinary.com" },
-      { protocol: "https", hostname: "loftlounge.ro" },
+      { protocol: "https", hostname: "Mayalounge.ro" },
       { protocol: "https", hostname: "kuziini.ro" },
     ],
   },
