@@ -1849,13 +1849,101 @@ export interface GalleryImage {
 export const Maya_GALLERY: GalleryConfig = {
   slots: 3,
   aspect: "square",
-  images: [],
+  images: [    {
+      id: "maya-1",
+      url: "/1.jpg",
+      order: 0
+    },
+    {
+      id: "maya-3",
+      url: "/3.jpg",
+      order: 1
+    },
+    {
+      id: "maya-4",
+      url: "/4.jpg",
+      order: 2
+    },
+    {
+      id: "maya-5",
+      url: "/5.jpg",
+      order: 3
+    },
+    {
+      id: "maya-11",
+      url: "/11.jpg",
+      order: 4
+    },
+    {
+      id: "maya-12",
+      url: "/12.jpeg",
+      order: 5
+    },
+    {
+      id: "maya-13",
+      url: "/13.jpeg",
+      order: 6
+    },
+    {
+      id: "maya-14",
+      url: "/14.jpeg",
+      order: 7
+    },
+    {
+      id: "maya-15",
+      url: "/15.jpeg",
+      order: 8
+    }]
 };
 
 export const KUZIINI_GALLERY: GalleryConfig = {
   slots: 3,
   aspect: "square",
-  images: [],
+  images: [    {
+      id: "maya-1",
+      url: "/1.jpg",
+      order: 0
+    },
+    {
+      id: "maya-3",
+      url: "/3.jpg",
+      order: 1
+    },
+    {
+      id: "maya-4",
+      url: "/4.jpg",
+      order: 2
+    },
+    {
+      id: "maya-5",
+      url: "/5.jpg",
+      order: 3
+    },
+    {
+      id: "maya-11",
+      url: "/11.jpg",
+      order: 4
+    },
+    {
+      id: "maya-12",
+      url: "/12.jpeg",
+      order: 5
+    },
+    {
+      id: "maya-13",
+      url: "/13.jpeg",
+      order: 6
+    },
+    {
+      id: "maya-14",
+      url: "/14.jpeg",
+      order: 7
+    },
+    {
+      id: "maya-15",
+      url: "/15.jpeg",
+      order: 8
+    }]
 };
 
 // ─── Photo Library ──────────────────────────────────────────────────────────
