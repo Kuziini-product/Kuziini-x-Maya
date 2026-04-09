@@ -146,7 +146,7 @@ export default function HomePage() {
               <img
                 src="/Maya.png"
                 alt="Maya"
-                className="h-10 object-contain mx-auto mb-1"
+                className="h-20 object-contain mx-auto mb-1"
               />
               <p className="text-white text-sm font-light tracking-[0.5em] uppercase">
                 Mamaia
@@ -314,7 +314,7 @@ export default function HomePage() {
               <img
                 src="/Maya.png"
                 alt="Maya"
-                className="h-5 object-contain opacity-60 mt-0.5 shrink-0"
+                className="h-10 object-contain opacity-60 mt-0.5 shrink-0"
               />
               <p className="text-white/40 text-sm leading-relaxed">
                 — primul day party din România. 10 ani de gastronomie, băuturi craft și entertainment 360°.
@@ -363,7 +363,7 @@ export default function HomePage() {
             <img
               src="/Maya.png"
               alt="Maya"
-              className="h-[26px] object-contain opacity-80"
+              className="h-[52px] object-contain opacity-80"
             />
           </button>
         </div>
