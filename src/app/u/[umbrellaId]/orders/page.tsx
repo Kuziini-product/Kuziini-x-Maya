@@ -225,9 +225,20 @@ function OrderCard({
 
   const isActive = !["delivered", "rejected", "cancelled"].includes(order.status);
   const isCompleted = order.status === "delivered";
+  const isRejected = ["rejected", "cancelled"].includes(order.status);
+
+  const progressSteps = [
+    { key: "sent", label: "Trimisă", icon: "📩" },
+    { key: "confirmed", label: "Văzută", icon: "👀" },
+    { key: "preparing", label: "Se prepară", icon: "👨‍🍳" },
+    { key: "delivering", label: "Pe drum", icon: "🏃‍♂️" },
+    { key: "delivered", label: "Livrată", icon: "✅" },
+  ];
+  const statusOrder = ["pending", "sent", "confirmed", "preparing", "delivering", "delivered"];
+  const currentIdx = statusOrder.indexOf(order.status);
 
   return (
-    <div className={cn("bg-white/[0.03] border overflow-hidden", isActive ? "border-[#C9AB81]/30" : "border-white/[0.06]")}>
+    <div className={cn("bg-white/[0.03] border overflow-hidden", isActive ? "border-[#C9AB81]/30" : isRejected ? "border-red-500/20" : "border-white/[0.06]")}>
       {isActive && (
         <div className="h-0.5 bg-gradient-to-r from-[#C9AB81]/60 to-[#C9AB81] animate-pulse" />
       )}
@@ -246,6 +257,32 @@ function OrderCard({
             {expanded ? <ChevronUp className="w-4 h-4 text-white/30" /> : <ChevronDown className="w-4 h-4 text-white/30" />}
           </div>
         </div>
+
+        {/* Progress stepper */}
+        {!isRejected && (
+          <div className="flex items-center gap-0.5 my-3">
+            {progressSteps.map((step, i) => {
+              const stepIdx = statusOrder.indexOf(step.key);
+              const isDone = currentIdx >= stepIdx;
+              const isCurrent = currentIdx === stepIdx;
+              return (
+                <div key={step.key} className="flex-1 flex flex-col items-center gap-1">
+                  <div className={cn(
+                    "h-1 w-full rounded-full transition-all duration-500",
+                    isDone ? "bg-[#C9AB81]" : "bg-white/10",
+                    isCurrent && "animate-pulse bg-[#C9AB81]"
+                  )} />
+                  <span className={cn(
+                    "text-[8px] tracking-wider uppercase font-bold transition-colors",
+                    isCurrent ? "text-[#C9AB81]" : isDone ? "text-white/40" : "text-white/15"
+                  )}>
+                    {step.icon}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        )}
 
         <div className="flex items-center justify-between pt-2 border-t border-white/[0.06]">
           <span className="text-xs text-white/40">
