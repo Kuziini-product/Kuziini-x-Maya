@@ -73,6 +73,8 @@ export default function HomePage() {
               </p>
             </button>
 
+            <span className="text-[#C9AB81]/30 text-lg font-bold my-3">×</span>
+
             {/* Logo Kuziini — scroll to About */}
             <button onClick={() => document.getElementById("about")?.scrollIntoView({ behavior: "smooth" })} className="block mx-auto w-fit">
               <img
