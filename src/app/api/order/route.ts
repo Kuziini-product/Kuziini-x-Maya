@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sleep, generateId } from "@/lib/utils";
+import { kvGet } from "@/lib/kv";
+import { migrateGuests } from "@/lib/migrate-guests";
 import { ORDER_LOG } from "@/lib/mock-data";
-import type { Order, CartItem } from "@/types";
+import type { Order, CartItem, GuestProfile } from "@/types";
 
 export async function POST(req: NextRequest) {
   await sleep(500);
@@ -32,6 +34,22 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       { success: false, error: "Date incomplete pentru comandă." },
       { status: 400 }
+    );
+  }
+
+  // Check if guest is active (inactive guests cannot place new orders)
+  const today = new Date().toLocaleDateString("sv-SE", { timeZone: "Europe/Bucharest" });
+  const guests = migrateGuests(await kvGet<GuestProfile[]>("guests:registry", []));
+  const guest = guests.find(
+    (g) =>
+      g.stayStart <= today && g.stayEnd >= today && g.status !== "checked_out" &&
+      (g.loungerIds?.includes(umbrellaId) || g.loungerId === umbrellaId ||
+       g.members?.some((m) => m.phone === guestPhone) || g.phone === guestPhone)
+  );
+  if (guest && guest.status === "inactive") {
+    return NextResponse.json(
+      { success: false, error: "Contul este inactiv. Nu se pot plasa comenzi noi. Contactati receptia." },
+      { status: 403 }
     );
   }
 

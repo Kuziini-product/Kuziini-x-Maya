@@ -1,20 +1,19 @@
 import { NextResponse } from "next/server";
 import { kvGet, kvSet } from "@/lib/kv";
 import { generateId } from "@/lib/utils";
-import type { GuestProfile } from "@/types";
+import { migrateGuests } from "@/lib/migrate-guests";
+import { getGuestForLounger, todayRO } from "@/lib/lounger-utils";
+import type { GuestProfile, GuestMember } from "@/types";
 
 const KV_KEY = "guests:registry";
 
 async function getGuests(): Promise<GuestProfile[]> {
-  return kvGet<GuestProfile[]>(KV_KEY, []);
+  const raw = await kvGet<GuestProfile[]>(KV_KEY, []);
+  return migrateGuests(raw);
 }
 
 async function saveGuests(list: GuestProfile[]) {
   return kvSet(KV_KEY, list);
-}
-
-function todayRO(): string {
-  return new Date().toLocaleDateString("sv-SE", { timeZone: "Europe/Bucharest" });
 }
 
 export async function POST(req: Request) {
@@ -47,43 +46,55 @@ export async function POST(req: Request) {
           g.name.toLowerCase().includes(q) ||
           g.phone.includes(q) ||
           g.email.toLowerCase().includes(q) ||
-          g.loungerId.toLowerCase().includes(q)
+          g.loungerIds?.some((lid) => lid.toLowerCase().includes(q)) ||
+          g.loungerId.toLowerCase().includes(q) ||
+          g.members?.some((m) =>
+            m.name.toLowerCase().includes(q) || m.phone.includes(q) || m.email.toLowerCase().includes(q)
+          )
       );
       return NextResponse.json({ success: true, data: results });
     }
 
     // ── CREATE (Check-in) ──
     if (action === "create") {
-      const { name, phone, email, stayStart, stayEnd, loungerId, creditEnabled, creditLimit, notes } = body;
+      const { name, phone, email, stayStart, stayEnd, loungerId, loungerIds, members, creditEnabled, creditLimit, notes } = body;
       if (!name || !phone) {
         return NextResponse.json({ success: false, error: "Numele și telefonul sunt obligatorii." });
       }
-      // Check if lounger is already taken by an active guest today
       const today = todayRO();
-      const conflict = guests.find(
-        (g) =>
-          g.loungerId === loungerId &&
-          g.status !== "checked_out" &&
-          g.status !== "inactive" &&
-          g.stayStart <= today &&
-          g.stayEnd >= today
-      );
-      if (conflict) {
-        return NextResponse.json({
-          success: false,
-          error: `Sezlongul ${loungerId} este deja ocupat de ${conflict.name}.`,
-        });
+
+      // Build members array
+      const guestMembers: GuestMember[] = members && members.length > 0
+        ? members
+        : [{ phone, name, email: email || "" }];
+
+      // Build loungerIds array
+      const guestLoungerIds: string[] = loungerIds && loungerIds.length > 0
+        ? loungerIds.map((id: string) => id.trim().toUpperCase())
+        : loungerId ? [loungerId.trim().toUpperCase()] : [];
+
+      // Check conflicts for all loungers
+      for (const lid of guestLoungerIds) {
+        const conflict = getGuestForLounger(guests, lid, today);
+        if (conflict) {
+          return NextResponse.json({
+            success: false,
+            error: `Sezlongul ${lid} este deja ocupat de ${conflict.name}.`,
+          });
+        }
       }
 
       const now = new Date().toISOString();
       const guest: GuestProfile = {
         id: generateId(),
-        name,
-        phone,
-        email: email || "",
+        name: guestMembers[0].name,
+        phone: guestMembers[0].phone,
+        email: guestMembers[0].email,
+        members: guestMembers,
+        loungerIds: guestLoungerIds,
+        loungerId: guestLoungerIds[0] || "",
         stayStart: stayStart || today,
         stayEnd: stayEnd || today,
-        loungerId: loungerId || "",
         status: "registered",
         creditEnabled: creditEnabled || false,
         creditLimit: creditLimit || 0,
@@ -91,13 +102,13 @@ export async function POST(req: Request) {
         registeredAt: now,
         registeredBy: adminId,
         notes: notes || "",
-        loungerHistory: loungerId ? [{
+        loungerHistory: guestLoungerIds.map((lid) => ({
           date: today,
-          loungerId,
+          loungerId: lid,
           action: "assigned" as const,
           timestamp: now,
           by: adminId,
-        }] : [],
+        })),
       };
       guests.push(guest);
       await saveGuests(guests);
@@ -113,13 +124,113 @@ export async function POST(req: Request) {
       }
       const allowed: (keyof GuestProfile)[] = [
         "name", "phone", "email", "stayStart", "stayEnd",
-        "loungerId", "status", "creditEnabled", "creditLimit", "notes",
+        "loungerId", "loungerIds", "members", "status",
+        "creditEnabled", "creditLimit", "notes",
       ];
       for (const key of allowed) {
         if (updates[key] !== undefined) {
           (guests[idx] as unknown as Record<string, unknown>)[key] = updates[key];
         }
       }
+      // Sync backward compat fields
+      if (updates.members && updates.members.length > 0) {
+        guests[idx].phone = updates.members[0].phone;
+        guests[idx].name = updates.members[0].name;
+        guests[idx].email = updates.members[0].email;
+      }
+      if (updates.loungerIds && updates.loungerIds.length > 0) {
+        guests[idx].loungerId = updates.loungerIds[0];
+      }
+      await saveGuests(guests);
+      return NextResponse.json({ success: true, data: guests[idx] });
+    }
+
+    // ── ADD-MEMBER ──
+    if (action === "add-member") {
+      const { guestId, member } = body as { guestId: string; member: GuestMember };
+      if (!member?.phone) {
+        return NextResponse.json({ success: false, error: "Telefonul membrului este obligatoriu." });
+      }
+      const idx = guests.findIndex((g) => g.id === guestId);
+      if (idx === -1) {
+        return NextResponse.json({ success: false, error: "Oaspete negăsit." });
+      }
+      // Check phone uniqueness
+      const phoneExists = guests.some((g) =>
+        g.members?.some((m) => m.phone === member.phone)
+      );
+      if (phoneExists) {
+        return NextResponse.json({ success: false, error: `Telefonul ${member.phone} este deja inregistrat.` });
+      }
+      if (!guests[idx].members) guests[idx].members = [];
+      guests[idx].members.push(member);
+      await saveGuests(guests);
+      return NextResponse.json({ success: true, data: guests[idx] });
+    }
+
+    // ── REMOVE-MEMBER ──
+    if (action === "remove-member") {
+      const { guestId, phone: memberPhone } = body;
+      const idx = guests.findIndex((g) => g.id === guestId);
+      if (idx === -1) {
+        return NextResponse.json({ success: false, error: "Oaspete negăsit." });
+      }
+      if (!guests[idx].members || guests[idx].members.length <= 1) {
+        return NextResponse.json({ success: false, error: "Nu se poate sterge ultimul membru." });
+      }
+      if (guests[idx].members[0].phone === memberPhone) {
+        return NextResponse.json({ success: false, error: "Nu se poate sterge membrul principal." });
+      }
+      guests[idx].members = guests[idx].members.filter((m) => m.phone !== memberPhone);
+      await saveGuests(guests);
+      return NextResponse.json({ success: true, data: guests[idx] });
+    }
+
+    // ── ADD-LOUNGER ──
+    if (action === "add-lounger") {
+      const { guestId, loungerId: newLid } = body;
+      if (!newLid) {
+        return NextResponse.json({ success: false, error: "ID sezlong obligatoriu." });
+      }
+      const idx = guests.findIndex((g) => g.id === guestId);
+      if (idx === -1) {
+        return NextResponse.json({ success: false, error: "Oaspete negăsit." });
+      }
+      const lid = newLid.trim().toUpperCase();
+      const today = todayRO();
+      const conflict = getGuestForLounger(guests, lid, today);
+      if (conflict && conflict.id !== guestId) {
+        return NextResponse.json({ success: false, error: `Sezlongul ${lid} este ocupat de ${conflict.name}.` });
+      }
+      if (!guests[idx].loungerIds) guests[idx].loungerIds = [];
+      if (!guests[idx].loungerIds.includes(lid)) {
+        guests[idx].loungerIds.push(lid);
+        if (!guests[idx].loungerHistory) guests[idx].loungerHistory = [];
+        guests[idx].loungerHistory!.push({
+          date: today,
+          loungerId: lid,
+          action: "assigned",
+          timestamp: new Date().toISOString(),
+          by: adminId,
+        });
+      }
+      guests[idx].loungerId = guests[idx].loungerIds[0];
+      await saveGuests(guests);
+      return NextResponse.json({ success: true, data: guests[idx] });
+    }
+
+    // ── REMOVE-LOUNGER ──
+    if (action === "remove-lounger") {
+      const { guestId, loungerId: removeLid } = body;
+      const idx = guests.findIndex((g) => g.id === guestId);
+      if (idx === -1) {
+        return NextResponse.json({ success: false, error: "Oaspete negăsit." });
+      }
+      if (!guests[idx].loungerIds || guests[idx].loungerIds.length <= 1) {
+        return NextResponse.json({ success: false, error: "Trebuie sa ramana cel putin un sezlong." });
+      }
+      guests[idx].loungerIds = guests[idx].loungerIds.filter((l) => l !== removeLid);
+      guests[idx].loungerId = guests[idx].loungerIds[0];
       await saveGuests(guests);
       return NextResponse.json({ success: true, data: guests[idx] });
     }
@@ -141,34 +252,34 @@ export async function POST(req: Request) {
       const now = new Date().toISOString();
       const today = todayRO();
 
-      // Initialize history if not exists
       if (!guests[idx].loungerHistory) guests[idx].loungerHistory = [];
-
-      // Add history entries
       guests[idx].loungerHistory!.push({
-        date: today,
-        loungerId: oldLoungerId,
-        action: "relocated_from",
-        reason: reason.trim(),
-        timestamp: now,
-        by: adminId,
+        date: today, loungerId: oldLoungerId, action: "relocated_from",
+        reason: reason.trim(), timestamp: now, by: adminId,
       });
       guests[idx].loungerHistory!.push({
-        date: today,
-        loungerId: newLoungerId.trim().toUpperCase(),
-        action: "relocated_to",
-        reason: reason.trim(),
-        timestamp: now,
-        by: adminId,
+        date: today, loungerId: newLoungerId.trim().toUpperCase(), action: "relocated_to",
+        reason: reason.trim(), timestamp: now, by: adminId,
       });
 
-      // Update lounger
-      guests[idx].loungerId = newLoungerId.trim().toUpperCase();
+      // Update in loungerIds array
+      const newLid = newLoungerId.trim().toUpperCase();
+      if (guests[idx].loungerIds) {
+        const lidIdx = guests[idx].loungerIds.indexOf(oldLoungerId);
+        if (lidIdx !== -1) {
+          guests[idx].loungerIds[lidIdx] = newLid;
+        } else {
+          guests[idx].loungerIds.push(newLid);
+        }
+      } else {
+        guests[idx].loungerIds = [newLid];
+      }
+      guests[idx].loungerId = guests[idx].loungerIds[0];
       await saveGuests(guests);
       return NextResponse.json({ success: true, data: guests[idx] });
     }
 
-    // ── GET HISTORY (lounger history for a guest) ──
+    // ── HISTORY ──
     if (action === "history") {
       const { guestId } = body;
       const guest = guests.find((g) => g.id === guestId);

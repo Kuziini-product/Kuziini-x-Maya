@@ -19,6 +19,8 @@ import {
   MapPin,
 } from "lucide-react";
 import type { GuestProfile, DailyConfirmation } from "@/types";
+import GuestCardModal from "@/components/admin/GuestCardModal";
+import { getGuestForLounger as getGuestForLoungerUtil, suggestAdjacentLoungers, getOccupiedLoungers } from "@/lib/lounger-utils";
 
 interface LoungerConfig {
   id: string;
@@ -62,6 +64,7 @@ export default function LoungerGrid({ adminId }: Props) {
   const [ciNotes, setCiNotes] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [editingGuest, setEditingGuest] = useState<GuestProfile | null>(null);
 
   const fetchData = useCallback(async () => {
     try {
@@ -105,18 +108,19 @@ export default function LoungerGrid({ adminId }: Props) {
   const confirmedGuestIds = new Set(confirmations.map((c) => c.guestId));
 
   function getGuestForLounger(loungerId: string): GuestProfile | undefined {
-    return guests.find(
-      (g) =>
-        g.loungerId === loungerId &&
-        g.stayStart <= today &&
-        g.stayEnd >= today &&
-        g.status !== "checked_out"
-    );
+    return getGuestForLoungerUtil(guests, loungerId, today);
   }
 
   function getLoungerColor(loungerId: string): string {
     const guest = getGuestForLounger(loungerId);
     if (!guest) return "th-tab-inactive th-border th-text-muted";
+    // Highlight loungers belonging to the same guest card as the selected one
+    if (selected) {
+      const selectedG = getGuestForLounger(selected);
+      if (selectedG && selectedG.id === guest.id && loungerId !== selected && selectedG.loungerIds?.includes(loungerId)) {
+        return "bg-sky-400/15 border-sky-400/30 text-sky-400";
+      }
+    }
     if (guest.status === "active" && confirmedGuestIds.has(guest.id)) {
       return "bg-emerald-400/15 border-emerald-400/30 text-emerald-400";
     }
@@ -508,13 +512,19 @@ export default function LoungerGrid({ adminId }: Props) {
                     </div>
                   )}
 
-                  {/* Action button */}
+                  {/* Action buttons */}
                   <button
                     onClick={() => setPanelMode("relocate")}
                     className="w-full flex items-center justify-center gap-2 bg-[#C9AB81] text-[#0A0A0A] py-3 font-bold text-xs tracking-wider uppercase"
                   >
                     <ArrowRightLeft className="w-4 h-4" />
                     Reloca oaspetele
+                  </button>
+                  <button
+                    onClick={() => setEditingGuest(selectedGuest!)}
+                    className="w-full flex items-center justify-center gap-2 th-tab-inactive th-text-muted py-3 font-bold text-xs tracking-wider uppercase mt-2"
+                  >
+                    Editeaza card complet
                   </button>
                 </div>
               ) : (
@@ -714,6 +724,15 @@ export default function LoungerGrid({ adminId }: Props) {
             </div>
           )}
         </div>
+      )}
+
+      {editingGuest && (
+        <GuestCardModal
+          guest={editingGuest}
+          adminId={adminId}
+          onClose={() => setEditingGuest(null)}
+          onUpdated={(g) => { setEditingGuest(g); fetchData(); }}
+        />
       )}
     </div>
   );

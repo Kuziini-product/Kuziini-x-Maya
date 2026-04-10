@@ -188,6 +188,8 @@ export interface PaymentOptions {
   card: boolean;
   roomCharge: boolean;
   creditStatus?: CreditStatus;
+  canOrder: boolean;
+  canRequestBill: boolean;
 }
 
 // ─── API Responses ────────────────────────────────────────────────────────────
@@ -232,14 +234,22 @@ export interface AdminUser {
 
 export type GuestStatus = "registered" | "active" | "inactive" | "checked_out";
 
+export interface GuestMember {
+  phone: string;
+  name: string;
+  email: string;
+}
+
 export interface GuestProfile {
   id: string;
   name: string;
   phone: string;
   email: string;
+  members: GuestMember[];
+  loungerIds: string[];
+  loungerId: string;
   stayStart: string;
   stayEnd: string;
-  loungerId: string;
   status: GuestStatus;
   creditEnabled: boolean;
   creditLimit?: number;

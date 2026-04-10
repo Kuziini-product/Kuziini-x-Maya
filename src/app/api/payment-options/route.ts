@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { MOCK_CREDIT_STATUS } from "@/lib/mock-data";
 import { kvGet } from "@/lib/kv";
+import { migrateGuests } from "@/lib/migrate-guests";
 import { sleep } from "@/lib/utils";
 import type { GuestProfile } from "@/types";
 
@@ -18,38 +19,63 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ success: false, error: "umbrellaId obligatoriu." }, { status: 400 });
   }
 
-  // Check if there's a registered guest on this lounger with credit enabled
   const today = todayRO();
-  const guests = await kvGet<GuestProfile[]>("guests:registry", []);
-  const activeGuest = guests.find(
+  const guests = migrateGuests(await kvGet<GuestProfile[]>("guests:registry", []));
+
+  // Find guest by loungerIds or any member phone
+  const guest = guests.find(
     (g) =>
-      g.status === "active" &&
       g.stayStart <= today &&
       g.stayEnd >= today &&
-      (g.loungerId === umbrellaId || (phone && g.phone === phone))
+      g.status !== "checked_out" &&
+      (
+        g.loungerIds?.includes(umbrellaId) ||
+        g.loungerId === umbrellaId ||
+        (phone && g.members?.some((m) => m.phone === phone)) ||
+        (phone && g.phone === phone)
+      )
   );
 
-  if (activeGuest && activeGuest.creditEnabled) {
-    const limitAvailable = (activeGuest.creditLimit || 0) - (activeGuest.creditUsed || 0);
+  if (guest) {
+    const isActive = guest.status === "active";
+    const canOrder = isActive;
+    const canRequestBill = true; // always can request bill
+
+    if (guest.creditEnabled) {
+      const limitAvailable = (guest.creditLimit || 0) - (guest.creditUsed || 0);
+      return NextResponse.json({
+        success: true,
+        data: {
+          cash: true,
+          card: true,
+          roomCharge: true,
+          canOrder,
+          canRequestBill,
+          creditStatus: {
+            eligible: true,
+            guestName: guest.name,
+            limitTotal: guest.creditLimit || 0,
+            limitUsed: guest.creditUsed || 0,
+            limitAvailable,
+            currency: "RON",
+          },
+        },
+      });
+    }
+
     return NextResponse.json({
       success: true,
       data: {
         cash: true,
         card: true,
-        roomCharge: true,
-        creditStatus: {
-          eligible: true,
-          guestName: activeGuest.name,
-          limitTotal: activeGuest.creditLimit || 0,
-          limitUsed: activeGuest.creditUsed || 0,
-          limitAvailable,
-          currency: "RON",
-        },
+        roomCharge: false,
+        canOrder,
+        canRequestBill,
       },
     });
   }
 
-  // Fallback to mock credit status or no credit
+  // Fallback - no registered guest found
   return NextResponse.json({
     success: true,
     data: {
@@ -57,7 +83,8 @@ export async function GET(req: NextRequest) {
       card: true,
       roomCharge: MOCK_CREDIT_STATUS.eligible,
       creditStatus: MOCK_CREDIT_STATUS,
+      canOrder: true,
+      canRequestBill: true,
     },
   });
 }
-

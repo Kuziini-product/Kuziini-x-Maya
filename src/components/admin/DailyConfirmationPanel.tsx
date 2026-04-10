@@ -9,6 +9,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import type { GuestProfile } from "@/types";
+import GuestCardModal from "@/components/admin/GuestCardModal";
 
 interface Props {
   adminId: string;
@@ -21,6 +22,7 @@ export default function DailyConfirmationPanel({ adminId }: Props) {
   const [confirming, setConfirming] = useState<string | null>(null);
   const [deactivating, setDeactivating] = useState(false);
   const [manualLounger, setManualLounger] = useState<Record<string, string>>({});
+  const [editingGuest, setEditingGuest] = useState<GuestProfile | null>(null);
 
   const fetchStatus = useCallback(async () => {
     try {
@@ -121,9 +123,9 @@ export default function DailyConfirmationPanel({ adminId }: Props) {
               >
                 <div className="flex items-center justify-between mb-2">
                   <div>
-                    <p className="th-text text-sm font-medium">{g.name}</p>
+                    <button onClick={() => setEditingGuest(g)} className="th-text text-sm font-medium underline">{g.name}</button>
                     <p className="th-text-muted text-xs">
-                      {g.phone} · Sezlong: {g.loungerId || "—"}
+                      {g.phone} · Sezlong: {(g.loungerIds || [g.loungerId]).join(", ") || "—"}
                     </p>
                   </div>
                 </div>
@@ -175,9 +177,9 @@ export default function DailyConfirmationPanel({ adminId }: Props) {
                 className="bg-emerald-400/5 border border-emerald-400/10 px-3 py-2 flex items-center justify-between"
               >
                 <div>
-                  <p className="th-text text-sm">{g.name}</p>
+                  <button onClick={() => setEditingGuest(g)} className="th-text text-sm font-medium underline">{g.name}</button>
                   <p className="th-text-muted text-xs">
-                    Sezlong: {g.loungerId} · {g.phone}
+                    Sezlong: {(g.loungerIds || [g.loungerId]).join(", ") || "—"} · {g.phone}
                   </p>
                 </div>
                 <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
@@ -203,6 +205,14 @@ export default function DailyConfirmationPanel({ adminId }: Props) {
           <AlertTriangle className="w-4 h-4" />
           {deactivating ? "Se dezactiveaza..." : "Dezactiveaza toti (final de zi)"}
         </button>
+      )}
+      {editingGuest && (
+        <GuestCardModal
+          guest={editingGuest}
+          adminId={adminId}
+          onClose={() => setEditingGuest(null)}
+          onUpdated={(g) => { setEditingGuest(g); fetchStatus(); }}
+        />
       )}
     </div>
   );

@@ -39,6 +39,8 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
   const [creditEnabled, setCreditEnabled] = useState(false);
   const [creditLimit, setCreditLimit] = useState(500);
   const [notes, setNotes] = useState("");
+  const [extraMembers, setExtraMembers] = useState<{phone: string; name: string; email: string}[]>([]);
+  const [loungerCount, setLoungerCount] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<GuestProfile | null>(null);
@@ -100,6 +102,18 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
     setLoading(true);
     setError(null);
     try {
+      const allMembers = [
+        { phone: phone.trim(), name: name.trim(), email: email.trim() },
+        ...extraMembers.filter(m => m.phone.trim()),
+      ];
+      const mainLounger = loungerId.trim().toUpperCase();
+      const selectedLoungerIds = mainLounger ? [mainLounger] : [];
+      // If more lounger slots requested, add placeholder IDs for adjacent assignment
+      if (loungerCount > 1 && mainLounger) {
+        for (let i = 1; i < loungerCount; i++) {
+          selectedLoungerIds.push(`${mainLounger}+${i}`);
+        }
+      }
       const res = await fetch("/api/admin/guests", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -111,10 +125,12 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
           email: email.trim(),
           stayStart,
           stayEnd,
-          loungerId: loungerId.trim().toUpperCase(),
+          loungerId: mainLounger,
           creditEnabled,
           creditLimit: creditEnabled ? creditLimit : 0,
           notes: notes.trim(),
+          members: allMembers,
+          loungerIds: selectedLoungerIds,
         }),
       });
       const json = await res.json();
@@ -149,6 +165,8 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
     setLoungerId("");
     setCreditEnabled(false);
     setNotes("");
+    setExtraMembers([]);
+    setLoungerCount(1);
     setSuccess(null);
     setError(null);
   }
@@ -239,6 +257,62 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
           </div>
         </div>
 
+        {/* Extra members */}
+        <div>
+          <label className={labelCls}>Membri aditionali</label>
+          {extraMembers.map((m, i) => (
+            <div key={i} className="grid grid-cols-[1fr_1fr_1fr_auto] gap-2 mb-2">
+              <input
+                type="tel"
+                value={m.phone}
+                onChange={(e) => {
+                  const arr = [...extraMembers];
+                  arr[i] = { ...arr[i], phone: e.target.value };
+                  setExtraMembers(arr);
+                }}
+                className={inputCls}
+                placeholder="Telefon"
+              />
+              <input
+                type="text"
+                value={m.name}
+                onChange={(e) => {
+                  const arr = [...extraMembers];
+                  arr[i] = { ...arr[i], name: e.target.value };
+                  setExtraMembers(arr);
+                }}
+                className={inputCls}
+                placeholder="Nume"
+              />
+              <input
+                type="email"
+                value={m.email}
+                onChange={(e) => {
+                  const arr = [...extraMembers];
+                  arr[i] = { ...arr[i], email: e.target.value };
+                  setExtraMembers(arr);
+                }}
+                className={inputCls}
+                placeholder="Email"
+              />
+              <button
+                type="button"
+                onClick={() => setExtraMembers(extraMembers.filter((_, j) => j !== i))}
+                className="th-text-muted px-2"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={() => setExtraMembers([...extraMembers, { phone: "", name: "", email: "" }])}
+            className="text-[#C9AB81] text-xs font-bold tracking-wider uppercase"
+          >
+            + Adauga membru
+          </button>
+        </div>
+
         {/* Stay period */}
         <div className="grid grid-cols-2 gap-3">
           <div>
@@ -295,6 +369,17 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
               Selectat: {loungerId.toUpperCase()}
             </p>
           )}
+          <div className="mt-2">
+            <label className={labelCls}>Cate locuri?</label>
+            <input
+              type="number"
+              value={loungerCount}
+              onChange={(e) => setLoungerCount(Math.max(1, Math.min(10, Number(e.target.value))))}
+              min={1}
+              max={10}
+              className={`${inputCls} w-24`}
+            />
+          </div>
         </div>
 
         {/* Credit toggle */}

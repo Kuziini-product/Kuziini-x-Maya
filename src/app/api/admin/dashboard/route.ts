@@ -1,11 +1,9 @@
 import { NextResponse } from "next/server";
 import { kvGet } from "@/lib/kv";
 import { ALL_UMBRELLAS } from "@/lib/umbrella-config";
+import { migrateGuests } from "@/lib/migrate-guests";
+import { getOccupiedLoungers, todayRO } from "@/lib/lounger-utils";
 import type { GuestProfile, DailyConfirmation, DashboardStats } from "@/types";
-
-function todayRO(): string {
-  return new Date().toLocaleDateString("sv-SE", { timeZone: "Europe/Bucharest" });
-}
 
 export async function POST(req: Request) {
   try {
@@ -17,7 +15,7 @@ export async function POST(req: Request) {
     }
 
     const today = todayRO();
-    const guests = await kvGet<GuestProfile[]>("guests:registry", []);
+    const guests = migrateGuests(await kvGet<GuestProfile[]>("guests:registry", []));
     const confirmations = await kvGet<DailyConfirmation[]>(`guests:daily:${today}`, []);
 
     // Lounger config - 400 umbrellas from master config
@@ -28,7 +26,7 @@ export async function POST(req: Request) {
     );
     const activeGuests = todayGuests.filter((g) => g.status === "active");
     const confirmedIds = new Set(confirmations.map((c) => c.guestId));
-    const occupiedLoungers = new Set(activeGuests.map((g) => g.loungerId));
+    const occupiedLoungers = getOccupiedLoungers(activeGuests, today);
 
     // Pending orders count (from KV when real order system is integrated)
     const pendingOrders = 0;

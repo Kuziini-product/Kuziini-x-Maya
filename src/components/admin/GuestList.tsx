@@ -14,6 +14,7 @@ import {
   Umbrella,
 } from "lucide-react";
 import type { GuestProfile, GuestStatus } from "@/types";
+import GuestCardModal from "@/components/admin/GuestCardModal";
 
 interface Props {
   adminId: string;
@@ -28,6 +29,7 @@ export default function GuestList({ adminId }: Props) {
   const [filter, setFilter] = useState<Filter>("all");
   const [expanded, setExpanded] = useState<string | null>(null);
   const [updating, setUpdating] = useState<string | null>(null);
+  const [editingGuest, setEditingGuest] = useState<GuestProfile | null>(null);
 
   const fetchGuests = useCallback(async () => {
     try {
@@ -54,7 +56,9 @@ export default function GuestList({ adminId }: Props) {
       if (
         !g.name.toLowerCase().includes(q) &&
         !g.phone.includes(q) &&
-        !g.loungerId.toLowerCase().includes(q)
+        !g.loungerId.toLowerCase().includes(q) &&
+        !g.members?.some(m => m.name.toLowerCase().includes(q) || m.phone.includes(q)) &&
+        !g.loungerIds?.some(lid => lid.toLowerCase().includes(q))
       )
         return false;
     }
@@ -200,6 +204,8 @@ export default function GuestList({ adminId }: Props) {
                   {g.creditEnabled && (
                     <CreditCard className="w-3.5 h-3.5 text-purple-400" />
                   )}
+                  {(g.members?.length || 1) > 1 && <span className="text-[10px] th-text-faint">{g.members?.length} pers</span>}
+                  {(g.loungerIds?.length || 1) > 1 && <span className="text-[10px] th-text-faint">{g.loungerIds?.length} loc</span>}
                   {statusBadge(g.status)}
                   {expanded === g.id ? (
                     <ChevronUp className="w-4 h-4 th-text-muted" />
@@ -223,7 +229,7 @@ export default function GuestList({ adminId }: Props) {
                       <Calendar className="w-3 h-3" /> {g.stayStart} → {g.stayEnd}
                     </div>
                     <div className="flex items-center gap-1.5 th-text-secondary">
-                      <Umbrella className="w-3 h-3" /> {g.loungerId || "neatribuit"}
+                      <Umbrella className="w-3 h-3" /> {(g.loungerIds || [g.loungerId]).join(", ") || "neatribuit"}
                     </div>
                   </div>
 
@@ -266,6 +272,13 @@ export default function GuestList({ adminId }: Props) {
                       Credit: {g.creditEnabled ? "ON" : "OFF"}
                     </button>
 
+                    <button
+                      onClick={() => setEditingGuest(g)}
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2 text-[10px] font-bold tracking-wider uppercase bg-[#C9AB81]/10 border border-[#C9AB81]/20 text-[#C9AB81]"
+                    >
+                      Edit card
+                    </button>
+
                     {g.status !== "checked_out" && (
                       <button
                         onClick={() => checkout(g.id)}
@@ -282,6 +295,15 @@ export default function GuestList({ adminId }: Props) {
             </div>
           ))}
         </div>
+      )}
+
+      {editingGuest && (
+        <GuestCardModal
+          guest={editingGuest}
+          adminId={adminId}
+          onClose={() => setEditingGuest(null)}
+          onUpdated={(g) => { setEditingGuest(g); fetchGuests(); }}
+        />
       )}
     </div>
   );
