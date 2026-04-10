@@ -133,8 +133,8 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
   if (step === "done") {
     return (
       <div className="min-h-dvh bg-[#0A0A0A] flex flex-col items-center justify-center px-6 text-center">
-        <div className="text-8xl mb-6 animate-bounce">
-          🧑‍🍳
+        <div className="text-7xl mb-6 animate-bounce">
+          🏃‍♂️💨🧾
         </div>
         <h2 className="text-2xl font-bold text-white mb-3 tracking-wide">
           Nota ta a fost transmisă!
