@@ -20,6 +20,7 @@ export function BottomNav({ umbrellaId }: BottomNavProps) {
 
   const itemCount = useCartStore((s) => s.itemCount());
   const items = useCartStore((s) => s.items);
+  const cartTotal = useCartStore((s) => s.total());
   const clearCart = useCartStore((s) => s.clearCart);
   const { userSession } = useSessionStore();
   const addOrder = useSessionStore((s) => s.addOrder);
@@ -110,7 +111,7 @@ export function BottomNav({ umbrellaId }: BottomNavProps) {
     actionIcon = <UtensilsCrossed className="w-4 h-4" />;
     actionStyle = "bg-[#C9AB81] text-[#0A0A0A]";
   } else if (isOnCart && itemCount > 0) {
-    actionLabel = ordering ? "Se trimite..." : "Plasează comanda";
+    actionLabel = ordering ? "Se trimite..." : `Plasează · ${cartTotal} RON`;
     actionIcon = <ShoppingBag className="w-4 h-4" />;
     actionStyle = "bg-emerald-500 text-white";
   } else if (itemCount > 0) {

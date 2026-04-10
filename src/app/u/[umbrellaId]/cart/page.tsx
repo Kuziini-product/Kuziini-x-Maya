@@ -68,9 +68,6 @@ export default function CartPage({ params }: { params: { umbrellaId: string } })
           }
           right={
             <div className="flex items-center gap-2">
-              <span className="text-[10px] text-white font-bold tracking-[0.15em] uppercase border border-white/20 bg-white/[0.06] px-3 py-1.5">
-                Coș ({items.length})
-              </span>
               <Link href={`/u/${umbrellaId}/menu`} className="text-[10px] text-[#C9AB81] font-bold tracking-[0.15em] uppercase border border-[#C9AB81]/30 px-3 py-1.5 active:bg-[#C9AB81]/10 transition-colors">
                 Continuă
               </Link>
