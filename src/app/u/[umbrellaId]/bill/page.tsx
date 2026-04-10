@@ -136,7 +136,7 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
     return (
       <div className="min-h-dvh bg-gradient-to-b from-white via-white/10 to-[#0A0A0A] flex flex-col items-center justify-center px-6 text-center relative">
         {/* Maya logo visible at top */}
-        <img src="/Maya.png" alt="Maya" className="absolute top-6 left-1/2 -translate-x-1/2 h-32 object-contain pointer-events-none" />
+        <img src="/Maya.png" alt="Maya" className="absolute top-6 left-1/2 -translate-x-1/2 h-64 object-contain pointer-events-none" />
         <div className="flex items-center justify-center gap-1 mb-6 animate-bounce relative z-10">
           {selectedMethod === "cash" && (
             <>
