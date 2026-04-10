@@ -24,9 +24,7 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
   const { userSession, orders, clearSession, addClosedBill } = useSessionStore();
   const clearCart = useCartStore((s) => s.clearCart);
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethod | null>(null);
-  const [confirming, setConfirming] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [done, setDone] = useState(false);
+  const [step, setStep] = useState<"select" | "confirm" | "sending" | "done">("select");
   const [error, setError] = useState<string | null>(null);
 
   const { data: payOpts, isLoading: loadingOpts } = useQuery({
@@ -40,9 +38,14 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
   );
   const total = myOrders.reduce((s, o) => s + o.total, 0);
 
-  async function handleClose() {
+  function handleSelectMethod(method: PaymentMethod) {
+    setSelectedMethod(method);
+    setStep("confirm");
+  }
+
+  async function handleConfirm() {
     if (!selectedMethod || !userSession) return;
-    setLoading(true);
+    setStep("sending");
     setError(null);
     try {
       const res = await fetch("/api/bill/request", {
@@ -57,7 +60,6 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
       });
       const json = await res.json();
       if (!json.success) throw new Error(json.error);
-      // Save closed bill to history before clearing session
       addClosedBill({
         id: `bill-${Date.now()}`,
         umbrellaId,
@@ -66,45 +68,103 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
         paymentMethod: selectedMethod!,
         closedAt: new Date().toISOString(),
       });
-      // Auto-logout: clear session + cart, then show success
       clearCart();
       clearSession();
-      setDone(true);
+      setStep("done");
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Eroare la trimiterea notei.");
-    } finally {
-      setLoading(false);
+      setStep("confirm");
     }
   }
 
-  if (done) {
+  // Confirmation step — "Ai selectat plata Cash/Card"
+  if (step === "confirm" && selectedMethod) {
+    const methodLabel = selectedMethod === "cash" ? "Cash" : selectedMethod === "card" ? "Card" : "Room Charge";
+    const methodIcon = selectedMethod === "cash" ? <Banknote className="w-8 h-8" /> : selectedMethod === "card" ? <CreditCard className="w-8 h-8" /> : <Hotel className="w-8 h-8" />;
     return (
       <div className="min-h-dvh bg-[#0A0A0A] flex flex-col items-center justify-center px-6 text-center">
-        <div className="w-20 h-20 flex items-center justify-center mb-6 bg-emerald-500/20 border border-emerald-500/30">
-          <CheckCircle2 className="w-10 h-10 text-emerald-400" />
+        <div className="w-20 h-20 flex items-center justify-center mb-6 bg-[#C9AB81]/20 border border-[#C9AB81]/30 text-[#C9AB81]">
+          {methodIcon}
         </div>
-        <h2 className="text-3xl font-bold text-white mb-3 tracking-wide">
-          Nota a fost încasată!
+        <h2 className="text-2xl font-bold text-white mb-3 tracking-wide">
+          Ai selectat plata {methodLabel}
         </h2>
-        <p className="text-white/40 text-sm mb-4">
-          {selectedMethod === "room-charge"
-            ? `Suma de ${formatPrice(total)} a fost adăugată la camera ta.`
-            : `Total plătit: ${formatPrice(total)} · ${selectedMethod === "cash" ? "Cash" : "Card"}`}
+        <p className="text-white/40 text-sm mb-2">
+          Total: <span className="text-[#C9AB81] font-bold">{formatPrice(total)}</span>
         </p>
-        <div className="bg-emerald-500/10 border border-emerald-500/20 px-5 py-4 mb-2">
-          <p className="text-emerald-400 text-sm font-bold tracking-wide mb-1">
-            Plata a fost confirmată
-          </p>
-          <p className="text-white/30 text-xs">
-            Umbrela {umbrellaId} · Sesiunea se va închide automat
-          </p>
+        <p className="text-white/40 text-sm mb-8">
+          Umbrela {umbrellaId}
+        </p>
+
+        {error && (
+          <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/20 px-4 py-3 text-red-400 text-sm mb-4">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            {error}
+          </div>
+        )}
+
+        <button
+          onClick={handleConfirm}
+          className="w-full max-w-xs bg-emerald-500 text-white py-4 font-bold text-sm tracking-[0.15em] uppercase active:opacity-80 transition-opacity mb-3"
+        >
+          Confirmă și trimite nota
+        </button>
+        <button
+          onClick={() => { setStep("select"); setSelectedMethod(null); }}
+          className="text-white/40 text-xs font-bold tracking-wider uppercase py-2"
+        >
+          Schimbă metoda de plată
+        </button>
+      </div>
+    );
+  }
+
+  // Sending step
+  if (step === "sending") {
+    return (
+      <div className="min-h-dvh bg-[#0A0A0A] flex flex-col items-center justify-center px-6 text-center">
+        <Spinner className="text-[#C9AB81] mb-6" />
+        <p className="text-white/40 text-sm">Se trimite nota...</p>
+      </div>
+    );
+  }
+
+  // Done — waiter animation
+  if (step === "done") {
+    return (
+      <div className="min-h-dvh bg-[#0A0A0A] flex flex-col items-center justify-center px-6 text-center">
+        <div className="text-8xl mb-6 animate-bounce">
+          🧑‍🍳
+        </div>
+        <h2 className="text-2xl font-bold text-white mb-3 tracking-wide">
+          Nota ta a fost transmisă!
+        </h2>
+        <p className="text-white/50 text-sm mb-6">
+          Un ospătar vine spre tine cu nota.
+        </p>
+        <div className="bg-white/[0.03] border border-white/[0.06] px-6 py-4 mb-8 w-full max-w-xs">
+          <p className="text-white/30 text-[10px] font-bold tracking-[0.2em] uppercase mb-2">Detalii</p>
+          <div className="flex justify-between text-sm mb-1">
+            <span className="text-white/40">Total</span>
+            <span className="text-[#C9AB81] font-bold">{formatPrice(total)}</span>
+          </div>
+          <div className="flex justify-between text-sm mb-1">
+            <span className="text-white/40">Plată</span>
+            <span className="text-white font-bold">
+              {selectedMethod === "cash" ? "Cash" : selectedMethod === "card" ? "Card" : "Room Charge"}
+            </span>
+          </div>
+          <div className="flex justify-between text-sm">
+            <span className="text-white/40">Umbrela</span>
+            <span className="text-white font-bold">{umbrellaId}</span>
+          </div>
         </div>
         <p className="text-white/30 text-sm mb-8">
-          Mulțumim că ai ales Maya
+          Mulțumim că ai ales Maya ✨
         </p>
         <button
           onClick={() => router.push("/")}
-          className="bg-[#C9AB81] text-[#0A0A0A] px-6 py-3 font-bold text-sm tracking-[0.1em] uppercase"
+          className="bg-[#C9AB81] text-[#0A0A0A] px-8 py-3 font-bold text-sm tracking-[0.15em] uppercase active:opacity-80"
         >
           Înapoi la pagina principală
         </button>
@@ -188,38 +248,16 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
               <PaymentOption
                 icon={<Banknote className="w-5 h-5" />}
                 label="Cash"
-                description="Plată în numerar la livrare"
-                value="cash"
-                selected={selectedMethod === "cash"}
-                confirming={selectedMethod === "cash" && confirming}
-                loading={selectedMethod === "cash" && loading}
+                description="Plată în numerar"
                 available={payOpts?.cash ?? true}
-                onSelect={() => {
-                  if (selectedMethod === "cash" && confirming) {
-                    handleClose();
-                  } else {
-                    setSelectedMethod("cash");
-                    setConfirming(true);
-                  }
-                }}
+                onSelect={() => handleSelectMethod("cash")}
               />
               <PaymentOption
                 icon={<CreditCard className="w-5 h-5" />}
                 label="Card"
                 description="Visa, Mastercard, contactless"
-                value="card"
-                selected={selectedMethod === "card"}
-                confirming={selectedMethod === "card" && confirming}
-                loading={selectedMethod === "card" && loading}
                 available={payOpts?.card ?? true}
-                onSelect={() => {
-                  if (selectedMethod === "card" && confirming) {
-                    handleClose();
-                  } else {
-                    setSelectedMethod("card");
-                    setConfirming(true);
-                  }
-                }}
+                onSelect={() => handleSelectMethod("card")}
               />
               <PaymentOption
                 icon={<Hotel className="w-5 h-5" />}
@@ -229,10 +267,6 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
                     ? `Camera ${payOpts.creditStatus.roomNumber} · Disponibil: ${formatPrice(payOpts.creditStatus.limitAvailable)}`
                     : "Adaugă pe cameră"
                 }
-                value="room-charge"
-                selected={selectedMethod === "room-charge"}
-                confirming={selectedMethod === "room-charge" && confirming}
-                loading={selectedMethod === "room-charge" && loading}
                 available={payOpts?.roomCharge ?? false}
                 disabled={
                   !payOpts?.roomCharge ||
@@ -240,19 +274,12 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
                 }
                 disabledReason={
                   !payOpts?.roomCharge
-                    ? "Room charge indisponibil pentru această sesiune"
+                    ? "Room charge indisponibil"
                     : payOpts.creditStatus && total > payOpts.creditStatus.limitAvailable
                     ? `Limită depășită. Disponibil: ${formatPrice(payOpts.creditStatus.limitAvailable)}`
                     : undefined
                 }
-                onSelect={() => {
-                  if (selectedMethod === "room-charge" && confirming) {
-                    handleClose();
-                  } else {
-                    setSelectedMethod("room-charge");
-                    setConfirming(true);
-                  }
-                }}
+                onSelect={() => handleSelectMethod("room-charge")}
               />
             </div>
           )}
@@ -299,68 +326,37 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
 }
 
 function PaymentOption({
-  icon, label, description, selected, available, confirming, loading: isLoading, disabled, disabledReason, onSelect,
+  icon, label, description, available, disabled, disabledReason, onSelect,
 }: {
   icon: React.ReactNode;
   label: string;
   description: string;
-  value: PaymentMethod;
-  selected: boolean;
   available: boolean;
-  confirming?: boolean;
-  loading?: boolean;
   disabled?: boolean;
   disabledReason?: string;
   onSelect: () => void;
 }) {
-  const isDisabled = (disabled || !available) && !confirming;
-  const isConfirming = selected && confirming;
+  const isDisabled = disabled || !available;
 
   return (
     <div>
       <button
-        disabled={isDisabled || isLoading}
+        disabled={isDisabled}
         onClick={onSelect}
         className={cn(
-          "w-full flex items-center gap-4 p-4 border transition-all text-left",
-          isConfirming
-            ? "border-emerald-500 bg-emerald-500/15 animate-pulse-subtle"
-            : selected
-            ? "border-[#C9AB81] bg-[#C9AB81]/10"
-            : "border-white/[0.06] bg-white/[0.03]",
+          "w-full flex items-center gap-4 p-4 border transition-all text-left active:bg-white/[0.06]",
+          "border-white/[0.06] bg-white/[0.03]",
           isDisabled && "opacity-50 cursor-not-allowed"
         )}
       >
-        <div className={cn(
-          "w-11 h-11 flex items-center justify-center transition-colors",
-          isConfirming
-            ? "bg-emerald-500 text-white"
-            : selected
-            ? "bg-[#C9AB81] text-[#0A0A0A]"
-            : "bg-white/10 text-white/50"
-        )}>
-          {isLoading ? <Spinner /> : icon}
+        <div className="w-11 h-11 flex items-center justify-center bg-white/10 text-white/50">
+          {icon}
         </div>
         <div className="flex-1 min-w-0">
-          {isConfirming ? (
-            <>
-              <p className="font-bold text-emerald-400 text-sm tracking-wide">
-                Confirmă plata cu {label}?
-              </p>
-              <p className="text-xs text-emerald-400/60">
-                Apasă din nou pentru a confirma
-              </p>
-            </>
-          ) : (
-            <>
-              <p className="font-bold text-white text-sm tracking-wide">{label}</p>
-              <p className="text-xs text-white/30 truncate">{description}</p>
-            </>
-          )}
+          <p className="font-bold text-white text-sm tracking-wide">{label}</p>
+          <p className="text-xs text-white/30 truncate">{description}</p>
         </div>
-        {isConfirming && <CheckCircle2 className="w-6 h-6 text-emerald-400 shrink-0" />}
-        {selected && !isConfirming && <CheckCircle2 className="w-5 h-5 text-[#C9AB81] shrink-0" />}
-        {!selected && !isDisabled && <ChevronRight className="w-4 h-4 text-white/20 shrink-0" />}
+        {!isDisabled && <ChevronRight className="w-4 h-4 text-white/20 shrink-0" />}
       </button>
       {isDisabled && disabledReason && (
         <p className="text-xs text-red-400 mt-1 px-2">{disabledReason}</p>
