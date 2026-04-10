@@ -138,23 +138,18 @@ export function BottomNav({ umbrellaId }: BottomNavProps) {
             )}
           </button>
 
-          {/* Menu link */}
+          {/* Menu / Continue button */}
           <Link
             href={`${base}/menu`}
             className={cn(
-              "flex items-center gap-1.5 px-3 py-2 transition-all duration-200 shrink-0",
-              isOnMenu
-                ? "text-[#C9AB81]"
-                : "text-white/30 active:text-white/50"
+              "flex-1 flex items-center justify-center gap-2 py-2.5 font-bold text-xs tracking-wider uppercase transition-all active:opacity-80",
+              isOnCart
+                ? "bg-white/10 text-white/60"
+                : "bg-white/[0.06] text-white/40"
             )}
           >
-            <UtensilsCrossed
-              className={cn("w-4 h-4 transition-all", isOnMenu && "scale-110")}
-              strokeWidth={isOnMenu ? 2.2 : 1.8}
-            />
-            <span className="text-[9px] font-bold tracking-wider uppercase">
-              Meniu
-            </span>
+            <UtensilsCrossed className="w-4 h-4" strokeWidth={1.8} />
+            {isOnCart ? "Continuă" : "Meniu"}
           </Link>
 
           {/* Dynamic action button */}
