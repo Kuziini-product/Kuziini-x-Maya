@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Lock, Users, ShoppingBag, Receipt, DollarSign, RefreshCw, Umbrella, ImageIcon, LayoutGrid, FileText, Eye, Trash2, Heart, BarChart3, ArrowUpDown, ExternalLink, Bell, ChevronRight, ArrowLeft, Clock, Smartphone, Monitor, Volume2, VolumeX, UserPlus, CalendarCheck, Map, Shield } from "lucide-react";
+import { Lock, Users, ShoppingBag, Receipt, DollarSign, RefreshCw, Umbrella, ImageIcon, LayoutGrid, FileText, Eye, Trash2, Heart, BarChart3, ArrowUpDown, ExternalLink, Bell, ChevronRight, ArrowLeft, Clock, Smartphone, Monitor, Volume2, VolumeX, UserPlus, CalendarCheck, Map, Shield, Palette } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
 import type { PromoBanner } from "@/types";
 import type { GalleryImage, GalleryAspect, LibraryPhoto } from "@/lib/mock-data";
+import { type AdminTheme, THEME_LABELS, getSavedTheme, saveTheme } from "@/lib/admin-theme";
 import BannerManager from "@/components/BannerManager";
 import GalleryManager from "@/components/GalleryManager";
 import SectionHelp from "@/components/SectionHelp";
@@ -278,6 +279,15 @@ export default function AdminPage() {
   const [selectedAccessUser, setSelectedAccessUser] = useState<AccessUser | null>(null);
   const [galleryStats, setGalleryStats] = useState<GalleryStatsData | null>(null);
   const [mayaAdminId, setMayaAdminId] = useState<string | null>(null);
+  const [theme, setThemeState] = useState<AdminTheme>("dark");
+
+  useEffect(() => { setThemeState(getSavedTheme()); }, []);
+  function cycleTheme() {
+    const order: AdminTheme[] = ["dark", "light", "gold"];
+    const next = order[(order.indexOf(theme) + 1) % order.length];
+    setThemeState(next);
+    saveTheme(next);
+  }
   const [selectedGalleryUser, setSelectedGalleryUser] = useState<GalleryUserStat | null>(null);
   const [onlineCount, setOnlineCount] = useState(0);
   const [onlinePhones, setOnlinePhones] = useState<Set<string>>(new Set());
@@ -558,14 +568,14 @@ export default function AdminPage() {
 
   if (!authenticated) {
     return (
-      <div className="min-h-dvh bg-white flex items-center justify-center px-6">
+      <div className="min-h-dvh flex items-center justify-center px-6" data-theme={theme}>
         <div className="w-full max-w-sm">
           <div className="text-center mb-8">
             <div className="w-16 h-16 bg-[#C9AB81]/20 border border-[#C9AB81]/30 flex items-center justify-center mx-auto mb-4">
               <Lock className="w-8 h-8 text-[#C9AB81]" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 tracking-wide">Kuziini</h1>
-            <p className="text-gray-600 text-xs mt-1">Kuziini × Maya</p>
+            <h1 className="text-2xl font-bold th-text tracking-wide">Kuziini</h1>
+            <p className="th-text-muted text-xs mt-1">Kuziini × Maya</p>
           </div>
 
           <div className="space-y-4">
@@ -573,14 +583,14 @@ export default function AdminPage() {
               <label className="text-[10px] font-bold text-[#C9AB81] uppercase tracking-[0.2em] mb-2 block">
                 Parolă
               </label>
-              <div className="flex items-center gap-3 bg-gray-50 border border-gray-200 px-4 py-3 focus-within:border-[#C9AB81]/50 transition-colors">
-                <Lock className="w-4 h-4 text-gray-600 shrink-0" />
+              <div className="flex items-center gap-3 bg-gray-50 border th-border px-4 py-3 focus-within:border-[#C9AB81]/50 transition-colors">
+                <Lock className="w-4 h-4 th-text-muted shrink-0" />
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-                  className="flex-1 bg-transparent outline-none text-gray-900 text-sm placeholder:text-gray-400"
+                  className="flex-1 bg-transparent outline-none th-text text-sm placeholder:text-gray-400"
                   placeholder="Introdu parola"
                   autoFocus
                 />
@@ -625,9 +635,9 @@ export default function AdminPage() {
   ];
 
   return (
-    <div className="min-h-dvh bg-white text-gray-900">
+    <div className="min-h-dvh" data-theme={theme}>
       {/* Header */}
-      <div className="bg-white backdrop-blur-md border-b border-gray-200 px-4 py-4 sticky top-0 z-10">
+      <div className="th-header backdrop-blur-md border-b px-4 py-4 sticky top-0 z-10">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-lg font-bold tracking-wide">Kuziini Panel</h1>
@@ -665,7 +675,7 @@ export default function AdminPage() {
                   } catch {}
                 }
               }}
-              className={`w-9 h-9 flex items-center justify-center transition-colors ${soundEnabled ? "bg-emerald-500/20 text-emerald-400" : "bg-gray-200 text-gray-600"}`}
+              className={`w-9 h-9 flex items-center justify-center transition-colors ${soundEnabled ? "bg-emerald-500/20 text-emerald-400" : "bg-gray-200 th-text-muted"}`}
               title={soundEnabled ? "Sunet activat" : "Sunet dezactivat"}
             >
               {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
@@ -686,18 +696,25 @@ export default function AdminPage() {
               Live App
             </a>
             <button
+              onClick={cycleTheme}
+              className="h-9 flex items-center gap-1 px-2 bg-[#C9AB81]/20 border border-[#C9AB81]/30 text-[#C9AB81] text-[10px] font-bold tracking-wider uppercase"
+              title={`Tema: ${THEME_LABELS[theme]}`}
+            >
+              <Palette className="w-3.5 h-3.5" />
+            </button>
+            <button
               onClick={() => fetchData()}
               disabled={loading}
-              className="w-9 h-9 flex items-center justify-center bg-gray-200 active:bg-white/20 transition-colors"
+              className="w-9 h-9 flex items-center justify-center th-tab-inactive transition-colors"
             >
-              <RefreshCw className={`w-4 h-4 text-gray-700 ${loading ? "animate-spin" : ""}`} />
+              <RefreshCw className={`w-4 h-4 th-text-muted ${loading ? "animate-spin" : ""}`} />
             </button>
           </div>
         </div>
 
         {/* Tabs - Kuziini */}
         <div className="mt-3">
-          <p className="text-gray-500 text-[8px] font-bold tracking-[0.3em] uppercase mb-1">KUZIINI</p>
+          <p className="th-text-faint text-[8px] font-bold tracking-[0.3em] uppercase mb-1">KUZIINI</p>
           <div className="flex gap-1 overflow-x-auto">
             {tabs.filter(t => !t.key.startsWith("guest-") && t.key !== "admin-users").map((t) => (
               <button
@@ -706,7 +723,7 @@ export default function AdminPage() {
                 className={`flex items-center gap-1.5 px-3 py-2 text-[10px] font-bold tracking-wider uppercase whitespace-nowrap transition-all relative ${
                   tab === t.key
                     ? "bg-[#C9AB81] text-[#0A0A0A]"
-                    : "bg-gray-100 text-gray-600"
+                    : "th-tab-inactive th-text-muted"
                 }`}
               >
                 {t.icon}
@@ -722,7 +739,7 @@ export default function AdminPage() {
         </div>
         {/* Tabs - Maya Guest Management */}
         <div className="mt-2">
-          <p className="text-gray-500 text-[8px] font-bold tracking-[0.3em] uppercase mb-1">MAYA · OASPETI</p>
+          <p className="th-text-faint text-[8px] font-bold tracking-[0.3em] uppercase mb-1">MAYA · OASPETI</p>
           <div className="flex gap-1 overflow-x-auto">
             {tabs.filter(t => t.key.startsWith("guest-") || t.key === "admin-users").map((t) => (
               <button
@@ -731,7 +748,7 @@ export default function AdminPage() {
                 className={`flex items-center gap-1.5 px-3 py-2 text-[10px] font-bold tracking-wider uppercase whitespace-nowrap transition-all ${
                   tab === t.key
                     ? "bg-[#C9AB81] text-[#0A0A0A]"
-                    : "bg-gray-100 text-gray-600"
+                    : "th-tab-inactive th-text-muted"
                 }`}
               >
                 {t.icon}
@@ -747,7 +764,7 @@ export default function AdminPage() {
         {tab === "overview" && (
           <>
             <div className="flex items-center justify-between mb-3">
-              <p className="text-gray-600 text-xs">Statistici generale</p>
+              <p className="th-text-muted text-xs">Statistici generale</p>
               <SectionHelp items={[
                 "Aceasta sectiune afiseaza statisticile generale ale platformei in timp real.",
                 "Total logari: numarul total de autentificari ale clientilor prin QR code.",
@@ -772,14 +789,14 @@ export default function AdminPage() {
             </div>
 
             {Object.keys(data.stats.paymentBreakdown).length > 0 && (
-              <div className="bg-gray-100/80 border border-gray-200 p-4">
+              <div className="th-card border p-4">
                 <h3 className="text-[#C9AB81] text-[10px] font-bold tracking-[0.2em] uppercase mb-3">
                   Metode de plată
                 </h3>
                 {Object.entries(data.stats.paymentBreakdown).map(([method, count]) => (
                   <div key={method} className="flex justify-between text-sm py-1">
-                    <span className="text-gray-700 capitalize">{method}</span>
-                    <span className="text-white font-bold">{count}</span>
+                    <span className="th-text-secondary capitalize">{method}</span>
+                    <span className="th-text font-bold">{count}</span>
                   </div>
                 ))}
               </div>
@@ -791,7 +808,7 @@ export default function AdminPage() {
         {tab === "logins" && (
           <>
             <div className="flex items-center justify-between mb-3">
-              <p className="text-gray-600 text-xs">{data.logins.length} inregistrari</p>
+              <p className="th-text-muted text-xs">{data.logins.length} inregistrari</p>
               <SectionHelp items={[
                 "Aici vezi toate logarile clientilor prin QR code, in ordine cronologica.",
                 "Fiecare intrare arata: numele clientului, numarul de telefon si umbrela scanata.",
@@ -803,19 +820,19 @@ export default function AdminPage() {
               <EmptyMsg text="Nicio logare înregistrată." />
             ) : (
               data.logins.map((l, i) => (
-                <div key={i} className="bg-gray-100/80 border border-gray-200 p-4">
+                <button key={i} className="th-card border p-4 w-full text-left active:scale-[0.99] transition-transform cursor-pointer" onClick={() => { setClientSearch(l.phone); setTab("clients"); }}>
                   <div className="flex items-center justify-between mb-1">
-                    <p className="font-bold text-sm text-gray-900 tracking-wide">
+                    <p className="font-bold text-sm th-text tracking-wide">
                       {l.name || "—"}
                     </p>
-                    <span className="text-[10px] text-gray-500">{formatTime(l.timestamp)}</span>
+                    <span className="text-[10px] th-text-faint">{formatTime(l.timestamp)}</span>
                   </div>
-                  <div className="flex items-center gap-3 text-xs text-gray-600">
+                  <div className="flex items-center gap-3 text-xs th-text-muted">
                     <span>{l.phone}</span>
                     {l.email && <span>{l.email}</span>}
                     <span className="text-[#C9AB81]">⛱️ {l.umbrellaId}</span>
                   </div>
-                </div>
+                </button>
               ))
             )}
           </>
@@ -825,7 +842,7 @@ export default function AdminPage() {
         {tab === "orders" && (
           <>
             <div className="flex items-center justify-between mb-3">
-              <p className="text-gray-600 text-xs">{data.orders.length} comenzi</p>
+              <p className="th-text-muted text-xs">{data.orders.length} comenzi</p>
               <SectionHelp items={[
                 "Lista tuturor comenzilor plasate de clienti, cu detalii complete.",
                 "Fiecare comanda arata: ID comanda, telefon client, umbrela, produsele comandate si totalul.",
@@ -836,27 +853,27 @@ export default function AdminPage() {
               <EmptyMsg text="Nicio comandă înregistrată." />
             ) : (
               data.orders.map((o, i) => (
-                <div key={i} className="bg-gray-100/80 border border-gray-200 p-4">
+                <div key={i} className="th-card border p-4 cursor-pointer active:scale-[0.99] transition-transform" onClick={() => { setClientSearch(o.phone); setTab("clients"); }}>
                   <div className="flex items-center justify-between mb-2">
-                    <p className="font-bold text-sm text-gray-900 tracking-wide">
+                    <p className="font-bold text-sm th-text tracking-wide">
                       {o.orderId}
                     </p>
-                    <span className="text-[10px] text-white/70">{formatTime(o.timestamp)}</span>
+                    <span className="text-[10px] th-text-faint">{formatTime(o.timestamp)}</span>
                   </div>
-                  <div className="flex items-center gap-3 text-xs text-gray-600 mb-2">
+                  <div className="flex items-center gap-3 text-xs th-text-muted mb-2">
                     <span>{o.phone}</span>
                     <span className="text-[#C9AB81]">⛱️ {o.umbrellaId}</span>
                   </div>
                   <div className="space-y-1">
                     {o.items.map((item, j) => (
-                      <div key={j} className="flex justify-between text-xs text-gray-700">
+                      <div key={j} className="flex justify-between text-xs th-text-secondary">
                         <span>{item.quantity}× {item.name}</span>
                         <span>{formatPrice(item.price * item.quantity)}</span>
                       </div>
                     ))}
                   </div>
-                  <div className="flex justify-between mt-2 pt-2 border-t border-gray-200">
-                    <span className="text-xs text-gray-600">Total</span>
+                  <div className="flex justify-between mt-2 pt-2 border-t th-border">
+                    <span className="text-xs th-text-muted">Total</span>
                     <span className="text-sm font-bold text-[#C9AB81]">{formatPrice(o.total)}</span>
                   </div>
                 </div>
@@ -869,7 +886,7 @@ export default function AdminPage() {
         {tab === "bills" && (
           <>
             <div className="flex items-center justify-between mb-3">
-              <p className="text-gray-600 text-xs">{data.billRequests.length} note solicitate</p>
+              <p className="th-text-muted text-xs">{data.billRequests.length} note solicitate</p>
               <SectionHelp items={[
                 "Aici vezi toate cererile de nota de plata trimise de clienti.",
                 "Fiecare cerere arata: umbrela, metoda de plata aleasa si suma totala.",
@@ -880,12 +897,12 @@ export default function AdminPage() {
               <EmptyMsg text="Nicio notă solicitată." />
             ) : (
               data.billRequests.map((b, i) => (
-                <div key={i} className="bg-gray-100/80 border border-gray-200 p-4 flex items-center justify-between">
+                <div key={i} className="th-card border p-4 flex items-center justify-between">
                   <div>
-                    <p className="font-bold text-sm text-gray-900 tracking-wide">
+                    <p className="font-bold text-sm th-text tracking-wide">
                       ⛱️ {b.umbrellaId}
                     </p>
-                    <p className="text-xs text-gray-600 mt-0.5 capitalize">{b.paymentMethod}</p>
+                    <p className="text-xs th-text-muted mt-0.5 capitalize">{b.paymentMethod}</p>
                   </div>
                   <div className="text-right">
                     <p className="font-bold text-[#C9AB81]">{formatPrice(b.amount)}</p>
@@ -901,7 +918,7 @@ export default function AdminPage() {
         {tab === "banners" && (
           <>
             <div className="flex items-center justify-between mb-3">
-              <p className="text-gray-600 text-xs">
+              <p className="th-text-muted text-xs">
                 {kuziiniBanners.length} bannere Kuziini
               </p>
               <SectionHelp items={[
@@ -927,7 +944,7 @@ export default function AdminPage() {
         {tab === "gallery" && (
           <>
             <div className="flex items-center justify-between mb-4">
-              <p className="text-gray-600 text-xs">
+              <p className="th-text-muted text-xs">
                 Pozele apar pe landing in sectiunea Kuziini
               </p>
               <SectionHelp items={[
@@ -961,7 +978,7 @@ export default function AdminPage() {
         {tab === "offers" && (
           <>
             <div className="flex items-center justify-between mb-3">
-              <p className="text-gray-600 text-xs">
+              <p className="th-text-muted text-xs">
                 {offers.length} solicitări
                 {offers.filter((o) => !o.read).length > 0 && (
                   <span className="ml-2 text-[#C9AB81] font-bold">
@@ -977,7 +994,7 @@ export default function AdminPage() {
                 <div
                   key={o.id}
                   className={`bg-white/[0.03] border p-4 ${
-                    o.read ? "border-gray-200" : "border-[#C9AB81]/30"
+                    o.read ? "th-border" : "border-[#C9AB81]/30"
                   }`}
                 >
                   <div className="flex items-start gap-3">
@@ -1004,7 +1021,7 @@ export default function AdminPage() {
                     })()}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1">
-                        <p className="font-bold text-sm text-gray-900 tracking-wide">
+                        <p className="font-bold text-sm th-text tracking-wide">
                           {o.name}
                           {!o.read && (
                             <span className="ml-2 text-[8px] bg-[#C9AB81] text-[#0A0A0A] px-1.5 py-0.5 font-bold tracking-wider uppercase">
@@ -1014,10 +1031,10 @@ export default function AdminPage() {
                         </p>
                         <span className="text-[10px] text-white/70 shrink-0">{formatTime(o.timestamp)}</span>
                       </div>
-                      <p className="text-xs text-gray-700">{o.phone}</p>
+                      <p className="text-xs th-text-secondary">{o.phone}</p>
                       <p className="text-xs text-[#C9AB81]/70">{o.email}</p>
                       {o.message && (
-                        <p className="text-xs text-gray-600 mt-1 italic">&ldquo;{o.message}&rdquo;</p>
+                        <p className="text-xs th-text-muted mt-1 italic">&ldquo;{o.message}&rdquo;</p>
                       )}
                     </div>
                   </div>
@@ -1033,7 +1050,7 @@ export default function AdminPage() {
                           const json = await res.json();
                           if (json.success) setOffers(json.data);
                         }}
-                        className="flex items-center gap-1.5 bg-gray-100 px-3 py-1.5 text-[10px] font-bold tracking-wider uppercase text-gray-700"
+                        className="flex items-center gap-1.5 th-tab-inactive px-3 py-1.5 text-[10px] font-bold tracking-wider uppercase th-text-secondary"
                       >
                         <Eye className="w-3 h-3" />
                         Marchează citit
@@ -1076,19 +1093,19 @@ export default function AdminPage() {
                   <ArrowLeft className="w-3.5 h-3.5" />
                   Înapoi
                 </button>
-                <div className="bg-gray-100/80 border border-gray-200 p-4 mb-4">
-                  <p className="font-bold text-lg text-gray-900 tracking-wide">{selectedGalleryUser.sessionId.slice(0, 20)}...</p>
+                <div className="th-card border p-4 mb-4">
+                  <p className="font-bold text-lg th-text tracking-wide">{selectedGalleryUser.sessionId.slice(0, 20)}...</p>
                   <div className="grid grid-cols-3 gap-3 mt-3">
                     <div className="bg-white/[0.03] px-2 py-2 text-center">
-                      <p className="text-[9px] text-gray-600 uppercase tracking-wider">Poze văzute</p>
+                      <p className="text-[9px] th-text-muted uppercase tracking-wider">Poze văzute</p>
                       <p className="text-xl font-bold text-white">{selectedGalleryUser.photosViewed}</p>
                     </div>
                     <div className="bg-white/[0.03] px-2 py-2 text-center">
-                      <p className="text-[9px] text-gray-600 uppercase tracking-wider">Timp total</p>
+                      <p className="text-[9px] th-text-muted uppercase tracking-wider">Timp total</p>
                       <p className="text-xl font-bold text-white">{formatDuration(selectedGalleryUser.totalTimeSpent)}</p>
                     </div>
                     <div className="bg-white/[0.03] px-2 py-2 text-center">
-                      <p className="text-[9px] text-gray-600 uppercase tracking-wider">Like-uri</p>
+                      <p className="text-[9px] th-text-muted uppercase tracking-wider">Like-uri</p>
                       <p className="text-xl font-bold text-red-400">{selectedGalleryUser.likes}</p>
                     </div>
                   </div>
@@ -1103,14 +1120,14 @@ export default function AdminPage() {
                 </p>
                 <div className="space-y-2">
                   {[...selectedGalleryUser.photoDetails].reverse().map((p, i) => (
-                    <div key={i} className="bg-gray-100/80 border border-gray-200 p-3 flex items-center justify-between">
+                    <div key={i} className="th-card border p-3 flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 flex items-center justify-center bg-purple-500/20 shrink-0">
                           <Eye className="w-4 h-4 text-purple-400" />
                         </div>
                         <div>
                           <p className="text-xs text-white font-bold">Poza #{p.photoIndex + 1}</p>
-                          <div className="flex items-center gap-2 text-[10px] text-gray-600">
+                          <div className="flex items-center gap-2 text-[10px] th-text-muted">
                             {p.duration > 0 && (
                               <span className="px-1.5 py-0.5 bg-blue-500/20 text-blue-400 font-bold tracking-wider">
                                 {formatDuration(p.duration)}
@@ -1140,7 +1157,7 @@ export default function AdminPage() {
 
                 {/* Detailed gallery stats */}
                 {galleryStats && (
-                  <div className="bg-gray-100/80 border border-gray-200 p-4 mb-4">
+                  <div className="th-card border p-4 mb-4">
                     <h3 className="text-[#C9AB81] text-[10px] font-bold tracking-[0.2em] uppercase mb-3 flex items-center gap-2">
                       <Heart className="w-3.5 h-3.5" />
                       Statistici Galerie
@@ -1148,18 +1165,18 @@ export default function AdminPage() {
 
                     {/* Total time spent */}
                     <div className="bg-white/[0.03] p-3 mb-3 text-center">
-                      <p className="text-[9px] text-gray-600 uppercase tracking-wider mb-1">Timp total vizualizare</p>
+                      <p className="text-[9px] th-text-muted uppercase tracking-wider mb-1">Timp total vizualizare</p>
                       <p className="text-xl font-bold text-[#C9AB81]">{formatDuration(galleryStats.totalTimeSpent)}</p>
                     </div>
 
                     {/* Photo breakdown */}
-                    <p className="text-gray-600 text-[10px] font-bold tracking-wider uppercase mb-2">Per poză</p>
+                    <p className="th-text-muted text-[10px] font-bold tracking-wider uppercase mb-2">Per poză</p>
                     <div className="space-y-2 mb-4">
                       {galleryStats.photos.map((p) => (
                         <div key={p.index} className="bg-white/[0.02] p-2.5 flex items-center justify-between">
-                          <span className="text-gray-700 text-xs font-bold">Poza #{p.index + 1}</span>
+                          <span className="th-text-secondary text-xs font-bold">Poza #{p.index + 1}</span>
                           <div className="flex items-center gap-3 text-[10px]">
-                            <span className="text-gray-600">{p.views} vizualizări</span>
+                            <span className="th-text-muted">{p.views} vizualizări</span>
                             <span className="text-blue-400 font-bold">{formatDuration(p.avgDuration)} mediu</span>
                             <span className="flex items-center gap-1 text-red-400 font-bold">
                               <Heart className="w-3 h-3 fill-red-400" />
@@ -1171,7 +1188,7 @@ export default function AdminPage() {
                     </div>
 
                     {/* Hourly distribution */}
-                    <p className="text-gray-600 text-[10px] font-bold tracking-wider uppercase mb-2 text-center">Vizualizări pe ore</p>
+                    <p className="th-text-muted text-[10px] font-bold tracking-wider uppercase mb-2 text-center">Vizualizări pe ore</p>
                     <div className="flex items-end justify-center gap-0.5 h-16 mb-1 mx-auto max-w-full">
                       {galleryStats.hourlyViews.map((count, hour) => {
                         const max = Math.max(...galleryStats.hourlyViews, 1);
@@ -1186,7 +1203,7 @@ export default function AdminPage() {
                         );
                       })}
                     </div>
-                    <div className="flex justify-between text-[8px] text-gray-500 px-0">
+                    <div className="flex justify-between text-[8px] th-text-faint px-0">
                       <span>00</span>
                       <span>03</span>
                       <span>06</span>
@@ -1199,7 +1216,7 @@ export default function AdminPage() {
                     </div>
 
                     {/* Per-user gallery stats */}
-                    <p className="text-gray-600 text-[10px] font-bold tracking-wider uppercase mt-4 mb-2">
+                    <p className="th-text-muted text-[10px] font-bold tracking-wider uppercase mt-4 mb-2">
                       Vizitatori unici ({galleryStats.users.length})
                     </p>
                     <div className="space-y-2">
@@ -1207,12 +1224,12 @@ export default function AdminPage() {
                         <button
                           key={u.sessionId}
                           onClick={() => setSelectedGalleryUser(u)}
-                          className="w-full bg-white/[0.02] p-3 text-left active:bg-gray-100 transition-colors"
+                          className="w-full bg-white/[0.02] p-3 text-left active:th-tab-inactive transition-colors"
                         >
                           <div className="flex items-center justify-between">
                             <div>
                               <p className="text-xs text-white font-bold">{u.sessionId.slice(0, 24)}...</p>
-                              <div className="flex items-center gap-3 text-[10px] text-gray-600 mt-1">
+                              <div className="flex items-center gap-3 text-[10px] th-text-muted mt-1">
                                 <span>{u.photosViewed} poze</span>
                                 <span className="text-blue-400">{formatDuration(u.totalTimeSpent)}</span>
                                 {u.likes > 0 && (
@@ -1222,11 +1239,11 @@ export default function AdminPage() {
                                   </span>
                                 )}
                               </div>
-                              <div className="text-[9px] text-gray-700 mt-0.5">
+                              <div className="text-[9px] th-text-secondary mt-0.5">
                                 {formatTime(u.firstView)} — {formatTime(u.lastView)}
                               </div>
                             </div>
-                            <ChevronRight className="w-3.5 h-3.5 text-gray-500 shrink-0" />
+                            <ChevronRight className="w-3.5 h-3.5 th-text-faint shrink-0" />
                           </div>
                         </button>
                       ))}
@@ -1243,7 +1260,7 @@ export default function AdminPage() {
                       className={`px-3 py-1.5 text-[10px] font-bold tracking-wider uppercase transition-all ${
                         clientFilter === key
                           ? "bg-[#C9AB81] text-[#0A0A0A]"
-                          : "bg-gray-100 text-gray-600"
+                          : "th-tab-inactive th-text-muted"
                       }`}
                     >
                       {label}
@@ -1258,7 +1275,7 @@ export default function AdminPage() {
                     placeholder="Caută client (nume, telefon, email)..."
                     value={clientSearch}
                     onChange={(e) => setClientSearch(e.target.value)}
-                    className="flex-1 bg-gray-100 border border-gray-300 px-3 py-2 text-white text-xs placeholder:text-gray-400 outline-none focus:border-[#C9AB81]/50"
+                    className="flex-1 th-tab-inactive border th-border px-3 py-2 text-white text-xs placeholder:text-gray-400 outline-none focus:border-[#C9AB81]/50"
                   />
                   <button
                     onClick={() => {
@@ -1266,7 +1283,7 @@ export default function AdminPage() {
                       const idx = sorts.indexOf(clientSort);
                       setClientSort(sorts[(idx + 1) % sorts.length]);
                     }}
-                    className="flex items-center gap-1.5 bg-gray-100 border border-gray-300 px-3 py-2 text-[10px] font-bold tracking-wider uppercase text-gray-700"
+                    className="flex items-center gap-1.5 th-tab-inactive border th-border px-3 py-2 text-[10px] font-bold tracking-wider uppercase th-text-secondary"
                   >
                     <ArrowUpDown className="w-3 h-3" />
                     {clientSort === "spent" && "Cheltuieli"}
@@ -1297,14 +1314,14 @@ export default function AdminPage() {
                     case "name": filtered.sort((a, b) => a.name.localeCompare(b.name)); break;
                   }
                   return (<>
-                    <p className="text-gray-600 text-xs mb-3">
+                    <p className="th-text-muted text-xs mb-3">
                       {filtered.length} clienți
                       {clientFilter !== "all" && ` (filtru: ${clientFilter === "receptie" ? "recepție" : "cereri ofertă"})`}
                     </p>
                     {filtered.map((c) => {
                       const isOnline = onlinePhones.has(c.phone);
                       return (
-                    <div key={c.phone} className={`p-4 mb-3 border ${isOnline ? "bg-emerald-500/[0.06] border-emerald-500/30" : "bg-white/[0.03] border-gray-200"}`}>
+                    <div key={c.phone} className={`p-4 mb-3 border ${isOnline ? "bg-emerald-500/[0.06] border-emerald-500/30" : "bg-white/[0.03] th-border"}`}>
                       {/* Header */}
                       <div className="flex items-start justify-between mb-2">
                         <div>
@@ -1320,12 +1337,12 @@ export default function AdminPage() {
                               <span className="text-[9px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 font-bold tracking-wider uppercase">Online</span>
                             )}
                           </div>
-                          <p className="text-xs text-gray-600">{c.phone}</p>
+                          <p className="text-xs th-text-muted">{c.phone}</p>
                           {c.email && <p className="text-xs text-[#C9AB81]/70">{c.email}</p>}
                         </div>
                         <div className="text-right">
                           <p className="text-sm font-bold text-[#C9AB81]">{formatPrice(c.totalSpent)}</p>
-                          <p className="text-[10px] text-gray-600">{c.totalVisits} vizite</p>
+                          <p className="text-[10px] th-text-muted">{c.totalVisits} vizite</p>
                         </div>
                       </div>
 
@@ -1346,15 +1363,15 @@ export default function AdminPage() {
                       {/* Stats grid */}
                       <div className="grid grid-cols-3 gap-2 mb-2">
                         <div className="bg-white/[0.03] px-2 py-1.5 text-center">
-                          <p className="text-[9px] text-gray-600 uppercase tracking-wider">Comenzi</p>
+                          <p className="text-[9px] th-text-muted uppercase tracking-wider">Comenzi</p>
                           <p className="text-sm font-bold text-white">{c.totalOrders}</p>
                         </div>
                         <div className="bg-white/[0.03] px-2 py-1.5 text-center">
-                          <p className="text-[9px] text-gray-600 uppercase tracking-wider">Medie/vizită</p>
+                          <p className="text-[9px] th-text-muted uppercase tracking-wider">Medie/vizită</p>
                           <p className="text-sm font-bold text-white">{formatPrice(c.avgPerVisit)}</p>
                         </div>
                         <div className="bg-white/[0.03] px-2 py-1.5 text-center">
-                          <p className="text-[9px] text-gray-600 uppercase tracking-wider">Oferte</p>
+                          <p className="text-[9px] th-text-muted uppercase tracking-wider">Oferte</p>
                           <p className="text-sm font-bold text-white">{c.offerRequests}</p>
                         </div>
                       </div>
@@ -1363,7 +1380,7 @@ export default function AdminPage() {
                       {Object.keys(c.paymentMethods).length > 0 && (
                         <div className="flex gap-2 mb-2">
                           {Object.entries(c.paymentMethods).map(([method, count]) => (
-                            <span key={method} className="text-[10px] bg-gray-100 px-2 py-1 text-gray-700 capitalize">
+                            <span key={method} className="text-[10px] th-tab-inactive px-2 py-1 th-text-secondary capitalize">
                               {method}: {count}
                             </span>
                           ))}
@@ -1383,7 +1400,7 @@ export default function AdminPage() {
 
                       {/* Offer details */}
                       {c.offerDetails.length > 0 && (
-                        <div className="border-t border-gray-200 pt-2 mt-2 space-y-1.5">
+                        <div className="border-t th-border pt-2 mt-2 space-y-1.5">
                           <p className="text-[9px] text-[#C9AB81] font-bold tracking-wider uppercase">Solicitări ofertă</p>
                           {c.offerDetails.map((od, oi) => (
                             <div key={oi} className="flex items-start gap-2 bg-white/[0.02] p-2">
@@ -1391,8 +1408,8 @@ export default function AdminPage() {
                                 <img src={od.photoUrl} alt="" className="w-10 h-10 object-cover shrink-0 border border-white/[0.08]" />
                               )}
                               <div className="flex-1 min-w-0">
-                                {od.message && <p className="text-[10px] text-gray-700 italic">&ldquo;{od.message}&rdquo;</p>}
-                                <p className="text-[9px] text-gray-700">{formatTime(od.timestamp)}</p>
+                                {od.message && <p className="text-[10px] th-text-secondary italic">&ldquo;{od.message}&rdquo;</p>}
+                                <p className="text-[9px] th-text-secondary">{formatTime(od.timestamp)}</p>
                               </div>
                             </div>
                           ))}
@@ -1504,9 +1521,9 @@ export default function AdminPage() {
                   <ArrowLeft className="w-3.5 h-3.5" />
                   Înapoi la lista
                 </button>
-                <div className={`bg-white/[0.03] border p-4 mb-4 ${onlinePhones.has(selectedAccessUser.phone) ? "border-emerald-500/40" : "border-gray-200"}`}>
+                <div className={`bg-white/[0.03] border p-4 mb-4 ${onlinePhones.has(selectedAccessUser.phone) ? "border-emerald-500/40" : "th-border"}`}>
                   <div className="flex items-center gap-2">
-                    <p className="font-bold text-lg text-gray-900 tracking-wide">{selectedAccessUser.name || "—"}</p>
+                    <p className="font-bold text-lg th-text tracking-wide">{selectedAccessUser.name || "—"}</p>
                     {onlinePhones.has(selectedAccessUser.phone) && (
                       <span className="flex items-center gap-1 text-[9px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 font-bold tracking-wider uppercase">
                         <span className="relative flex h-1.5 w-1.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span></span>
@@ -1514,15 +1531,15 @@ export default function AdminPage() {
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-gray-700">{selectedAccessUser.phone}</p>
+                  <p className="text-xs th-text-secondary">{selectedAccessUser.phone}</p>
                   {selectedAccessUser.email && <p className="text-xs text-[#C9AB81]/70">{selectedAccessUser.email}</p>}
                   <div className="grid grid-cols-2 gap-3 mt-3">
                     <div className="bg-white/[0.03] px-3 py-2 text-center">
-                      <p className="text-[9px] text-gray-600 uppercase tracking-wider">Total accesări</p>
+                      <p className="text-[9px] th-text-muted uppercase tracking-wider">Total accesări</p>
                       <p className="text-xl font-bold text-white">{selectedAccessUser.totalAccess}</p>
                     </div>
                     <div className="bg-white/[0.03] px-3 py-2 text-center">
-                      <p className="text-[9px] text-gray-600 uppercase tracking-wider">Prima accesare</p>
+                      <p className="text-[9px] th-text-muted uppercase tracking-wider">Prima accesare</p>
                       <p className="text-xs font-bold text-white mt-1">{formatTime(selectedAccessUser.firstAccess)}</p>
                     </div>
                   </div>
@@ -1533,7 +1550,7 @@ export default function AdminPage() {
                 </p>
                 <div className="space-y-2">
                   {[...selectedAccessUser.pages].reverse().map((p, i) => (
-                    <div key={i} className="bg-gray-100/80 border border-gray-200 p-3 flex items-center justify-between">
+                    <div key={i} className="th-card border p-3 flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <div className={`w-8 h-8 flex items-center justify-center shrink-0 ${
                           p.action === "scan" ? "bg-emerald-500/20" :
@@ -1547,7 +1564,7 @@ export default function AdminPage() {
                         </div>
                         <div>
                           <p className="text-xs text-white font-bold">{p.page}</p>
-                          <div className="flex items-center gap-2 text-[10px] text-gray-600">
+                          <div className="flex items-center gap-2 text-[10px] th-text-muted">
                             <span className={`px-1.5 py-0.5 font-bold tracking-wider uppercase ${
                               p.action === "scan" ? "bg-emerald-500/20 text-emerald-400" :
                               p.action === "menu" ? "bg-blue-500/20 text-blue-400" :
@@ -1571,7 +1588,7 @@ export default function AdminPage() {
               /* ── User list view ── */
               <>
                 <div className="flex items-center justify-between mb-3">
-                  <p className="text-gray-600 text-xs">
+                  <p className="th-text-muted text-xs">
                     {accessData.users.length} utilizatori · {accessData.totalEntries} accesări totale
                     {accessUnread > 0 && (
                       <span className="ml-2 text-red-400 font-bold">({accessUnread} noi)</span>
@@ -1588,10 +1605,10 @@ export default function AdminPage() {
                     <button
                       key={u.phone}
                       onClick={() => setSelectedAccessUser(u)}
-                      className={`w-full p-4 mb-3 text-left active:bg-gray-100 transition-colors border ${
+                      className={`w-full p-4 mb-3 text-left active:th-tab-inactive transition-colors border ${
                         isOnline
                           ? "bg-emerald-500/[0.06] border-emerald-500/30"
-                          : "bg-white/[0.03] border-gray-200"
+                          : "bg-white/[0.03] th-border"
                       }`}
                     >
                       <div className="flex items-center justify-between">
@@ -1613,14 +1630,14 @@ export default function AdminPage() {
                               </span>
                             )}
                           </div>
-                          <p className="text-xs text-gray-600">{u.phone}</p>
+                          <p className="text-xs th-text-muted">{u.phone}</p>
                           {u.email && <p className="text-xs text-[#C9AB81]/60">{u.email}</p>}
-                          <div className="flex items-center gap-3 mt-1.5 text-[10px] text-gray-700">
+                          <div className="flex items-center gap-3 mt-1.5 text-[10px] th-text-secondary">
                             <span>Prima: {formatTime(u.firstAccess)}</span>
                             <span>Ultima: {formatTime(u.lastAccess)}</span>
                           </div>
                         </div>
-                        <ChevronRight className={`w-4 h-4 shrink-0 ml-2 ${isOnline ? "text-emerald-400/40" : "text-gray-500"}`} />
+                        <ChevronRight className={`w-4 h-4 shrink-0 ml-2 ${isOnline ? "text-emerald-400/40" : "th-text-faint"}`} />
                       </div>
                     </button>
                     );
@@ -1657,9 +1674,9 @@ export default function AdminPage() {
         )}
 
         {!mayaAdminId && (tab === "guest-dashboard" || tab === "guest-checkin" || tab === "guest-list" || tab === "guest-daily" || tab === "guest-loungers" || tab === "admin-users") && (
-          <div className="bg-gray-100/80 border border-gray-200 p-8 text-center">
-            <p className="text-gray-600 text-sm">Se incarca modulul de administrare...</p>
-            <RefreshCw className="w-5 h-5 text-gray-500 animate-spin mx-auto mt-3" />
+          <div className="th-card border p-8 text-center">
+            <p className="th-text-muted text-sm">Se incarca modulul de administrare...</p>
+            <RefreshCw className="w-5 h-5 th-text-faint animate-spin mx-auto mt-3" />
           </div>
         )}
 
@@ -1667,7 +1684,7 @@ export default function AdminPage() {
         {tab === "umbrellas" && (
           <>
             <div className="flex items-center justify-between mb-3">
-              <p className="text-gray-600 text-xs">{data.umbrellas.length} umbrele</p>
+              <p className="th-text-muted text-xs">{data.umbrellas.length} umbrele</p>
               <SectionHelp items={[
                 "Aici vezi statusul tuturor umbrelelor inregistrate in sistem.",
                 "Verde 'Ocupat' = umbrela are o sesiune activa (un client a scanat QR-ul).",
@@ -1677,17 +1694,17 @@ export default function AdminPage() {
               ]} />
             </div>
             {data.umbrellas.map((u) => (
-              <div key={u.id} className="bg-gray-100/80 border border-gray-200 p-4">
+              <div key={u.id} className="th-card border p-4">
                 <div className="flex items-center justify-between mb-1">
                   <div className="flex items-center gap-2">
                     <span className="text-lg">⛱️</span>
-                    <p className="font-bold text-sm text-gray-900 tracking-wide">{u.id}</p>
+                    <p className="font-bold text-sm th-text tracking-wide">{u.id}</p>
                   </div>
                   <span
                     className={`text-[10px] font-bold tracking-wider uppercase px-2 py-1 ${
                       u.hasSession
                         ? "bg-emerald-500/20 text-emerald-400"
-                        : "bg-gray-200 text-gray-600"
+                        : "bg-gray-200 th-text-muted"
                     }`}
                   >
                     {u.hasSession ? "Ocupat" : "Liber"}
@@ -1695,10 +1712,10 @@ export default function AdminPage() {
                 </div>
                 <p className="text-xs text-[#C9AB81] tracking-wider uppercase">{u.zone}</p>
                 {u.ownerPhone && (
-                  <p className="text-xs text-gray-600 mt-1">{u.ownerPhone}</p>
+                  <p className="text-xs th-text-muted mt-1">{u.ownerPhone}</p>
                 )}
                 {u.sessionStarted && (
-                  <p className="text-[10px] text-gray-500 mt-0.5">
+                  <p className="text-[10px] th-text-faint mt-0.5">
                     Din {formatTime(u.sessionStarted)}
                   </p>
                 )}
@@ -1716,13 +1733,13 @@ function StatCard({ label, value, gold, onClick }: { label: string; value: strin
   return (
     <Tag
       onClick={onClick}
-      className={`bg-gray-100/80 border border-gray-200 p-4 text-left ${onClick ? "active:bg-gray-100 transition-colors cursor-pointer" : ""}`}
+      className={`th-card border p-4 text-left ${onClick ? "active:th-tab-inactive transition-colors cursor-pointer" : ""}`}
     >
-      <p className="text-[10px] text-gray-600 font-bold tracking-[0.15em] uppercase mb-1">
+      <p className="text-[10px] th-text-muted font-bold tracking-[0.15em] uppercase mb-1">
         {label}
         {onClick && <ChevronRight className="w-3 h-3 inline ml-1 opacity-40" />}
       </p>
-      <p className={`text-2xl font-bold tracking-wide ${gold ? "text-[#C9AB81]" : "text-gray-900"}`}>
+      <p className={`text-2xl font-bold tracking-wide ${gold ? "text-[#C9AB81]" : "th-text"}`}>
         {value}
       </p>
     </Tag>
@@ -1731,8 +1748,8 @@ function StatCard({ label, value, gold, onClick }: { label: string; value: strin
 
 function EmptyMsg({ text }: { text: string }) {
   return (
-    <div className="bg-gray-100/80 border border-gray-200 p-8 text-center">
-      <p className="text-gray-600 text-sm">{text}</p>
+    <div className="th-card border p-8 text-center">
+      <p className="th-text-muted text-sm">{text}</p>
     </div>
   );
 }

@@ -87,7 +87,7 @@ export default function DailyConfirmationPanel({ adminId }: Props) {
   if (loading) {
     return (
       <div className="flex justify-center py-20">
-        <RefreshCw className="w-6 h-6 text-gray-600 animate-spin" />
+        <RefreshCw className="w-6 h-6 th-text-muted animate-spin" />
       </div>
     );
   }
@@ -95,12 +95,12 @@ export default function DailyConfirmationPanel({ adminId }: Props) {
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <p className="text-gray-600 text-xs">
+        <p className="th-text-muted text-xs">
           {confirmed.length} confirmati · {unconfirmed.length} neconfirmati azi
         </p>
         <button
           onClick={() => { setLoading(true); fetchStatus(); }}
-          className="text-gray-600"
+          className="th-text-muted"
         >
           <RefreshCw className="w-4 h-4" />
         </button>
@@ -121,8 +121,8 @@ export default function DailyConfirmationPanel({ adminId }: Props) {
               >
                 <div className="flex items-center justify-between mb-2">
                   <div>
-                    <p className="text-gray-900 text-sm font-medium">{g.name}</p>
-                    <p className="text-gray-600 text-xs">
+                    <p className="th-text text-sm font-medium">{g.name}</p>
+                    <p className="th-text-muted text-xs">
                       {g.phone} · Sezlong: {g.loungerId || "—"}
                     </p>
                   </div>
@@ -131,7 +131,7 @@ export default function DailyConfirmationPanel({ adminId }: Props) {
                 {/* Optional: change lounger */}
                 <div className="flex gap-2">
                   <div className="relative flex-1">
-                    <Umbrella className="absolute left-2.5 top-2 w-3.5 h-3.5 text-gray-600" />
+                    <Umbrella className="absolute left-2.5 top-2 w-3.5 h-3.5 th-text-muted" />
                     <input
                       type="text"
                       value={manualLounger[g.id] || ""}
@@ -139,7 +139,7 @@ export default function DailyConfirmationPanel({ adminId }: Props) {
                         setManualLounger((prev) => ({ ...prev, [g.id]: e.target.value }))
                       }
                       placeholder={g.loungerId || "Nr. sezlong"}
-                      className="w-full bg-gray-100/80 border border-gray-200 pl-8 pr-2 py-1.5 text-gray-900 text-xs outline-none focus:border-[#C9AB81]/50 placeholder:text-gray-400"
+                      className="w-full th-input border pl-8 pr-2 py-1.5 text-xs outline-none focus:border-[#C9AB81]/50"
                     />
                   </div>
                   <button
@@ -175,8 +175,8 @@ export default function DailyConfirmationPanel({ adminId }: Props) {
                 className="bg-emerald-400/5 border border-emerald-400/10 px-3 py-2 flex items-center justify-between"
               >
                 <div>
-                  <p className="text-gray-900 text-sm">{g.name}</p>
-                  <p className="text-gray-600 text-xs">
+                  <p className="th-text text-sm">{g.name}</p>
+                  <p className="th-text-muted text-xs">
                     Sezlong: {g.loungerId} · {g.phone}
                   </p>
                 </div>
@@ -188,7 +188,7 @@ export default function DailyConfirmationPanel({ adminId }: Props) {
       )}
 
       {unconfirmed.length === 0 && confirmed.length === 0 && (
-        <p className="text-gray-500 text-sm text-center py-10">
+        <p className="th-text-faint text-sm text-center py-10">
           Niciun oaspete programat pentru azi.
         </p>
       )}

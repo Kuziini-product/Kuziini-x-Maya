@@ -112,7 +112,7 @@ export default function LoungerGrid({ adminId }: Props) {
 
   function getLoungerColor(loungerId: string): string {
     const guest = getGuestForLounger(loungerId);
-    if (!guest) return "bg-gray-100 border-gray-200 text-gray-600";
+    if (!guest) return "th-tab-inactive th-border th-text-muted";
     if (guest.status === "active" && confirmedGuestIds.has(guest.id)) {
       return "bg-emerald-400/15 border-emerald-400/30 text-emerald-400";
     }
@@ -291,14 +291,14 @@ export default function LoungerGrid({ adminId }: Props) {
   }
 
   const inputCls =
-    "w-full bg-gray-100/80 border border-gray-200 px-3 py-2 text-gray-900 text-sm outline-none focus:border-[#C9AB81]/50 placeholder:text-gray-400";
+    "w-full th-input border px-3 py-2 text-sm outline-none focus:border-[#C9AB81]/50";
   const labelCls =
     "text-[10px] font-bold text-[#C9AB81] uppercase tracking-[0.2em] mb-1 block";
 
   if (loading) {
     return (
       <div className="flex justify-center py-20">
-        <RefreshCw className="w-6 h-6 text-gray-600 animate-spin" />
+        <RefreshCw className="w-6 h-6 th-text-muted animate-spin" />
       </div>
     );
   }
@@ -306,7 +306,7 @@ export default function LoungerGrid({ adminId }: Props) {
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-4 text-[10px] text-gray-600">
+        <div className="flex items-center gap-4 text-[10px] th-text-muted">
           <span className="flex items-center gap-1">
             <span className="w-3 h-3 bg-emerald-400/30 border border-emerald-400/50 inline-block" />
             Confirmat
@@ -316,13 +316,13 @@ export default function LoungerGrid({ adminId }: Props) {
             Neconfirmat
           </span>
           <span className="flex items-center gap-1">
-            <span className="w-3 h-3 bg-gray-100 border border-gray-300 inline-block" />
+            <span className="w-3 h-3 th-tab-inactive border th-border inline-block" />
             Liber
           </span>
         </div>
         <button
           onClick={() => { setLoading(true); fetchData(); }}
-          className="text-gray-600"
+          className="th-text-muted"
         >
           <RefreshCw className="w-4 h-4" />
         </button>
@@ -359,13 +359,13 @@ export default function LoungerGrid({ adminId }: Props) {
 
       {/* ── BOTTOM PANEL ── */}
       {selected && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-300 p-4 z-50 max-h-[70vh] overflow-y-auto shadow-lg">
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t th-border p-4 z-50 max-h-[70vh] overflow-y-auto shadow-lg">
           {/* Header */}
           <div className="flex items-center justify-between mb-3">
-            <p className="text-gray-900 font-bold text-lg">
+            <p className="th-text font-bold text-lg">
               Sezlong {selected}
             </p>
-            <button onClick={closePanel} className="text-gray-600 p-1">
+            <button onClick={closePanel} className="th-text-muted p-1">
               <X className="w-5 h-5" />
             </button>
           </div>
@@ -388,12 +388,12 @@ export default function LoungerGrid({ adminId }: Props) {
             <>
               {selectedGuest ? (
                 <div className="mb-4">
-                  <div className="bg-gray-100/80 border border-gray-200 p-3 mb-3">
-                    <p className="text-gray-900 font-medium">{selectedGuest.name}</p>
-                    <p className="text-gray-600 text-xs mt-1">
+                  <div className="th-card border p-3 mb-3">
+                    <p className="th-text font-medium">{selectedGuest.name}</p>
+                    <p className="th-text-muted text-xs mt-1">
                       {selectedGuest.phone} · {selectedGuest.email || "—"}
                     </p>
-                    <p className="text-gray-600 text-xs">
+                    <p className="th-text-muted text-xs">
                       {selectedGuest.stayStart} → {selectedGuest.stayEnd}
                     </p>
                     <div className="flex items-center gap-3 mt-2">
@@ -413,7 +413,7 @@ export default function LoungerGrid({ adminId }: Props) {
                   </div>
                   {/* Lounger history */}
                   {selectedGuest.loungerHistory && selectedGuest.loungerHistory.length > 0 && (
-                    <div className="bg-gray-50 border border-gray-200 p-3 mb-3">
+                    <div className="th-card border th-border p-3 mb-3">
                       <p className="text-[10px] font-bold text-[#C9AB81] uppercase tracking-[0.2em] mb-2">
                         Istoric locuri
                       </p>
@@ -425,19 +425,19 @@ export default function LoungerGrid({ adminId }: Props) {
                                 h.action === "assigned" ? "bg-emerald-400" :
                                 h.action === "relocated_to" ? "bg-sky-400" : "bg-amber-400"
                               }`} />
-                              <span className="text-gray-700 font-medium">{h.loungerId}</span>
-                              <span className="text-gray-500">
+                              <span className="th-text-secondary font-medium">{h.loungerId}</span>
+                              <span className="th-text-faint">
                                 {h.action === "assigned" ? "asignat" :
                                  h.action === "relocated_to" ? "mutat aici" : "plecat"}
                               </span>
                             </div>
-                            <span className="text-gray-400 text-[10px]">{h.date}</span>
+                            <span className="th-text-faint text-[10px]">{h.date}</span>
                           </div>
                         ))}
                         {selectedGuest.loungerHistory.some(h => h.reason) && (
-                          <div className="mt-1 pt-1 border-t border-gray-100">
+                          <div className="mt-1 pt-1 border-t th-border">
                             {selectedGuest.loungerHistory.filter(h => h.reason).map((h, i) => (
-                              <p key={i} className="text-gray-500 text-[10px] italic">
+                              <p key={i} className="th-text-faint text-[10px] italic">
                                 {h.loungerId}: {h.reason}
                               </p>
                             ))}
@@ -457,7 +457,7 @@ export default function LoungerGrid({ adminId }: Props) {
                 </div>
               ) : (
                 <div>
-                  <p className="text-gray-600 text-sm mb-4">Acest sezlong este liber.</p>
+                  <p className="th-text-muted text-sm mb-4">Acest sezlong este liber.</p>
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       onClick={() => setPanelMode("assign")}
@@ -483,14 +483,14 @@ export default function LoungerGrid({ adminId }: Props) {
           {panelMode === "assign" && !success && (
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <button onClick={() => setPanelMode("info")} className="text-gray-600 text-xs">&larr; Inapoi</button>
+                <button onClick={() => setPanelMode("info")} className="th-text-muted text-xs">&larr; Inapoi</button>
                 <p className="text-[#C9AB81] text-[10px] font-bold tracking-[0.2em] uppercase">
                   Asigneaza oaspete pe {selected}
                 </p>
               </div>
 
               <div className="relative mb-3">
-                <Search className="absolute left-3 top-2 w-4 h-4 text-gray-500" />
+                <Search className="absolute left-3 top-2 w-4 h-4 th-text-faint" />
                 <input
                   type="text"
                   value={searchQuery}
@@ -509,17 +509,17 @@ export default function LoungerGrid({ adminId }: Props) {
                     className={`w-full text-left px-3 py-2 text-sm border transition-all ${
                       selectedGuestId === g.id
                         ? "bg-[#C9AB81]/10 border-[#C9AB81]/30"
-                        : "bg-gray-50 border-gray-200"
+                        : "th-card th-border"
                     }`}
                   >
-                    <p className="text-gray-900 font-medium">{g.name}</p>
-                    <p className="text-gray-600 text-xs">
+                    <p className="th-text font-medium">{g.name}</p>
+                    <p className="th-text-muted text-xs">
                       {g.phone} · {g.loungerId || "fara loc"} · {g.status}
                     </p>
                   </button>
                 ))}
                 {assignableGuests.length === 0 && (
-                  <p className="text-gray-500 text-xs text-center py-4">Niciun oaspete gasit.</p>
+                  <p className="th-text-faint text-xs text-center py-4">Niciun oaspete gasit.</p>
                 )}
               </div>
 
@@ -537,7 +537,7 @@ export default function LoungerGrid({ adminId }: Props) {
           {panelMode === "checkin" && !success && (
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <button onClick={() => setPanelMode("info")} className="text-gray-600 text-xs">&larr; Inapoi</button>
+                <button onClick={() => setPanelMode("info")} className="th-text-muted text-xs">&larr; Inapoi</button>
                 <p className="text-[#C9AB81] text-[10px] font-bold tracking-[0.2em] uppercase">
                   Check-in rapid pe {selected}
                 </p>
@@ -568,15 +568,15 @@ export default function LoungerGrid({ adminId }: Props) {
                     <input type="date" value={ciStayEnd} onChange={(e) => setCiStayEnd(e.target.value)} className={inputCls} />
                   </div>
                 </div>
-                <div className="flex items-center justify-between bg-gray-100/80 border border-gray-200 p-3">
+                <div className="flex items-center justify-between th-card border p-3">
                   <div className="flex items-center gap-2">
                     <CreditCard className="w-4 h-4 text-purple-400" />
-                    <span className="text-sm text-gray-900">Credit</span>
+                    <span className="text-sm th-text">Credit</span>
                   </div>
                   <button
                     type="button"
                     onClick={() => setCiCredit(!ciCredit)}
-                    className={`w-10 h-5 rounded-full transition-colors relative ${ciCredit ? "bg-purple-500" : "bg-gray-200"}`}
+                    className={`w-10 h-5 rounded-full transition-colors relative ${ciCredit ? "bg-purple-500" : "th-tab-inactive"}`}
                   >
                     <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-transform ${ciCredit ? "left-5" : "left-0.5"}`} />
                   </button>
@@ -597,20 +597,20 @@ export default function LoungerGrid({ adminId }: Props) {
           {panelMode === "relocate" && !success && selectedGuest && (
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <button onClick={() => setPanelMode("info")} className="text-gray-600 text-xs">&larr; Inapoi</button>
+                <button onClick={() => setPanelMode("info")} className="th-text-muted text-xs">&larr; Inapoi</button>
                 <p className="text-[#C9AB81] text-[10px] font-bold tracking-[0.2em] uppercase">
                   Reloca {selectedGuest.name}
                 </p>
               </div>
 
-              <p className="text-gray-600 text-xs mb-3">
+              <p className="th-text-muted text-xs mb-3">
                 Muta de pe {selected} pe alt sezlong:
               </p>
 
               {/* Previous loungers - quick assign */}
               {selectedGuest.loungerHistory && selectedGuest.loungerHistory.filter(h => h.action !== "relocated_from").length > 0 && (
                 <div className="mb-3">
-                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">
+                  <p className="text-[10px] font-bold th-text-faint uppercase tracking-wider mb-1.5">
                     Locuri anterioare (click pentru selectie rapida)
                   </p>
                   <div className="flex gap-1.5 flex-wrap">

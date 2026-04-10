@@ -158,11 +158,11 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
       <div className="bg-emerald-400/10 border border-emerald-400/20 p-6 text-center">
         <Check className="w-12 h-12 text-emerald-400 mx-auto mb-3" />
         <p className="text-emerald-400 font-bold text-lg mb-1">Check-in reusit!</p>
-        <p className="text-gray-700 text-sm mb-1">{success.name}</p>
-        <p className="text-gray-600 text-xs mb-1">
+        <p className="th-text-secondary text-sm mb-1">{success.name}</p>
+        <p className="th-text-muted text-xs mb-1">
           Sezlong: {success.loungerId || "neatribuit"} · {success.stayStart} → {success.stayEnd}
         </p>
-        <p className="text-gray-600 text-xs mb-4">
+        <p className="th-text-muted text-xs mb-4">
           Credit: {success.creditEnabled ? "DA" : "NU"}
         </p>
         <button
@@ -176,7 +176,7 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
   }
 
   const inputCls =
-    "w-full bg-gray-100/80 border border-gray-200 px-3 py-2.5 text-gray-900 text-sm outline-none focus:border-[#C9AB81]/50 placeholder:text-gray-400";
+    "w-full th-input border px-3 py-2.5 text-sm outline-none focus:border-[#C9AB81]/50";
   const labelCls =
     "text-[10px] font-bold text-[#C9AB81] uppercase tracking-[0.2em] mb-1.5 block";
 
@@ -190,7 +190,7 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
   return (
     <>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <p className="text-gray-600 text-xs mb-2">
+        <p className="th-text-muted text-xs mb-2">
           Inregistreaza un oaspete nou la receptie
         </p>
 
@@ -198,7 +198,7 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
         <div>
           <label className={labelCls}>Nume complet *</label>
           <div className="relative">
-            <UserPlus className="absolute left-3 top-2.5 w-4 h-4 text-gray-500" />
+            <UserPlus className="absolute left-3 top-2.5 w-4 h-4 th-text-faint" />
             <input
               type="text"
               value={name}
@@ -214,7 +214,7 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
           <div>
             <label className={labelCls}>Telefon *</label>
             <div className="relative">
-              <Phone className="absolute left-3 top-2.5 w-4 h-4 text-gray-500" />
+              <Phone className="absolute left-3 top-2.5 w-4 h-4 th-text-faint" />
               <input
                 type="tel"
                 value={phone}
@@ -227,7 +227,7 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
           <div>
             <label className={labelCls}>Email</label>
             <div className="relative">
-              <Mail className="absolute left-3 top-2.5 w-4 h-4 text-gray-500" />
+              <Mail className="absolute left-3 top-2.5 w-4 h-4 th-text-faint" />
               <input
                 type="email"
                 value={email}
@@ -244,7 +244,7 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
           <div>
             <label className={labelCls}>De la</label>
             <div className="relative">
-              <Calendar className="absolute left-3 top-2.5 w-4 h-4 text-gray-500" />
+              <Calendar className="absolute left-3 top-2.5 w-4 h-4 th-text-faint" />
               <input
                 type="date"
                 value={stayStart}
@@ -256,7 +256,7 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
           <div>
             <label className={labelCls}>Pana la</label>
             <div className="relative">
-              <Calendar className="absolute left-3 top-2.5 w-4 h-4 text-gray-500" />
+              <Calendar className="absolute left-3 top-2.5 w-4 h-4 th-text-faint" />
               <input
                 type="date"
                 value={stayEnd}
@@ -272,7 +272,7 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
           <label className={labelCls}>Sezlong / Umbrela</label>
           <div className="flex gap-2">
             <div className="relative flex-1">
-              <Umbrella className="absolute left-3 top-2.5 w-4 h-4 text-gray-500" />
+              <Umbrella className="absolute left-3 top-2.5 w-4 h-4 th-text-faint" />
               <input
                 type="text"
                 value={loungerId}
@@ -298,17 +298,17 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
         </div>
 
         {/* Credit toggle */}
-        <div className="bg-gray-100/80 border border-gray-200 p-4">
+        <div className="th-card border p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <CreditCard className="w-4 h-4 text-purple-400" />
-              <span className="text-sm text-gray-900">Plata pe credit</span>
+              <span className="text-sm th-text">Plata pe credit</span>
             </div>
             <button
               type="button"
               onClick={() => setCreditEnabled(!creditEnabled)}
               className={`w-12 h-6 rounded-full transition-colors relative ${
-                creditEnabled ? "bg-purple-500" : "bg-gray-200"
+                creditEnabled ? "bg-purple-500" : "th-tab-inactive"
               }`}
             >
               <span
@@ -337,7 +337,7 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
         <div>
           <label className={labelCls}>Note</label>
           <div className="relative">
-            <StickyNote className="absolute left-3 top-2.5 w-4 h-4 text-gray-500" />
+            <StickyNote className="absolute left-3 top-2.5 w-4 h-4 th-text-faint" />
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
@@ -363,13 +363,13 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
         <div className="fixed inset-0 bg-black/40 z-50 flex items-end">
           <div className="bg-white w-full max-h-[80vh] overflow-y-auto p-4 rounded-t-2xl">
             <div className="flex items-center justify-between mb-4">
-              <p className="text-gray-900 font-bold text-lg">Alege sezlong</p>
-              <button onClick={() => setShowMap(false)} className="text-gray-600 p-1">
+              <p className="th-text font-bold text-lg">Alege sezlong</p>
+              <button onClick={() => setShowMap(false)} className="th-text-muted p-1">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="flex items-center gap-4 text-[10px] text-gray-600 mb-4">
+            <div className="flex items-center gap-4 text-[10px] th-text-muted mb-4">
               <span className="flex items-center gap-1">
                 <span className="w-3 h-3 bg-emerald-100 border border-emerald-300 inline-block" />
                 Liber
