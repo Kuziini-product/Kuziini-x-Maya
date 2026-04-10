@@ -21,11 +21,7 @@ async function getGallery(category: BannerCategory): Promise<StoredGallery> {
     aspect: mem.aspect,
     images: [...mem.images],
   };
-  const stored = await kvGet<StoredGallery>(key, fallback);
-  if (!stored || !stored.images || stored.images.length === 0) {
-    return fallback;
-  }
-  return stored;
+  return kvGet<StoredGallery>(key, fallback);
 }
 
 async function saveGallery(category: BannerCategory, data: StoredGallery) {
