@@ -211,13 +211,13 @@ export default function LandingPage({
         <div className="px-5 pb-6 pt-6">
           <div className="flex items-center justify-center gap-4 pt-4 border-t border-white/[0.04]">
             <a href="https://www.instagram.com/kuziiniconceptstore/" target="_blank" rel="noopener noreferrer">
-              <img src="/kuziini-logo.png" alt="Kuziini" className="h-8 object-contain invert brightness-200" />
+              <img src="/kuziini-logo.png" alt="Kuziini" className="h-10 object-contain invert brightness-200" />
             </a>
             <span className="text-[#C9AB81]/40 text-lg font-bold">×</span>
             <img
               src="/Maya.png"
               alt="Maya"
-              className="h-8 object-contain opacity-60"
+              className="h-10 object-contain opacity-60"
             />
           </div>
         </div>

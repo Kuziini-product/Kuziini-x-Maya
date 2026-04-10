@@ -192,7 +192,7 @@ export default function HomePage() {
             <img
               src="/Maya.png"
               alt="Maya"
-              className="h-[52px] object-contain opacity-80"
+              className="w-[100px] h-auto object-contain opacity-80"
             />
           </button>
         </div>

@@ -145,7 +145,7 @@ export default function MenuPage({ params }: { params: { umbrellaId: string } })
           <img
             src="/Maya.png"
             alt="Maya"
-            className="h-10 object-contain"
+            className="h-12 object-contain"
           />
         </div>
         <p className="text-white/30 text-[10px] tracking-[0.4em] uppercase">
