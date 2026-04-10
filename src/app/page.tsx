@@ -187,19 +187,19 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="py-12 px-5 border-t border-white/[0.06]">
         <div className="flex items-center justify-center gap-4 mb-6">
-          <button onClick={() => router.push("/admin")}>
-            <img
-              src="/kuziini-logo.png"
-              alt="Kuziini"
-              className="w-[100px] h-auto rounded-2xl border border-white/10 invert brightness-200 object-contain"
-            />
-          </button>
-          <span className="text-[#C9AB81]/40 text-lg font-bold">x</span>
           <button onClick={() => router.push("/Maya")}>
             <img
               src="/Maya.png"
               alt="Maya"
               className="w-[100px] h-auto object-contain opacity-80"
+            />
+          </button>
+          <span className="text-[#C9AB81]/40 text-lg font-bold">×</span>
+          <button onClick={() => router.push("/admin")}>
+            <img
+              src="/kuziini-logo.png"
+              alt="Kuziini"
+              className="w-[100px] h-auto rounded-2xl border border-white/10 invert brightness-200 object-contain"
             />
           </button>
         </div>
