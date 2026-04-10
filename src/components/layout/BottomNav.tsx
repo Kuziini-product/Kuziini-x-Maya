@@ -54,6 +54,10 @@ export function BottomNav({ umbrellaId }: BottomNavProps) {
   const base = `/u/${umbrellaId}`;
   const isOnMenu = pathname.startsWith(`${base}/menu`);
   const isOnCart = pathname.startsWith(`${base}/cart`);
+  const isOnBill = pathname.startsWith(`${base}/bill`);
+
+  // Hide nav on bill page when session is cleared (note was sent)
+  if (isOnBill && !userSession) return null;
 
   const handleAction = useCallback(async () => {
     if (isOnCart && itemCount > 0) {
