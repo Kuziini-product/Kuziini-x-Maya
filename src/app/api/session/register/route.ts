@@ -6,7 +6,7 @@ import { sendPushToAll } from "@/lib/push";
 export async function POST(req: NextRequest) {
   await sleep(400);
 
-  const { umbrellaId, phone, name } = await req.json();
+  const { umbrellaId, phone, name, email } = await req.json();
 
   if (!umbrellaId || !phone) {
     return NextResponse.json({ success: false, error: "umbrellaId și phone sunt obligatorii." }, { status: 400 });
@@ -70,6 +70,7 @@ export async function POST(req: NextRequest) {
   LOGIN_LOG.push({
     name: name || "",
     phone,
+    email: email || "",
     umbrellaId,
     timestamp: new Date().toISOString(),
   });

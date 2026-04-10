@@ -46,6 +46,7 @@ export const MOCK_SESSIONS: Record<string, Session> = {
 export interface LoginEntry {
   name: string;
   phone: string;
+  email: string;
   umbrellaId: string;
   timestamp: string;
 }

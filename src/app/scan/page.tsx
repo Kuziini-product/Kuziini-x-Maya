@@ -63,6 +63,7 @@ export default function ScanPage() {
           umbrellaId: DEFAULT_UMBRELLA,
           phone: cleaned,
           name: trimmedName,
+          email: email.trim(),
         }),
       });
       const json = await res.json();

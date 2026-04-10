@@ -157,13 +157,21 @@ export async function POST(req: NextRequest) {
   }
 
   if (action === "getClientProfiles") {
-    // Aggregate client data from logins, orders, bills, offers, analytics
+    // Aggregate client data from logins, orders, bills, offers, analytics, AND guest management
     const { logins, orders, billRequests, offers } = body as {
-      logins: { name: string; phone: string; umbrellaId: string; timestamp: string }[];
+      logins: { name: string; phone: string; email?: string; umbrellaId: string; timestamp: string }[];
       orders: { phone: string; total: number; timestamp: string }[];
       billRequests: { umbrellaId: string; paymentMethod: string; amount: number }[];
       offers: { name: string; phone: string; email: string; message: string; photoUrl: string; timestamp: string }[];
     };
+
+    // Also load guests from Maya guest management system
+    const { kvGet } = await import("@/lib/kv");
+    const guestRegistry = await kvGet<{
+      id: string; name: string; phone: string; email: string;
+      stayStart: string; stayEnd: string; loungerId: string;
+      status: string; creditEnabled: boolean; registeredAt: string; notes?: string;
+    }[]>("guests:registry", []);
 
     const makeClient = (phone: string, timestamp: string): ClientProfile => ({
       phone, name: "—", email: "", source: [],
@@ -179,13 +187,14 @@ export async function POST(req: NextRequest) {
     // Build client profiles from login data
     const clients: Record<string, ClientProfile> = {};
 
-    // Process logins
+    // Process logins (now includes email)
     (logins || []).forEach((l) => {
       if (!l.phone) return;
       if (!clients[l.phone]) clients[l.phone] = makeClient(l.phone, l.timestamp);
       const c = clients[l.phone];
       c.totalVisits++;
       if (l.name && l.name !== "—") c.name = l.name;
+      if (l.email) c.email = l.email;
       if (!c.source.includes("receptie")) c.source.push("receptie");
       if (l.timestamp < c.firstVisit) c.firstVisit = l.timestamp;
       if (l.timestamp > c.lastVisit) c.lastVisit = l.timestamp;
@@ -229,6 +238,24 @@ export async function POST(req: NextRequest) {
         photoUrl: o.photoUrl || "",
         timestamp: o.timestamp,
       });
+    });
+
+    // Process guests from Maya guest management (ensures ALL registered guests appear)
+    (guestRegistry || []).forEach((g) => {
+      if (!g.phone) return;
+      if (!clients[g.phone]) clients[g.phone] = makeClient(g.phone, g.registeredAt);
+      const c = clients[g.phone];
+      // Update with guest management data (more complete: name, email, lounger)
+      if (g.name && g.name !== "—") c.name = g.name;
+      if (g.email) c.email = g.email;
+      if (!c.source.includes("receptie")) c.source.push("receptie");
+      if (g.loungerId && !c.umbrellas.includes(g.loungerId)) {
+        c.umbrellas.push(g.loungerId);
+      }
+      if (g.registeredAt < c.firstVisit) c.firstVisit = g.registeredAt;
+      if (g.registeredAt > c.lastVisit) c.lastVisit = g.registeredAt;
+      // If guest has no visits from QR scan, count the registration as 1 visit
+      if (c.totalVisits === 0) c.totalVisits = 1;
     });
 
     // Calculate averages

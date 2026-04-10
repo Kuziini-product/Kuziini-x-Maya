@@ -36,6 +36,7 @@ interface UmbrellaInfo {
 interface LoginEntry {
   name: string;
   phone: string;
+  email: string;
   umbrellaId: string;
   timestamp: string;
 }
@@ -807,10 +808,11 @@ export default function AdminPage() {
                     <p className="font-bold text-sm text-gray-900 tracking-wide">
                       {l.name || "—"}
                     </p>
-                    <span className="text-[10px] text-white/70">{formatTime(l.timestamp)}</span>
+                    <span className="text-[10px] text-gray-500">{formatTime(l.timestamp)}</span>
                   </div>
                   <div className="flex items-center gap-3 text-xs text-gray-600">
                     <span>{l.phone}</span>
+                    {l.email && <span>{l.email}</span>}
                     <span className="text-[#C9AB81]">⛱️ {l.umbrellaId}</span>
                   </div>
                 </div>
