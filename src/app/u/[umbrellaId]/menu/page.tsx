@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Search, ShoppingBag } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { Spinner } from "@/components/ui";
 import { MenuItemCard } from "@/components/menu/MenuItemCard";
@@ -29,7 +29,15 @@ export default function MenuPage({ params }: { params: { umbrellaId: string } })
   const [activeTab, setActiveTab] = useState("food");
   const [search, setSearch] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
+  const [canGoForward, setCanGoForward] = useState(false);
   const itemCount = useCartStore((s) => s.itemCount());
+
+  // Detect if user arrived via back navigation (forward history exists)
+  useEffect(() => {
+    const handlePopState = () => setCanGoForward(true);
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
 
   const { data, isLoading } = useQuery({
     queryKey: ["menu", umbrellaId],
@@ -78,41 +86,18 @@ export default function MenuPage({ params }: { params: { umbrellaId: string } })
 
           <div className="flex items-center gap-2">
             <button
-              onClick={() => setSearchOpen(!searchOpen)}
-              className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center"
-            >
-              <Search className="w-4 h-4 text-white/70" />
-            </button>
-            <Link
-              href={`/u/${umbrellaId}/cart`}
-              className={`relative w-9 h-9 rounded-full flex items-center justify-center ${itemCount > 0 ? "bg-[#C9AB81]" : "bg-white/10"}`}
-            >
-              <ShoppingBag className={`w-4 h-4 ${itemCount > 0 ? "text-[#0A0A0A]" : "text-white/70"}`} />
-              {itemCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-white text-[#0A0A0A] text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
-                  {itemCount}
-                </span>
+              onClick={() => { if (canGoForward) { window.history.forward(); setCanGoForward(false); } }}
+              className={cn(
+                "w-9 h-9 rounded-full flex items-center justify-center transition-all shrink-0",
+                canGoForward ? "bg-white/10 text-white/70" : "bg-transparent text-white/10"
               )}
-            </Link>
+              disabled={!canGoForward}
+            >
+              <ArrowRight className="w-4 h-4" />
+            </button>
           </div>
         </div>
 
-        {/* Search bar */}
-        {searchOpen && (
-          <div className="px-4 pb-3 animate-fade-up">
-            <div className="flex items-center gap-2 bg-white/10 rounded-lg px-3 py-2">
-              <Search className="w-3.5 h-3.5 text-white/40 shrink-0" />
-              <input
-                type="text"
-                placeholder="Caută în meniu..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                autoFocus
-                className="flex-1 bg-transparent outline-none text-sm text-white placeholder:text-white/30"
-              />
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Menu Tabs - LOFT style */}
