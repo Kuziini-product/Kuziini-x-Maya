@@ -42,25 +42,20 @@ export function BottomNav({ umbrellaId }: BottomNavProps) {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 bg-[#0A0A0A]/95 backdrop-blur-md border-t border-white/[0.06] pb-safe">
-      <div className="flex items-center justify-around px-1 pt-2 pb-2">
-        {/* Speaker toggle */}
+      <div className="relative flex items-center justify-center px-1 pt-2 pb-2">
+        {/* Speaker toggle - pinned left */}
         <button
           onClick={toggleAudio}
-          className="flex flex-col items-center gap-0.5 px-2.5 py-1.5 transition-all duration-200 text-white/30 active:text-white/50"
+          className="absolute left-4 flex items-center justify-center w-9 h-9 text-white/30 active:text-white/50 transition-all duration-200"
         >
-          <div className="relative">
-            {playing ? (
-              <Volume2 className="w-5 h-5" strokeWidth={1.8} />
-            ) : (
-              <VolumeX className="w-5 h-5" strokeWidth={1.8} />
-            )}
-          </div>
-          <span className="text-[9px] font-bold tracking-wider uppercase text-white/30">
-            Sunet
-          </span>
+          {playing ? (
+            <Volume2 className="w-5 h-5" strokeWidth={1.8} />
+          ) : (
+            <VolumeX className="w-5 h-5" strokeWidth={1.8} />
+          )}
         </button>
 
-        {/* Menu link */}
+        {/* Menu link - always centered */}
         {links.map(({ href, label, icon: Icon }) => {
           const active = pathname.startsWith(href);
           return (
