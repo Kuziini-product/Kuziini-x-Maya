@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { ScratchX } from "@/components/ui/ScratchX";
 import { Spinner } from "@/components/ui";
 import { MenuItemCard } from "@/components/menu/MenuItemCard";
 import { useCartStore, useSessionStore } from "@/store";
@@ -94,7 +95,7 @@ export default function MenuPage({ params }: { params: { umbrellaId: string } })
 
           <div className="flex items-center gap-2">
             <img src="/Maya.png" alt="Maya" className="h-12 object-contain" />
-            <span className="text-white/20 text-xs font-bold">×</span>
+            <ScratchX className="h-2.5 text-white/20" />
             <img src="/kuziini-logo.png" alt="Kuziini" className="h-6 object-contain invert brightness-200" />
           </div>
 

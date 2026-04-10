@@ -34,6 +34,26 @@ export const metadata: Metadata = {
   icons: {
     apple: "/icons/icon-192.png",
   },
+  openGraph: {
+    title: "Kuziini x Maya",
+    description: "Comanda direct de la sezlong - Kuziini x Maya Mamaia Nord",
+    siteName: "Kuziini x Maya",
+    type: "website",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Kuziini x Maya",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Kuziini x Maya",
+    description: "Comanda direct de la sezlong - Kuziini x Maya Mamaia Nord",
+    images: ["/og-image.png"],
+  },
 };
 
 export const viewport: Viewport = {

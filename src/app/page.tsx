@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronRight, ChevronLeft, MapPin, Phone, Mail, AtSign, X, Send, CheckCircle, Heart } from "lucide-react";
+import { ScratchX } from "@/components/ui/ScratchX";
 import { useSessionStore } from "@/store";
 import type { GalleryImage, GalleryAspect } from "@/lib/mock-data";
 
@@ -73,7 +74,7 @@ export default function HomePage() {
               </p>
             </button>
 
-            <span className="text-[#C9AB81]/30 text-lg font-bold my-3">×</span>
+            <ScratchX className="h-3 text-[#C9AB81]/40 my-3" />
 
             {/* Logo Kuziini — scroll to About */}
             <button onClick={() => document.getElementById("about")?.scrollIntoView({ behavior: "smooth" })} className="block mx-auto w-fit">
@@ -194,7 +195,7 @@ export default function HomePage() {
               className="w-[100px] h-auto object-contain opacity-80"
             />
           </button>
-          <span className="text-[#C9AB81]/40 text-lg font-bold">×</span>
+          <ScratchX className="h-3 text-[#C9AB81]/40" />
           <button onClick={() => router.push("/admin")}>
             <img
               src="/kuziini-logo.png"
