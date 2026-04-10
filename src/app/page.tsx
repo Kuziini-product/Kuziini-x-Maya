@@ -55,11 +55,6 @@ export default function HomePage() {
       {/* Hero - full screen mobile */}
       <section className="relative h-[100dvh] flex flex-col items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
-          <img
-            src="/hero-bg.jpg"
-            alt="Maya Mamaia"
-            className="w-full h-full object-cover"
-          />
           <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-[#0A0A0A]" />
         </div>
 
