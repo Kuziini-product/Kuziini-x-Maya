@@ -13,6 +13,10 @@ import {
   Calendar,
   CreditCard,
   StickyNote,
+  ArrowLeft,
+  Umbrella,
+  Clock,
+  MapPin,
 } from "lucide-react";
 import type { GuestProfile, DailyConfirmation } from "@/types";
 
@@ -359,13 +363,32 @@ export default function LoungerGrid({ adminId }: Props) {
 
       {/* ── BOTTOM PANEL ── */}
       {selected && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t th-border p-4 z-50 max-h-[70vh] overflow-y-auto shadow-lg">
-          {/* Header */}
+        <div className="fixed bottom-0 left-0 right-0 th-popup border-t th-border p-4 z-50 max-h-[75vh] overflow-y-auto shadow-2xl">
+          {/* Panel header - always visible */}
           <div className="flex items-center justify-between mb-3">
-            <p className="th-text font-bold text-lg">
-              Sezlong {selected}
-            </p>
-            <button onClick={closePanel} className="th-text-muted p-1">
+            <div className="flex items-center gap-2">
+              {panelMode !== "info" && (
+                <button onClick={() => { setPanelMode("info"); setError(null); }} className="th-text-muted p-1 active:opacity-60">
+                  <ArrowLeft className="w-5 h-5" />
+                </button>
+              )}
+              <div>
+                <p className="th-text font-bold text-lg">
+                  {panelMode === "info" && `Sezlong ${selected}`}
+                  {panelMode === "assign" && `Asigneaza pe ${selected}`}
+                  {panelMode === "checkin" && `Check-in pe ${selected}`}
+                  {panelMode === "relocate" && `Reloca de pe ${selected}`}
+                </p>
+                {panelMode !== "info" && (
+                  <p className="th-text-faint text-[10px]">
+                    {panelMode === "assign" && "Selecteaza un oaspete existent"}
+                    {panelMode === "checkin" && "Inregistreaza un oaspete nou"}
+                    {panelMode === "relocate" && `Muta ${selectedGuest?.name || ""} pe alt loc`}
+                  </p>
+                )}
+              </div>
+            </div>
+            <button onClick={closePanel} className="th-text-muted p-1 active:opacity-60">
               <X className="w-5 h-5" />
             </button>
           </div>
@@ -383,37 +406,75 @@ export default function LoungerGrid({ adminId }: Props) {
             <p className="text-red-500 text-xs mb-3">{error}</p>
           )}
 
-          {/* ── INFO MODE (default) ── */}
+          {/* ── INFO MODE ── */}
           {panelMode === "info" && !success && (
             <>
               {selectedGuest ? (
-                <div className="mb-4">
-                  <div className="th-card border p-3 mb-3">
-                    <p className="th-text font-medium">{selectedGuest.name}</p>
-                    <p className="th-text-muted text-xs mt-1">
-                      {selectedGuest.phone} · {selectedGuest.email || "—"}
-                    </p>
-                    <p className="th-text-muted text-xs">
-                      {selectedGuest.stayStart} → {selectedGuest.stayEnd}
-                    </p>
-                    <div className="flex items-center gap-3 mt-2">
-                      <span className={`text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 ${
-                        selectedGuest.status === "active"
-                          ? "bg-emerald-100 text-emerald-600"
-                          : "bg-amber-100 text-amber-600"
-                      }`}>
-                        {selectedGuest.status}
-                      </span>
-                      {selectedGuest.creditEnabled && (
-                        <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 bg-purple-100 text-purple-600">
-                          Credit ON
+                <div>
+                  {/* Full guest profile card */}
+                  <div className="th-card border p-4 mb-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="th-text font-bold text-base">{selectedGuest.name}</p>
+                      <div className="flex items-center gap-2">
+                        <span className={`text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 ${
+                          selectedGuest.status === "active"
+                            ? "bg-emerald-100 text-emerald-600"
+                            : selectedGuest.status === "inactive"
+                            ? "bg-amber-100 text-amber-600"
+                            : "bg-red-100 text-red-600"
+                        }`}>
+                          {selectedGuest.status}
                         </span>
-                      )}
+                        {selectedGuest.creditEnabled && (
+                          <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 bg-purple-100 text-purple-600">
+                            Credit
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Contact details */}
+                    <div className="grid grid-cols-2 gap-2 text-xs mb-3">
+                      <div className="flex items-center gap-1.5 th-text-secondary">
+                        <Phone className="w-3 h-3 shrink-0" /> {selectedGuest.phone}
+                      </div>
+                      <div className="flex items-center gap-1.5 th-text-secondary">
+                        <Mail className="w-3 h-3 shrink-0" /> {selectedGuest.email || "—"}
+                      </div>
+                      <div className="flex items-center gap-1.5 th-text-secondary">
+                        <Calendar className="w-3 h-3 shrink-0" /> {selectedGuest.stayStart} → {selectedGuest.stayEnd}
+                      </div>
+                      <div className="flex items-center gap-1.5 th-text-secondary">
+                        <Umbrella className="w-3 h-3 shrink-0" /> {selectedGuest.loungerId}
+                      </div>
+                    </div>
+
+                    {/* Credit details */}
+                    {selectedGuest.creditEnabled && (
+                      <div className="flex items-center gap-3 text-xs th-text-muted mb-2">
+                        <CreditCard className="w-3 h-3 text-purple-400" />
+                        <span>Limita: {selectedGuest.creditLimit || 0} RON</span>
+                        <span>Folosit: {selectedGuest.creditUsed || 0} RON</span>
+                      </div>
+                    )}
+
+                    {/* Notes */}
+                    {selectedGuest.notes && (
+                      <p className="th-text-faint text-xs italic border-t th-border pt-2 mt-2">
+                        {selectedGuest.notes}
+                      </p>
+                    )}
+
+                    {/* Registration info */}
+                    <div className="flex items-center gap-2 text-[10px] th-text-faint mt-2 pt-2 border-t th-border">
+                      <Clock className="w-3 h-3" />
+                      Inregistrat: {new Date(selectedGuest.registeredAt).toLocaleString("ro-RO")}
                     </div>
                   </div>
+
                   {/* Lounger history */}
                   {selectedGuest.loungerHistory && selectedGuest.loungerHistory.length > 0 && (
-                    <div className="th-card border th-border p-3 mb-3">
+                    <div className="th-card border p-3 mb-3">
                       <p className="text-[10px] font-bold text-[#C9AB81] uppercase tracking-[0.2em] mb-2">
                         Istoric locuri
                       </p>
@@ -447,6 +508,7 @@ export default function LoungerGrid({ adminId }: Props) {
                     </div>
                   )}
 
+                  {/* Action button */}
                   <button
                     onClick={() => setPanelMode("relocate")}
                     className="w-full flex items-center justify-center gap-2 bg-[#C9AB81] text-[#0A0A0A] py-3 font-bold text-xs tracking-wider uppercase"
@@ -457,7 +519,11 @@ export default function LoungerGrid({ adminId }: Props) {
                 </div>
               ) : (
                 <div>
-                  <p className="th-text-muted text-sm mb-4">Acest sezlong este liber.</p>
+                  <div className="th-card border p-4 mb-4 text-center">
+                    <MapPin className="w-8 h-8 th-text-faint mx-auto mb-2" />
+                    <p className="th-text font-medium">Sezlong liber</p>
+                    <p className="th-text-faint text-xs mt-1">Niciun oaspete asignat pe acest loc</p>
+                  </div>
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       onClick={() => setPanelMode("assign")}
@@ -482,13 +548,6 @@ export default function LoungerGrid({ adminId }: Props) {
           {/* ── ASSIGN MODE ── */}
           {panelMode === "assign" && !success && (
             <div>
-              <div className="flex items-center gap-2 mb-3">
-                <button onClick={() => setPanelMode("info")} className="th-text-muted text-xs">&larr; Inapoi</button>
-                <p className="text-[#C9AB81] text-[10px] font-bold tracking-[0.2em] uppercase">
-                  Asigneaza oaspete pe {selected}
-                </p>
-              </div>
-
               <div className="relative mb-3">
                 <Search className="absolute left-3 top-2 w-4 h-4 th-text-faint" />
                 <input
@@ -535,78 +594,58 @@ export default function LoungerGrid({ adminId }: Props) {
 
           {/* ── CHECKIN MODE ── */}
           {panelMode === "checkin" && !success && (
-            <div>
-              <div className="flex items-center gap-2 mb-3">
-                <button onClick={() => setPanelMode("info")} className="th-text-muted text-xs">&larr; Inapoi</button>
-                <p className="text-[#C9AB81] text-[10px] font-bold tracking-[0.2em] uppercase">
-                  Check-in rapid pe {selected}
-                </p>
+            <div className="space-y-3">
+              <div>
+                <label className={labelCls}>Nume *</label>
+                <input type="text" value={ciName} onChange={(e) => setCiName(e.target.value)} className={inputCls} placeholder="Ion Popescu" autoFocus />
               </div>
-
-              <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className={labelCls}>Nume *</label>
-                  <input type="text" value={ciName} onChange={(e) => setCiName(e.target.value)} className={inputCls} placeholder="Ion Popescu" autoFocus />
+                  <label className={labelCls}>Telefon *</label>
+                  <input type="tel" value={ciPhone} onChange={(e) => setCiPhone(e.target.value)} className={inputCls} placeholder="+40712345678" />
                 </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <label className={labelCls}>Telefon *</label>
-                    <input type="tel" value={ciPhone} onChange={(e) => setCiPhone(e.target.value)} className={inputCls} placeholder="+40712345678" />
-                  </div>
-                  <div>
-                    <label className={labelCls}>Email</label>
-                    <input type="email" value={ciEmail} onChange={(e) => setCiEmail(e.target.value)} className={inputCls} placeholder="email@ex.com" />
-                  </div>
+                <div>
+                  <label className={labelCls}>Email</label>
+                  <input type="email" value={ciEmail} onChange={(e) => setCiEmail(e.target.value)} className={inputCls} placeholder="email@ex.com" />
                 </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <label className={labelCls}>De la</label>
-                    <input type="date" value={ciStayStart} onChange={(e) => setCiStayStart(e.target.value)} className={inputCls} />
-                  </div>
-                  <div>
-                    <label className={labelCls}>Pana la</label>
-                    <input type="date" value={ciStayEnd} onChange={(e) => setCiStayEnd(e.target.value)} className={inputCls} />
-                  </div>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className={labelCls}>De la</label>
+                  <input type="date" value={ciStayStart} onChange={(e) => setCiStayStart(e.target.value)} className={inputCls} />
                 </div>
-                <div className="flex items-center justify-between th-card border p-3">
-                  <div className="flex items-center gap-2">
-                    <CreditCard className="w-4 h-4 text-purple-400" />
-                    <span className="text-sm th-text">Credit</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setCiCredit(!ciCredit)}
-                    className={`w-10 h-5 rounded-full transition-colors relative ${ciCredit ? "bg-purple-500" : "th-tab-inactive"}`}
-                  >
-                    <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-transform ${ciCredit ? "left-5" : "left-0.5"}`} />
-                  </button>
+                <div>
+                  <label className={labelCls}>Pana la</label>
+                  <input type="date" value={ciStayEnd} onChange={(e) => setCiStayEnd(e.target.value)} className={inputCls} />
                 </div>
-
+              </div>
+              <div className="flex items-center justify-between th-card border p-3">
+                <div className="flex items-center gap-2">
+                  <CreditCard className="w-4 h-4 text-purple-400" />
+                  <span className="text-sm th-text">Credit</span>
+                </div>
                 <button
-                  onClick={quickCheckin}
-                  disabled={saving}
-                  className="w-full bg-emerald-500 text-white py-3 font-bold text-xs tracking-wider uppercase disabled:opacity-50"
+                  type="button"
+                  onClick={() => setCiCredit(!ciCredit)}
+                  className={`w-10 h-5 rounded-full transition-colors relative ${ciCredit ? "bg-purple-500" : "th-tab-inactive"}`}
                 >
-                  {saving ? "Se inregistreaza..." : `Check-in pe ${selected}`}
+                  <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-transform ${ciCredit ? "left-5" : "left-0.5"}`} />
                 </button>
               </div>
+
+              <button
+                onClick={quickCheckin}
+                disabled={saving}
+                className="w-full bg-emerald-500 text-white py-3 font-bold text-xs tracking-wider uppercase disabled:opacity-50"
+              >
+                {saving ? "Se inregistreaza..." : `Check-in pe ${selected}`}
+              </button>
             </div>
           )}
 
           {/* ── RELOCATE MODE ── */}
           {panelMode === "relocate" && !success && selectedGuest && (
             <div>
-              <div className="flex items-center gap-2 mb-3">
-                <button onClick={() => setPanelMode("info")} className="th-text-muted text-xs">&larr; Inapoi</button>
-                <p className="text-[#C9AB81] text-[10px] font-bold tracking-[0.2em] uppercase">
-                  Reloca {selectedGuest.name}
-                </p>
-              </div>
-
-              <p className="th-text-muted text-xs mb-3">
-                Muta de pe {selected} pe alt sezlong:
-              </p>
-
               {/* Previous loungers - quick assign */}
               {selectedGuest.loungerHistory && selectedGuest.loungerHistory.filter(h => h.action !== "relocated_from").length > 0 && (
                 <div className="mb-3">
