@@ -1,4 +1,4 @@
-const CACHE_NAME = "kuziini-v3";
+const CACHE_NAME = "kuziini-v4";
 
 self.addEventListener("install", (event) => {
   self.skipWaiting();
