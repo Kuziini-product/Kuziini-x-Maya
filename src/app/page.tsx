@@ -83,33 +83,6 @@ export default function HomePage() {
             </button>
           </div>
 
-          <button
-            onClick={() => {
-              if (userSession?.umbrellaId) {
-                fetch("/api/access-log", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    action: "track",
-                    name: userSession.name || "",
-                    phone: userSession.phone || "",
-                    email: userSession.email || "",
-                    umbrellaId: userSession.umbrellaId,
-                    page: `/u/${userSession.umbrellaId}`,
-                    accessType: "menu-return",
-                  }),
-                }).catch(() => {});
-                router.push(`/u/${userSession.umbrellaId}`);
-              } else {
-                router.push("/scan");
-              }
-            }}
-            className="inline-flex items-center justify-center gap-2 bg-[#C9AB81] text-[#0A0A0A] px-8 py-3.5 font-bold text-sm tracking-[0.15em] uppercase transition-all active:opacity-80"
-          >
-            {userSession?.umbrellaId ? "Deschide meniul" : "Comandă acum"}
-            <ChevronRight className="w-4 h-4" />
-          </button>
-
         </div>
 
         <button
@@ -178,6 +151,36 @@ export default function HomePage() {
           </div>
         )}
       </section>
+
+      {/* CTA Button */}
+      <div className="py-10 px-5 text-center">
+        <button
+          onClick={() => {
+            if (userSession?.umbrellaId) {
+              fetch("/api/access-log", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  action: "track",
+                  name: userSession.name || "",
+                  phone: userSession.phone || "",
+                  email: userSession.email || "",
+                  umbrellaId: userSession.umbrellaId,
+                  page: `/u/${userSession.umbrellaId}`,
+                  accessType: "menu-return",
+                }),
+              }).catch(() => {});
+              router.push(`/u/${userSession.umbrellaId}`);
+            } else {
+              router.push("/scan");
+            }
+          }}
+          className="inline-flex items-center justify-center gap-2 bg-[#C9AB81] text-[#0A0A0A] px-8 py-3.5 font-bold text-sm tracking-[0.15em] uppercase transition-all active:opacity-80"
+        >
+          {userSession?.umbrellaId ? "Deschide meniul" : "Comandă acum"}
+          <ChevronRight className="w-4 h-4" />
+        </button>
+      </div>
 
       {/* Footer */}
       <footer className="py-12 px-5 border-t border-white/[0.06]">
