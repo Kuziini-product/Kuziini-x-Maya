@@ -29,15 +29,14 @@ export default function MenuPage({ params }: { params: { umbrellaId: string } })
   const [activeTab, setActiveTab] = useState("food");
   const [search, setSearch] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
-  const [canGoForward, setCanGoForward] = useState(false);
+  const [lastVisited, setLastVisited] = useState<string | null>(null);
   const itemCount = useCartStore((s) => s.itemCount());
 
-  // Detect if user arrived via back navigation (forward history exists)
+  // Check if user has visited a section before (stored when navigating away)
   useEffect(() => {
-    const handlePopState = () => setCanGoForward(true);
-    window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState);
-  }, []);
+    const saved = sessionStorage.getItem(`last-section-${umbrellaId}`);
+    if (saved) setLastVisited(saved);
+  }, [umbrellaId]);
 
   const { data, isLoading } = useQuery({
     queryKey: ["menu", umbrellaId],
@@ -85,16 +84,16 @@ export default function MenuPage({ params }: { params: { umbrellaId: string } })
           </div>
 
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => { if (canGoForward) { window.history.forward(); setCanGoForward(false); } }}
-              className={cn(
-                "w-9 h-9 rounded-full flex items-center justify-center transition-all shrink-0",
-                canGoForward ? "bg-white/10 text-white/70" : "bg-transparent text-white/10"
-              )}
-              disabled={!canGoForward}
-            >
-              <ArrowRight className="w-4 h-4" />
-            </button>
+            {lastVisited ? (
+              <Link
+                href={lastVisited}
+                className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center shrink-0"
+              >
+                <ArrowRight className="w-4 h-4 text-white/70" />
+              </Link>
+            ) : (
+              <div className="w-9 h-9 shrink-0" />
+            )}
           </div>
         </div>
 

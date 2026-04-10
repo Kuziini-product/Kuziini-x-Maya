@@ -57,6 +57,13 @@ export function BottomNav({ umbrellaId }: BottomNavProps) {
   const isOnCart = pathname.startsWith(`${base}/cart`);
   const isOnBill = pathname.startsWith(`${base}/bill`);
 
+  // Track last visited section (not menu/landing) for forward button
+  useEffect(() => {
+    if (!isOnMenu && !isOnLanding) {
+      sessionStorage.setItem(`last-section-${umbrellaId}`, pathname);
+    }
+  }, [pathname, isOnMenu, isOnLanding, umbrellaId]);
+
   // Hide nav on bill page when session is cleared (note was sent)
   if (isOnBill && !userSession) return null;
 
