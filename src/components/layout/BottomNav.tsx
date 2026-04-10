@@ -1,7 +1,8 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { UtensilsCrossed, Receipt, Sparkles } from "lucide-react";
+import { useRef, useState, useEffect } from "react";
+import { UtensilsCrossed, Volume2, VolumeX } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface BottomNavProps {
@@ -10,22 +11,58 @@ interface BottomNavProps {
 
 export function BottomNav({ umbrellaId }: BottomNavProps) {
   const pathname = usePathname();
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [playing, setPlaying] = useState(false);
+
+  useEffect(() => {
+    // Find the existing audio element created by AmbientSound
+    const existing = document.querySelector("audio");
+    if (existing) {
+      audioRef.current = existing;
+      setPlaying(!existing.paused);
+    }
+  }, []);
+
+  const toggleAudio = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (playing) {
+      audio.pause();
+      setPlaying(false);
+    } else {
+      audio.play().then(() => setPlaying(true)).catch(() => {});
+    }
+  };
 
   const base = `/u/${umbrellaId}`;
 
   const links = [
-    { href: "/", label: "K×L", icon: Sparkles, exact: true },
     { href: `${base}/menu`, label: "Meniu", icon: UtensilsCrossed },
-    { href: `${base}/bill`, label: "Nota", icon: Receipt },
   ];
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 bg-[#0A0A0A]/95 backdrop-blur-md border-t border-white/[0.06] pb-safe">
       <div className="flex items-center justify-around px-1 pt-2 pb-2">
-        {links.map(({ href, label, icon: Icon, exact }) => {
-          const active = exact
-            ? pathname === href
-            : pathname.startsWith(href);
+        {/* Speaker toggle */}
+        <button
+          onClick={toggleAudio}
+          className="flex flex-col items-center gap-0.5 px-2.5 py-1.5 transition-all duration-200 text-white/30 active:text-white/50"
+        >
+          <div className="relative">
+            {playing ? (
+              <Volume2 className="w-5 h-5" strokeWidth={1.8} />
+            ) : (
+              <VolumeX className="w-5 h-5" strokeWidth={1.8} />
+            )}
+          </div>
+          <span className="text-[9px] font-bold tracking-wider uppercase text-white/30">
+            Sunet
+          </span>
+        </button>
+
+        {/* Menu link */}
+        {links.map(({ href, label, icon: Icon }) => {
+          const active = pathname.startsWith(href);
           return (
             <Link
               key={href}
