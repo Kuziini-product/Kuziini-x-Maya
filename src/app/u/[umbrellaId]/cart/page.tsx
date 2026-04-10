@@ -60,15 +60,12 @@ export default function CartPage({ params }: { params: { umbrellaId: string } })
 
       <div>
         <PageHeader
-          title="Coș"
-          subtitle={`${items.length} ${items.length === 1 ? "produs" : "produse"}`}
-          back={
-            <Link href={`/u/${umbrellaId}/menu`} className="w-9 h-9 flex items-center justify-center bg-white/10">
-              <ArrowLeft className="w-4 h-4 text-white/70" />
-            </Link>
-          }
+          title="Comanda ta"
           right={
             <div className="flex items-center gap-2">
+              <span className="text-[10px] text-white font-bold tracking-[0.15em] uppercase border border-white/20 bg-white/[0.06] px-3 py-1.5">
+                Coș ({items.length})
+              </span>
               <Link href={`/u/${umbrellaId}/menu`} className="text-[10px] text-[#C9AB81] font-bold tracking-[0.15em] uppercase border border-[#C9AB81]/30 px-3 py-1.5 active:bg-[#C9AB81]/10 transition-colors">
                 Continuă
               </Link>
