@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { X, Plus, ShoppingBag } from "lucide-react";
 import { Spinner } from "@/components/ui";
 import { useSessionStore, useCartStore } from "@/store";
 import { cn } from "@/lib/utils";
@@ -24,10 +25,11 @@ export default function LandingPage({
   const { umbrellaId } = params;
   const router = useRouter();
   const { userSession } = useSessionStore();
-  const [mayaBanner, setMayaBanner] = useState<PromoBanner | null>(null);
-  const [kuziiniBanner, setKuziiniBanner] = useState<PromoBanner | null>(null);
+  const [mayaBanners, setMayaBanners] = useState<PromoBanner[]>([]);
+  const [kuziiniBanners, setKuziiniBanners] = useState<PromoBanner[]>([]);
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [addedToast, setAddedToast] = useState<string | null>(null);
+  const [openDrawer, setOpenDrawer] = useState<"Maya" | "kuziini" | null>(null);
   const addItem = useCartStore((s) => s.addItem);
   const cartItems = useCartStore((s) => s.items);
 
@@ -60,10 +62,10 @@ export default function LandingPage({
   useEffect(() => {
     fetch("/api/banners?category=Maya")
       .then((r) => r.json())
-      .then((j) => { if (j.success && j.data.length) setMayaBanner(j.data[0]); });
+      .then((j) => { if (j.success && j.data.length) setMayaBanners(j.data); });
     fetch("/api/banners?category=kuziini")
       .then((r) => r.json())
-      .then((j) => { if (j.success && j.data.length) setKuziiniBanner(j.data[0]); });
+      .then((j) => { if (j.success && j.data.length) setKuziiniBanners(j.data); });
     fetch(`/api/menu?umbrellaId=${umbrellaId}`)
       .then((r) => r.json())
       .then((j) => { if (j.success && j.data?.items) setMenuItems(j.data.items); });
@@ -104,9 +106,11 @@ export default function LandingPage({
   }
 
   const umbrella: Umbrella = data.umbrella;
+  const mayaBanner = mayaBanners[0] || null;
+  const kuziiniBanner = kuziiniBanners[0] || null;
+  const drawerBanners = openDrawer === "Maya" ? mayaBanners : openDrawer === "kuziini" ? kuziiniBanners : [];
 
-  function handleBannerClick(banner: PromoBanner) {
-    // If banner has a linked menu product, add it to cart with promo label
+  function handleAddFromBanner(banner: PromoBanner) {
     if (banner.menuItemId) {
       const item = menuItems.find((m) => m.id === banner.menuItemId);
       if (item) {
@@ -114,12 +118,24 @@ export default function LandingPage({
         setAddedToast(banner.title);
         setTimeout(() => setAddedToast(null), 2500);
       }
-      return;
-    }
-    // Fallback: open Instagram if set
-    if (banner.instagramUrl) {
+    } else if (banner.instagramUrl) {
       window.open(banner.instagramUrl, "_blank", "noopener,noreferrer");
     }
+  }
+
+  function getCartQty(banner: PromoBanner) {
+    if (!banner.menuItemId) return 0;
+    return cartItems.find((i) => i.menuItem.id === banner.menuItemId)?.quantity || 0;
+  }
+
+  function getMenuItemName(banner: PromoBanner) {
+    if (!banner.menuItemId) return undefined;
+    return menuItems.find((m) => m.id === banner.menuItemId)?.name;
+  }
+
+  function getMenuItemPrice(banner: PromoBanner) {
+    if (!banner.menuItemId) return undefined;
+    return menuItems.find((m) => m.id === banner.menuItemId)?.price;
   }
 
   return (
@@ -143,29 +159,51 @@ export default function LandingPage({
             )}
           </div>
 
-          {/* Maya banner */}
+          {/* Maya banner card — click opens drawer */}
           {mayaBanner && (
             <div className="w-full max-w-sm mb-3">
               <p className="text-[10px] font-bold text-white/20 tracking-[0.2em] uppercase mb-2">Maya</p>
-              <BannerSlide
-                banner={mayaBanner}
-                onClick={() => handleBannerClick(mayaBanner)}
-                cartQty={mayaBanner.menuItemId ? cartItems.find((i) => i.menuItem.id === mayaBanner.menuItemId)?.quantity : undefined}
-                menuItemName={mayaBanner.menuItemId ? menuItems.find((m) => m.id === mayaBanner.menuItemId)?.name : undefined}
-              />
+              <div
+                onClick={() => setOpenDrawer("Maya")}
+                className="bg-white/[0.03] border border-white/[0.06] overflow-hidden cursor-pointer active:bg-white/[0.06] transition-all animate-fade-in"
+              >
+                {mayaBanner.image && (
+                  <img src={mayaBanner.image} alt="" className="w-full h-28 object-cover" />
+                )}
+                <div className="p-4">
+                  <p className="text-sm font-bold text-white tracking-wide">{mayaBanner.title}</p>
+                  {mayaBanner.subtitle && (
+                    <p className="text-white/40 text-xs mt-0.5">{mayaBanner.subtitle}</p>
+                  )}
+                  <p className="text-[#C9AB81]/60 text-[9px] mt-1.5 font-bold tracking-wider uppercase">
+                    Vezi {mayaBanners.length} oferte
+                  </p>
+                </div>
+              </div>
             </div>
           )}
 
-          {/* Kuziini banner */}
+          {/* Kuziini banner card — click opens drawer */}
           {kuziiniBanner && (
             <div className="w-full max-w-sm">
               <p className="text-[10px] font-bold text-white/20 tracking-[0.2em] uppercase mb-2">Kuziini</p>
-              <BannerSlide
-                banner={kuziiniBanner}
-                onClick={() => handleBannerClick(kuziiniBanner)}
-                cartQty={kuziiniBanner.menuItemId ? cartItems.find((i) => i.menuItem.id === kuziiniBanner.menuItemId)?.quantity : undefined}
-                menuItemName={kuziiniBanner.menuItemId ? menuItems.find((m) => m.id === kuziiniBanner.menuItemId)?.name : undefined}
-              />
+              <div
+                onClick={() => setOpenDrawer("kuziini")}
+                className="bg-white/[0.03] border border-white/[0.06] overflow-hidden cursor-pointer active:bg-white/[0.06] transition-all animate-fade-in"
+              >
+                {kuziiniBanner.image && (
+                  <img src={kuziiniBanner.image} alt="" className="w-full h-28 object-cover" />
+                )}
+                <div className="p-4">
+                  <p className="text-sm font-bold text-white tracking-wide">{kuziiniBanner.title}</p>
+                  {kuziiniBanner.subtitle && (
+                    <p className="text-white/40 text-xs mt-0.5">{kuziiniBanner.subtitle}</p>
+                  )}
+                  <p className="text-[#C9AB81]/60 text-[9px] mt-1.5 font-bold tracking-wider uppercase">
+                    Vezi {kuziiniBanners.length} oferte
+                  </p>
+                </div>
+              </div>
             </div>
           )}
         </div>
@@ -192,42 +230,102 @@ export default function LandingPage({
           </div>
         )}
       </div>
-    </>
-  );
-}
 
-function BannerSlide({ banner, onClick, cartQty, menuItemName }: { banner: PromoBanner; onClick?: () => void; cartQty?: number; menuItemName?: string }) {
-  const isClickable = !!(banner.menuItemId || banner.instagramUrl);
-  return (
-    <div
-      onClick={isClickable ? onClick : undefined}
-      className={cn(
-        "bg-white/[0.03] border border-white/[0.06] p-4 animate-fade-in transition-all duration-500",
-        isClickable && "cursor-pointer active:bg-white/[0.06]"
-      )}
-    >
-      <div className="flex items-center justify-between">
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-bold text-white tracking-wide">{banner.title}</p>
-          {menuItemName && (
-            <p className="text-white/40 text-xs mt-0.5">{menuItemName}</p>
-          )}
-          {!menuItemName && banner.subtitle && (
-            <p className="text-white/40 text-xs mt-0.5">{banner.subtitle}</p>
-          )}
-          {banner.menuItemId && (
-            <p className="text-emerald-400/60 text-[9px] mt-1 font-bold tracking-wider uppercase">
-              {cartQty ? `${cartQty} în coș · + adaugă` : "+ Adaugă în coș"}
-            </p>
-          )}
+      {/* ═══ Offers Drawer ═══ */}
+      {openDrawer && (
+        <div className="fixed inset-0 z-50 flex flex-col">
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setOpenDrawer(null)} />
+
+          {/* Drawer panel */}
+          <div className="relative mt-auto bg-[#0A0A0A] border-t border-white/[0.08] max-h-[85dvh] flex flex-col animate-slide-up">
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
+              <div>
+                <p className="text-[10px] font-bold text-[#C9AB81] tracking-[0.2em] uppercase">
+                  {openDrawer === "Maya" ? "Oferte Maya" : "Oferte Kuziini"}
+                </p>
+                <p className="text-white/30 text-[10px] mt-0.5">
+                  Apasă pe o ofertă pentru a o adăuga în coș
+                </p>
+              </div>
+              <button
+                onClick={() => setOpenDrawer(null)}
+                className="w-9 h-9 flex items-center justify-center bg-white/10 active:bg-white/20 transition-colors"
+              >
+                <X className="w-4 h-4 text-white/60" />
+              </button>
+            </div>
+
+            {/* Offers list */}
+            <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
+              {drawerBanners.map((banner) => {
+                const itemName = getMenuItemName(banner);
+                const itemPrice = getMenuItemPrice(banner);
+                const qty = getCartQty(banner);
+                return (
+                  <div
+                    key={banner.id}
+                    className={cn(
+                      "border overflow-hidden transition-all",
+                      qty > 0
+                        ? "bg-emerald-500/[0.08] border-emerald-500/20"
+                        : "bg-white/[0.03] border-white/[0.06]"
+                    )}
+                  >
+                    {banner.image && (
+                      <img src={banner.image} alt="" className="w-full h-32 object-cover" />
+                    )}
+                    <div className="p-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                          <p className="font-bold text-white text-sm tracking-wide">
+                            {banner.title}
+                          </p>
+                          {itemName && (
+                            <p className="text-white/40 text-xs mt-0.5">{itemName}</p>
+                          )}
+                          {!itemName && banner.subtitle && (
+                            <p className="text-white/40 text-xs mt-0.5">{banner.subtitle}</p>
+                          )}
+                          {itemPrice != null && (
+                            <p className="text-[#C9AB81] font-bold text-sm mt-1">
+                              {itemPrice} RON
+                            </p>
+                          )}
+                        </div>
+                        {!banner.emoji && !banner.image && (
+                          <ShoppingBag className="w-5 h-5 text-white/20 shrink-0 mt-1" />
+                        )}
+                        {banner.emoji && !banner.image && (
+                          <span className="text-2xl shrink-0">{banner.emoji}</span>
+                        )}
+                      </div>
+
+                      {/* Add to cart button */}
+                      {banner.menuItemId && (
+                        <button
+                          onClick={() => handleAddFromBanner(banner)}
+                          className={cn(
+                            "w-full mt-3 flex items-center justify-center gap-2 py-2.5 font-bold text-xs tracking-wider uppercase transition-all active:scale-[0.98]",
+                            qty > 0
+                              ? "bg-emerald-500 text-white"
+                              : "bg-[#C9AB81] text-[#0A0A0A]"
+                          )}
+                        >
+                          <Plus className="w-3.5 h-3.5" />
+                          {qty > 0 ? `${qty} în coș · adaugă încă` : "Adaugă în coș"}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
-        {banner.image ? (
-          <img src={banner.image} alt="" className="w-10 h-10 object-cover rounded shrink-0 ml-3" />
-        ) : banner.emoji ? (
-          <span className="text-2xl shrink-0 ml-3">{banner.emoji}</span>
-        ) : null}
-      </div>
-    </div>
+      )}
+    </>
   );
 }
 
