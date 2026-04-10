@@ -180,18 +180,18 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
         <p className="text-white/40 text-xs mb-4 tracking-wide">
           Până ajunge ospătarul poți vizita
         </p>
-        <div className="flex items-center gap-3 mb-6">
+        <div className="flex items-center gap-3 mb-6 w-full max-w-xs">
           <a
             href="https://www.instagram.com/kuziiniconceptstore/"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 flex items-center justify-center gap-2 border border-[#C9AB81]/30 py-3 rounded-xl text-[#C9AB81] font-bold text-xs tracking-[0.15em] uppercase active:bg-[#C9AB81]/10 transition-colors"
+            className="flex-1 flex items-center justify-center border border-[#C9AB81]/30 py-3 px-8 rounded-xl text-[#C9AB81] font-bold text-xs tracking-[0.15em] uppercase active:bg-[#C9AB81]/10 transition-colors"
           >
             Kuziini
           </a>
           <button
             onClick={() => router.push("/#about")}
-            className="flex-1 flex items-center justify-center gap-2 border border-[#C9AB81]/30 py-3 rounded-xl text-[#C9AB81] font-bold text-xs tracking-[0.15em] uppercase active:bg-[#C9AB81]/10 transition-colors"
+            className="flex-1 flex items-center justify-center border border-[#C9AB81]/30 py-3 px-8 rounded-xl text-[#C9AB81] font-bold text-xs tracking-[0.15em] uppercase active:bg-[#C9AB81]/10 transition-colors"
           >
             Acasă
           </button>
