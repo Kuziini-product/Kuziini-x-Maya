@@ -21,7 +21,18 @@ export default function ScanPage() {
   useEffect(() => {
     if (userSession?.umbrellaId) {
       router.push(`/u/${userSession.umbrellaId}`);
+      return;
     }
+    // Auto-fill from previously saved contact data
+    try {
+      const saved = localStorage.getItem("kuziini_contact");
+      if (saved) {
+        const { name: n, phone: p, email: e } = JSON.parse(saved);
+        if (n) setName(n);
+        if (p) setPhone(p);
+        if (e) setEmail(e);
+      }
+    } catch {}
   }, [userSession, router]);
 
   async function handleSubmit() {

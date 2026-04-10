@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Phone, User, X } from "lucide-react";
 import { useSessionStore } from "@/store";
 
@@ -15,6 +15,18 @@ export function PhoneModal({ umbrellaId, onClose }: PhoneModalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { setUserSession } = useSessionStore();
+
+  // Auto-fill from saved contact data
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("kuziini_contact");
+      if (saved) {
+        const { name: n, phone: p } = JSON.parse(saved);
+        if (n) setName(n);
+        if (p) setPhone(p);
+      }
+    } catch {}
+  }, []);
 
   async function handleSubmit() {
     const trimmedName = name.trim();
@@ -47,6 +59,10 @@ export function PhoneModal({ umbrellaId, onClose }: PhoneModalProps) {
         isRegistered: json.data.isRegistered ?? true,
         joinedAt: json.data.joinedAt,
       });
+      localStorage.setItem("kuziini_contact", JSON.stringify({
+        name: trimmedName,
+        phone: cleaned,
+      }));
       onClose();
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Eroare la înregistrare.");
