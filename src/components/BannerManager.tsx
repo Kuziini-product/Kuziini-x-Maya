@@ -54,16 +54,15 @@ export default function BannerManager({
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  // Fetch menu items for Maya banner menu picker
+  // Fetch menu items for banner menu picker (both brands)
   useEffect(() => {
-    if (category !== "Maya") return;
     fetch("/api/menu?umbrellaId=A-01")
       .then((r) => r.json())
       .then((j) => {
         if (j.success && j.data?.items) setMenuItems(j.data.items);
       })
       .catch(() => {});
-  }, [category]);
+  }, []);
 
   const apiCall = useCallback(
     async (action: string, extra: Record<string, unknown> = {}) => {
@@ -424,12 +423,39 @@ function BannerForm({
         </div>
       )}
 
-      {/* Kuziini: Instagram URL */}
+      {/* Menu item picker — both brands */}
+      <div className="border-t border-white/[0.06] pt-2 mt-2">
+        <p className="text-emerald-400 text-[10px] font-bold tracking-[0.15em] uppercase mb-1.5 flex items-center gap-1">
+          <ShoppingBag className="w-3 h-3" />
+          Produs din meniu (opțional)
+        </p>
+        <select
+          value={form.menuItemId}
+          onChange={(e) => setForm((f) => ({ ...f, menuItemId: e.target.value }))}
+          className="w-full bg-[#1a1a1a] border border-white/10 px-3 py-2 text-white text-sm outline-none focus:border-emerald-400/50"
+          style={{ colorScheme: "dark" }}
+        >
+          <option value="" style={{ background: "#1a1a1a", color: "#fff" }}>-- Niciun produs --</option>
+          {menuItems.length === 0 && (
+            <option disabled style={{ background: "#1a1a1a", color: "#888" }}>Se incarca produsele...</option>
+          )}
+          {menuItems.filter((m) => m.available).map((item) => (
+            <option key={item.id} value={item.id} style={{ background: "#1a1a1a", color: "#fff" }}>
+              {item.name} — {item.price} RON
+            </option>
+          ))}
+        </select>
+        <p className="text-white/20 text-[9px] mt-1">
+          La click, produsul se adaugă direct în coșul clientului. Titlul bannerului poate fi diferit de numele produsului.
+        </p>
+      </div>
+
+      {/* Kuziini: Instagram URL (fallback if no menu item) */}
       {category === "kuziini" && (
         <div className="border-t border-white/[0.06] pt-2 mt-2">
           <p className="text-pink-400 text-[10px] font-bold tracking-[0.15em] uppercase mb-1.5 flex items-center gap-1">
             <Instagram className="w-3 h-3" />
-            Link Instagram (opțional)
+            Link Instagram (opțional — fallback dacă nu e produs selectat)
           </p>
           <input
             type="url"
@@ -438,38 +464,6 @@ function BannerForm({
             placeholder="https://www.instagram.com/p/..."
             className="w-full bg-white/5 border border-white/10 px-3 py-2 text-white text-sm outline-none focus:border-pink-400/50 placeholder:text-white/20"
           />
-          <p className="text-white/20 text-[9px] mt-1">
-            La click, clientul va fi trimis direct pe Instagram
-          </p>
-        </div>
-      )}
-
-      {/* Maya: Menu item picker */}
-      {category === "Maya" && (
-        <div className="border-t border-white/[0.06] pt-2 mt-2">
-          <p className="text-emerald-400 text-[10px] font-bold tracking-[0.15em] uppercase mb-1.5 flex items-center gap-1">
-            <ShoppingBag className="w-3 h-3" />
-            Produs din meniu (opțional)
-          </p>
-          <select
-            value={form.menuItemId}
-            onChange={(e) => setForm((f) => ({ ...f, menuItemId: e.target.value }))}
-            className="w-full bg-[#1a1a1a] border border-white/10 px-3 py-2 text-white text-sm outline-none focus:border-emerald-400/50"
-            style={{ colorScheme: "dark" }}
-          >
-            <option value="" style={{ background: "#1a1a1a", color: "#fff" }}>-- Niciun produs --</option>
-            {menuItems.length === 0 && (
-              <option disabled style={{ background: "#1a1a1a", color: "#888" }}>Se incarca produsele...</option>
-            )}
-            {menuItems.filter((m) => m.available).map((item) => (
-              <option key={item.id} value={item.id} style={{ background: "#1a1a1a", color: "#fff" }}>
-                {item.name} -- {item.price} RON
-              </option>
-            ))}
-          </select>
-          <p className="text-white/20 text-[9px] mt-1">
-            La click, produsul se adaugă direct în coșul clientului
-          </p>
         </div>
       )}
     </div>

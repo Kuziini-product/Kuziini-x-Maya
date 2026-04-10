@@ -24,10 +24,8 @@ export default function LandingPage({
   const { umbrellaId } = params;
   const router = useRouter();
   const { userSession } = useSessionStore();
-  const [mayaIdx, setmayaIdx] = useState(0);
-  const [kuziiniIdx, setKuziiniIdx] = useState(0);
-  const [mayaBanners, setmayaBanners] = useState<PromoBanner[]>([]);
-  const [kuziiniBanners, setKuziiniBanners] = useState<PromoBanner[]>([]);
+  const [mayaBanner, setMayaBanner] = useState<PromoBanner | null>(null);
+  const [kuziiniBanner, setKuziiniBanner] = useState<PromoBanner | null>(null);
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [addedToast, setAddedToast] = useState<string | null>(null);
   const addItem = useCartStore((s) => s.addItem);
@@ -61,32 +59,14 @@ export default function LandingPage({
   useEffect(() => {
     fetch("/api/banners?category=Maya")
       .then((r) => r.json())
-      .then((j) => { if (j.success && j.data.length) setmayaBanners(j.data); });
+      .then((j) => { if (j.success && j.data.length) setMayaBanner(j.data[0]); });
     fetch("/api/banners?category=kuziini")
       .then((r) => r.json())
-      .then((j) => { if (j.success && j.data.length) setKuziiniBanners(j.data); });
+      .then((j) => { if (j.success && j.data.length) setKuziiniBanner(j.data[0]); });
     fetch(`/api/menu?umbrellaId=${umbrellaId}`)
       .then((r) => r.json())
       .then((j) => { if (j.success && j.data?.items) setMenuItems(j.data.items); });
   }, [umbrellaId]);
-
-  // Auto-rotate Maya banners
-  useEffect(() => {
-    if (mayaBanners.length <= 1) return;
-    const t = setInterval(() => {
-      setmayaIdx((i) => (i + 1) % mayaBanners.length);
-    }, 4000);
-    return () => clearInterval(t);
-  }, [mayaBanners.length]);
-
-  // Auto-rotate Kuziini banners
-  useEffect(() => {
-    if (kuziiniBanners.length <= 1) return;
-    const t = setInterval(() => {
-      setKuziiniIdx((i) => (i + 1) % kuziiniBanners.length);
-    }, 4000);
-    return () => clearInterval(t);
-  }, [kuziiniBanners.length]);
 
   // Redirect to /scan if not authenticated via QR
   useEffect(() => {
@@ -123,23 +103,21 @@ export default function LandingPage({
   }
 
   const umbrella: Umbrella = data.umbrella;
-  const mayaBanner = mayaBanners[mayaIdx] || null;
-  const kuziiniBanner = kuziiniBanners[kuziiniIdx] || null;
 
   function handleBannerClick(banner: PromoBanner) {
-    // Kuziini banners: open Instagram
-    if (banner.instagramUrl) {
-      window.open(banner.instagramUrl, "_blank", "noopener,noreferrer");
-      return;
-    }
-    // Maya banners: add menu item to cart
+    // If banner has a linked menu product, add it to cart
     if (banner.menuItemId) {
       const item = menuItems.find((m) => m.id === banner.menuItemId);
       if (item) {
         addItem(item, 1);
-        setAddedToast(item.name);
+        setAddedToast(banner.title);
         setTimeout(() => setAddedToast(null), 2500);
       }
+      return;
+    }
+    // Fallback: open Instagram if set
+    if (banner.instagramUrl) {
+      window.open(banner.instagramUrl, "_blank", "noopener,noreferrer");
     }
   }
 
@@ -164,45 +142,19 @@ export default function LandingPage({
             )}
           </div>
 
-          {/* Maya banners */}
+          {/* Maya banner */}
           {mayaBanner && (
             <div className="w-full max-w-sm mb-3">
               <p className="text-[10px] font-bold text-white/20 tracking-[0.2em] uppercase mb-2">Maya</p>
               <BannerSlide banner={mayaBanner} onClick={() => handleBannerClick(mayaBanner)} />
-              {mayaBanners.length > 1 && (
-                <div className="flex gap-1 mt-2">
-                  {mayaBanners.map((_: PromoBanner, i: number) => (
-                    <div
-                      key={i}
-                      className={cn(
-                        "h-0.5 rounded-full transition-all duration-300",
-                        i === mayaIdx ? "w-6 bg-[#C9AB81]" : "w-2 bg-white/15"
-                      )}
-                    />
-                  ))}
-                </div>
-              )}
             </div>
           )}
 
-          {/* Kuziini Banners */}
+          {/* Kuziini banner */}
           {kuziiniBanner && (
             <div className="w-full max-w-sm">
               <p className="text-[10px] font-bold text-white/20 tracking-[0.2em] uppercase mb-2">Kuziini</p>
               <BannerSlide banner={kuziiniBanner} onClick={() => handleBannerClick(kuziiniBanner)} />
-              {kuziiniBanners.length > 1 && (
-                <div className="flex gap-1 mt-2">
-                  {kuziiniBanners.map((_: PromoBanner, i: number) => (
-                    <div
-                      key={i}
-                      className={cn(
-                        "h-0.5 rounded-full transition-all duration-300",
-                        i === kuziiniIdx ? "w-6 bg-[#C9AB81]" : "w-2 bg-white/15"
-                      )}
-                    />
-                  ))}
-                </div>
-              )}
             </div>
           )}
         </div>
@@ -234,7 +186,7 @@ export default function LandingPage({
 }
 
 function BannerSlide({ banner, onClick }: { banner: PromoBanner; onClick?: () => void }) {
-  const isClickable = !!(banner.instagramUrl || banner.menuItemId);
+  const isClickable = !!(banner.menuItemId || banner.instagramUrl);
   return (
     <div
       onClick={isClickable ? onClick : undefined}
@@ -251,12 +203,7 @@ function BannerSlide({ banner, onClick }: { banner: PromoBanner; onClick?: () =>
           )}
           {banner.menuItemId && (
             <p className="text-emerald-400/60 text-[9px] mt-1 font-bold tracking-wider uppercase">
-              Apasă pentru a adăuga în coș
-            </p>
-          )}
-          {banner.instagramUrl && (
-            <p className="text-pink-400/60 text-[9px] mt-1 font-bold tracking-wider uppercase">
-              Deschide pe Instagram
+              + Adaugă în coș
             </p>
           )}
         </div>
