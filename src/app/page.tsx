@@ -134,9 +134,31 @@ export default function HomePage() {
           <div className="w-12 h-px bg-[#C9AB81]/40 mx-auto mt-3" />
         </div>
 
+        {/* Kuziini Gallery */}
+        {kuziiniGallery && kuziiniGallery.images.length > 0 && (
+          <div className="mb-8">
+            <div className="flex items-start gap-3 mb-4">
+              <img
+                src="/kuziini-logo.png"
+                alt="Kuziini"
+                className="h-8 object-contain invert brightness-200 opacity-60 mt-0.5 shrink-0"
+              />
+              <p className="text-white/40 text-sm leading-relaxed">
+                — inovație, rafinament și design sofisticat. Mobilier premium, interioare personalizate.
+              </p>
+            </div>
+            <ScrollableGallery
+              gallery={kuziiniGallery}
+              onImageClick={(allUrls, idx) => openLightbox(allUrls, idx, true, "kuziini")}
+              showLikes
+              category="kuziini"
+            />
+          </div>
+        )}
+
         {/* Maya Gallery */}
         {MayaGallery && MayaGallery.images.length > 0 && (
-          <div className="mb-8">
+          <div>
             <div className="flex items-start gap-3 mb-4">
               <img
                 src="/Maya.png"
@@ -152,24 +174,6 @@ export default function HomePage() {
               onImageClick={(allUrls, idx) => openLightbox(allUrls, idx, true, "Maya")}
               showLikes
               category="Maya"
-            />
-          </div>
-        )}
-
-        {/* Kuziini Gallery */}
-        {kuziiniGallery && kuziiniGallery.images.length > 0 && (
-          <div>
-            <div className="flex items-start gap-3 mb-4">
-              <span className="text-sm font-bold tracking-[0.15em] uppercase text-white/60 shrink-0 mt-0.5">Kuziini</span>
-              <p className="text-white/40 text-sm leading-relaxed">
-                — inovație, rafinament și design sofisticat. Mobilier premium, interioare personalizate.
-              </p>
-            </div>
-            <ScrollableGallery
-              gallery={kuziiniGallery}
-              onImageClick={(allUrls, idx) => openLightbox(allUrls, idx, true, "kuziini")}
-              showLikes
-              category="kuziini"
             />
           </div>
         )}
