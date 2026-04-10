@@ -1,160 +1,236 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Lock, RefreshCw, ImageIcon, QrCode, Plus, Trash2, Download, Printer, LayoutGrid, ExternalLink } from "lucide-react";
+import {
+  Lock,
+  Mail,
+  RefreshCw,
+  ImageIcon,
+  QrCode,
+  Plus,
+  Trash2,
+  Download,
+  Printer,
+  LayoutGrid,
+  ExternalLink,
+  BarChart3,
+  UserPlus,
+  Users,
+  CalendarCheck,
+  Map,
+  Shield,
+} from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
-import type { PromoBanner } from "@/types";
+import type { PromoBanner, AdminRole } from "@/types";
 import type { GalleryImage, GalleryAspect, LibraryPhoto } from "@/lib/mock-data";
 import BannerManager from "@/components/BannerManager";
 import GalleryManager from "@/components/GalleryManager";
 import SectionHelp from "@/components/SectionHelp";
+import { ALL_UMBRELLAS } from "@/lib/umbrella-config";
+import GuestDashboard from "@/components/admin/GuestDashboard";
+import GuestCheckinForm from "@/components/admin/GuestCheckinForm";
+import GuestList from "@/components/admin/GuestList";
+import DailyConfirmationPanel from "@/components/admin/DailyConfirmationPanel";
+import LoungerGrid from "@/components/admin/LoungerGrid";
+import AdminUserManager from "@/components/admin/AdminUserManager";
 
-type Tab = "banners" | "qrcodes" | "gallery";
+type Tab =
+  | "dashboard"
+  | "checkin"
+  | "guests"
+  | "daily"
+  | "loungers"
+  | "banners"
+  | "gallery"
+  | "qrcodes"
+  | "admins";
 
 interface UmbrellaQR {
   id: string;
   zone: string;
 }
 
-const SESSION_KEY = "maya_admin_session";
-const SESSION_HOURS = 1;
+interface AdminSession {
+  id: string;
+  name: string;
+  email: string;
+  role: AdminRole;
+  timestamp: number;
+}
 
-function getSavedSession(): string | null {
+const SESSION_KEY = "maya_admin_session";
+const SESSION_HOURS = 8;
+
+// Legacy password for banner/gallery API calls
+const LEGACY_PASSWORD = "Maya2025";
+
+function getSavedSession(): AdminSession | null {
   try {
     const raw = localStorage.getItem(SESSION_KEY);
     if (!raw) return null;
-    const { password: pw, timestamp } = JSON.parse(raw);
-    if (Date.now() - timestamp > SESSION_HOURS * 60 * 60 * 1000) {
+    const session: AdminSession = JSON.parse(raw);
+    if (Date.now() - session.timestamp > SESSION_HOURS * 60 * 60 * 1000) {
       localStorage.removeItem(SESSION_KEY);
       return null;
     }
-    return pw;
-  } catch { return null; }
+    return session;
+  } catch {
+    return null;
+  }
 }
 
-function saveSession(pw: string) {
-  localStorage.setItem(SESSION_KEY, JSON.stringify({ password: pw, timestamp: Date.now() }));
+function saveSession(admin: AdminSession) {
+  localStorage.setItem(SESSION_KEY, JSON.stringify(admin));
 }
+
+// Tab definitions with sections and role access
+interface TabDef {
+  key: Tab;
+  label: string;
+  icon: React.ReactNode;
+  section: "guests" | "content" | "system";
+  roles: AdminRole[];
+}
+
+const ALL_TABS: TabDef[] = [
+  // OASPETI section
+  { key: "dashboard", label: "Dashboard", icon: <BarChart3 className="w-4 h-4" />, section: "guests", roles: ["super_admin", "guest_admin"] },
+  { key: "checkin", label: "Check-in", icon: <UserPlus className="w-4 h-4" />, section: "guests", roles: ["super_admin", "guest_admin"] },
+  { key: "guests", label: "Oaspeti", icon: <Users className="w-4 h-4" />, section: "guests", roles: ["super_admin", "guest_admin"] },
+  { key: "daily", label: "Zilnic", icon: <CalendarCheck className="w-4 h-4" />, section: "guests", roles: ["super_admin", "guest_admin"] },
+  { key: "loungers", label: "Harta", icon: <Map className="w-4 h-4" />, section: "guests", roles: ["super_admin", "guest_admin"] },
+  // CONTINUT section
+  { key: "banners", label: "Bannere", icon: <ImageIcon className="w-4 h-4" />, section: "content", roles: ["super_admin", "content_admin"] },
+  { key: "gallery", label: "Galerie", icon: <LayoutGrid className="w-4 h-4" />, section: "content", roles: ["super_admin", "content_admin"] },
+  { key: "qrcodes", label: "QR Codes", icon: <QrCode className="w-4 h-4" />, section: "content", roles: ["super_admin", "content_admin"] },
+  // SISTEM section
+  { key: "admins", label: "Admini", icon: <Shield className="w-4 h-4" />, section: "system", roles: ["super_admin"] },
+];
+
+const SECTION_LABELS: Record<string, string> = {
+  guests: "OASPETI",
+  content: "CONTINUT",
+  system: "SISTEM",
+};
 
 export default function MayaAdminPage() {
+  // Auth state
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [authenticated, setAuthenticated] = useState(false);
-  const [storedPassword, setStoredPassword] = useState("");
+  const [adminSession, setAdminSession] = useState<AdminSession | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  // Content state (existing)
   const [banners, setBanners] = useState<PromoBanner[]>([]);
-  const [tab, setTab] = useState<Tab>("banners");
+  const [tab, setTab] = useState<Tab>("dashboard");
   const [gallerySlots, setGallerySlots] = useState(3);
   const [galleryAspect, setGalleryAspect] = useState<GalleryAspect>("square");
   const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
   const [galleryLibrary, setGalleryLibrary] = useState<LibraryPhoto[]>([]);
 
-  // QR state
-  const [umbrellas, setUmbrellas] = useState<UmbrellaQR[]>([
-    { id: "A-01", zone: "Zona Lounge" },
-    { id: "A-02", zone: "Zona Lounge" },
-    { id: "B-07", zone: "Zona Beach" },
-    { id: "VIP-03", zone: "VIP Premium" },
-  ]);
+  // QR state - all 400 umbrellas
+  const [umbrellas, setUmbrellas] = useState<UmbrellaQR[]>(
+    ALL_UMBRELLAS.map((u) => ({ id: u.id, zone: u.zone }))
+  );
   const [newId, setNewId] = useState("");
   const [newZone, setNewZone] = useState("Zona Lounge");
   const printRef = useRef<HTMLDivElement>(null);
   const autoLoginDone = useRef(false);
 
+  // Load content data (banners + gallery)
+  const loadContentData = useCallback(async () => {
+    try {
+      const [bannerRes, galleryRes] = await Promise.all([
+        fetch("/api/banners", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password: LEGACY_PASSWORD, category: "Maya", action: "list" }),
+        }),
+        fetch("/api/gallery", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password: LEGACY_PASSWORD, category: "Maya", action: "get" }),
+        }),
+      ]);
+      const [bannerJson, galleryJson] = await Promise.all([bannerRes.json(), galleryRes.json()]);
+      if (bannerJson.success) setBanners(bannerJson.data);
+      if (galleryJson.success) {
+        setGallerySlots(galleryJson.data.slots);
+        if (galleryJson.data.aspect) setGalleryAspect(galleryJson.data.aspect);
+        setGalleryImages(galleryJson.data.images);
+        if (galleryJson.data.library) setGalleryLibrary(galleryJson.data.library);
+      }
+    } catch {}
+  }, []);
+
+  // Auto-login from saved session
   useEffect(() => {
     if (autoLoginDone.current) return;
     autoLoginDone.current = true;
     const saved = getSavedSession();
     if (saved) {
-      setPassword(saved);
-      (async () => {
-        setLoading(true);
-        try {
-          const res = await fetch("/api/banners", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ password: saved, category: "Maya", action: "list" }),
-          });
-          const json = await res.json();
-          if (json.success) {
-            setBanners(json.data);
-            setStoredPassword(saved);
-            setAuthenticated(true);
-            fetch("/api/gallery", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ password: saved, category: "Maya", action: "get" }),
-            })
-              .then((r) => r.json())
-              .then((j) => {
-                if (j.success) {
-                  setGallerySlots(j.data.slots);
-                  if (j.data.aspect) setGalleryAspect(j.data.aspect);
-                  setGalleryImages(j.data.images);
-                  if (j.data.library) setGalleryLibrary(j.data.library);
-                }
-              });
-          }
-        } finally {
-          setLoading(false);
-        }
-      })();
+      setAdminSession(saved);
+      setAuthenticated(true);
+      // Set default tab based on role
+      const firstTab = ALL_TABS.find((t) => t.roles.includes(saved.role));
+      if (firstTab) setTab(firstTab.key);
+      loadContentData();
     }
-  }, []);
+  }, [loadContentData]);
 
   async function handleLogin() {
-    if (!password.trim()) {
-      setError("Introdu parola.");
+    if (!email.trim() || !password.trim()) {
+      setError("Introdu email-ul si parola.");
       return;
     }
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/banners", {
+      const res = await fetch("/api/admin/administrators", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password, category: "Maya", action: "list" }),
+        body: JSON.stringify({ action: "login", email: email.trim(), password }),
       });
       const json = await res.json();
       if (!json.success) throw new Error(json.error);
-      setBanners(json.data);
-      setStoredPassword(password);
+
+      const session: AdminSession = {
+        id: json.data.id,
+        name: json.data.name,
+        email: json.data.email,
+        role: json.data.role,
+        timestamp: Date.now(),
+      };
+      setAdminSession(session);
       setAuthenticated(true);
-      saveSession(password);
-      fetch("/api/gallery", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password, category: "Maya", action: "get" }),
-      })
-        .then((r) => r.json())
-        .then((j) => {
-          if (j.success) {
-            setGallerySlots(j.data.slots);
-            if (j.data.aspect) setGalleryAspect(j.data.aspect);
-            setGalleryImages(j.data.images);
-            if (j.data.library) setGalleryLibrary(j.data.library);
-          }
-        });
+      saveSession(session);
+
+      // Set default tab based on role
+      const firstTab = ALL_TABS.find((t) => t.roles.includes(session.role));
+      if (firstTab) setTab(firstTab.key);
+
+      loadContentData();
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Eroare.");
+      setError(e instanceof Error ? e.message : "Eroare la autentificare.");
     } finally {
       setLoading(false);
     }
   }
 
+  function handleLogout() {
+    localStorage.removeItem(SESSION_KEY);
+    setAuthenticated(false);
+    setAdminSession(null);
+    setEmail("");
+    setPassword("");
+  }
+
   async function refresh() {
     setLoading(true);
-    try {
-      const res = await fetch("/api/banners", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password: storedPassword, category: "Maya", action: "list" }),
-      });
-      const json = await res.json();
-      if (json.success) setBanners(json.data);
-    } finally {
-      setLoading(false);
-    }
+    await loadContentData();
+    setLoading(false);
   }
 
   function addUmbrella() {
@@ -237,6 +313,7 @@ export default function MayaAdminPage() {
     printWindow.document.close();
   }
 
+  // ─── LOGIN SCREEN ─────────────────────────────────────────────────────────
   if (!authenticated) {
     return (
       <div className="min-h-dvh bg-[#0A0A0A] flex items-center justify-center px-6">
@@ -250,24 +327,42 @@ export default function MayaAdminPage() {
             <h1 className="text-2xl font-bold text-white tracking-wide">
               Manager Maya
             </h1>
-            <p className="text-white/40 text-xs mt-1">Bannere, Galerie & QR Codes</p>
+            <p className="text-white/40 text-xs mt-1">Administrare completa</p>
           </div>
 
           <div className="space-y-4">
             <div>
               <label className="text-[10px] font-bold text-[#C9AB81] uppercase tracking-[0.2em] mb-2 block">
-                Parolă
+                Email
+              </label>
+              <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-3 focus-within:border-[#C9AB81]/50 transition-colors">
+                <Mail className="w-4 h-4 text-white/30 shrink-0" />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && document.getElementById("pw-input")?.focus()}
+                  className="flex-1 bg-transparent outline-none text-white text-sm placeholder:text-white/20"
+                  placeholder="admin@maya.ro"
+                  autoFocus
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="text-[10px] font-bold text-[#C9AB81] uppercase tracking-[0.2em] mb-2 block">
+                Parola
               </label>
               <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-3 focus-within:border-[#C9AB81]/50 transition-colors">
                 <Lock className="w-4 h-4 text-white/30 shrink-0" />
                 <input
+                  id="pw-input"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleLogin()}
                   className="flex-1 bg-transparent outline-none text-white text-sm placeholder:text-white/20"
-                  placeholder="Introdu parola Maya"
-                  autoFocus
+                  placeholder="Introdu parola"
                 />
               </div>
             </div>
@@ -279,20 +374,31 @@ export default function MayaAdminPage() {
               disabled={loading}
               className="w-full bg-[#C9AB81] text-[#0A0A0A] py-3.5 font-bold text-sm tracking-[0.15em] uppercase active:opacity-80 transition-opacity disabled:opacity-50"
             >
-              {loading ? "Se verifică..." : "Autentificare"}
+              {loading ? "Se verifica..." : "Autentificare"}
             </button>
+
+            <p className="text-white/20 text-[10px] text-center">
+              Prima accesare? admin@maya.ro / Maya2025
+            </p>
           </div>
         </div>
       </div>
     );
   }
 
-  const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
-    { key: "banners", label: "Bannere", icon: <ImageIcon className="w-4 h-4" /> },
-    { key: "gallery", label: "Galerie", icon: <LayoutGrid className="w-4 h-4" /> },
-    { key: "qrcodes", label: "QR Codes", icon: <QrCode className="w-4 h-4" /> },
-  ];
+  // ─── TABS FILTERED BY ROLE ────────────────────────────────────────────────
+  const visibleTabs = ALL_TABS.filter((t) =>
+    adminSession ? t.roles.includes(adminSession.role) : false
+  );
 
+  // Group tabs by section
+  const sections = visibleTabs.reduce<Record<string, TabDef[]>>((acc, t) => {
+    if (!acc[t.section]) acc[t.section] = [];
+    acc[t.section].push(t);
+    return acc;
+  }, {});
+
+  // ─── MAIN LAYOUT ──────────────────────────────────────────────────────────
   return (
     <div className="min-h-dvh bg-[#0A0A0A] text-white">
       {/* Header */}
@@ -301,7 +407,7 @@ export default function MayaAdminPage() {
           <div>
             <h1 className="text-lg font-bold tracking-wide">Manager Maya</h1>
             <p className="text-[#C9AB81] text-[10px] tracking-[0.2em] uppercase">
-              Bannere, Galerie & QR Codes
+              {adminSession?.name} · {adminSession?.role === "super_admin" ? "Super Admin" : adminSession?.role === "content_admin" ? "Content" : "Oaspeti"}
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -310,7 +416,7 @@ export default function MayaAdminPage() {
               className="h-9 flex items-center gap-1.5 px-3 bg-[#C9AB81]/20 border border-[#C9AB81]/30 text-[#C9AB81] text-[10px] font-bold tracking-wider uppercase active:bg-[#C9AB81]/30 transition-colors"
             >
               <ExternalLink className="w-3.5 h-3.5" />
-              Live App
+              Live
             </a>
             <button
               onClick={refresh}
@@ -321,35 +427,71 @@ export default function MayaAdminPage() {
                 className={`w-4 h-4 text-white/60 ${loading ? "animate-spin" : ""}`}
               />
             </button>
+            <button
+              onClick={handleLogout}
+              className="h-9 px-3 bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-bold tracking-wider uppercase"
+            >
+              Iesire
+            </button>
           </div>
         </div>
 
-        {/* Tabs */}
-        <div className="flex gap-1 mt-3">
-          {tabs.map((t) => (
-            <button
-              key={t.key}
-              onClick={() => setTab(t.key)}
-              className={`flex items-center gap-1.5 px-3 py-2 text-[10px] font-bold tracking-wider uppercase whitespace-nowrap transition-all ${
-                tab === t.key
-                  ? "bg-[#C9AB81] text-[#0A0A0A]"
-                  : "bg-white/[0.06] text-white/40"
-              }`}
-            >
-              {t.icon}
-              {t.label}
-            </button>
+        {/* Tabs grouped by section */}
+        <div className="mt-3 space-y-2">
+          {Object.entries(sections).map(([section, tabs]) => (
+            <div key={section}>
+              <p className="text-white/20 text-[8px] font-bold tracking-[0.3em] uppercase mb-1">
+                {SECTION_LABELS[section]}
+              </p>
+              <div className="flex gap-1 flex-wrap">
+                {tabs.map((t) => (
+                  <button
+                    key={t.key}
+                    onClick={() => setTab(t.key)}
+                    className={`flex items-center gap-1.5 px-3 py-2 text-[10px] font-bold tracking-wider uppercase whitespace-nowrap transition-all ${
+                      tab === t.key
+                        ? "bg-[#C9AB81] text-[#0A0A0A]"
+                        : "bg-white/[0.06] text-white/40"
+                    }`}
+                  >
+                    {t.icon}
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+            </div>
           ))}
         </div>
       </div>
 
       <div className="px-4 py-4">
-        {/* Banners Tab */}
+        {/* ── GUEST SECTION ── */}
+        {tab === "dashboard" && adminSession && (
+          <GuestDashboard adminId={adminSession.id} />
+        )}
+
+        {tab === "checkin" && adminSession && (
+          <GuestCheckinForm adminId={adminSession.id} />
+        )}
+
+        {tab === "guests" && adminSession && (
+          <GuestList adminId={adminSession.id} />
+        )}
+
+        {tab === "daily" && adminSession && (
+          <DailyConfirmationPanel adminId={adminSession.id} />
+        )}
+
+        {tab === "loungers" && adminSession && (
+          <LoungerGrid adminId={adminSession.id} />
+        )}
+
+        {/* ── CONTENT SECTION (existing) ── */}
         {tab === "banners" && (
           <>
             <div className="flex items-center justify-between mb-4">
               <p className="text-white/30 text-xs">
-                {banners.length} bannere · Apar pe pagina clienților în secțiunea Maya
+                {banners.length} bannere · Apar pe pagina clientilor in sectiunea Maya
               </p>
               <SectionHelp items={[
                 "Bannerele apar pe pagina clientului (pagina umbrelelei).",
@@ -363,19 +505,18 @@ export default function MayaAdminPage() {
             </div>
             <BannerManager
               category="Maya"
-              password={storedPassword}
+              password={LEGACY_PASSWORD}
               banners={banners}
               onUpdate={setBanners}
             />
           </>
         )}
 
-        {/* Gallery Tab */}
         {tab === "gallery" && (
           <>
             <div className="flex items-center justify-between mb-4">
               <p className="text-white/30 text-xs">
-                Pozele apar pe pagina de landing în secțiunea Maya
+                Pozele apar pe pagina de landing in sectiunea Maya
               </p>
               <SectionHelp items={[
                 "Alege numarul de ferestre (1, 2, 3, 4 sau 6) pentru a seta cate poze apar pe landing page.",
@@ -386,7 +527,7 @@ export default function MayaAdminPage() {
             </div>
             <GalleryManager
               category="Maya"
-              password={storedPassword}
+              password={LEGACY_PASSWORD}
               slots={gallerySlots}
               aspect={galleryAspect}
               images={galleryImages}
@@ -401,7 +542,6 @@ export default function MayaAdminPage() {
           </>
         )}
 
-        {/* QR Codes Tab */}
         {tab === "qrcodes" && (
           <>
             <div className="flex items-center justify-between mb-4">
@@ -418,7 +558,7 @@ export default function MayaAdminPage() {
             {/* Add umbrella */}
             <div className="bg-white/[0.03] border border-white/[0.06] p-4 mb-4">
               <p className="text-[#C9AB81] text-[10px] font-bold tracking-[0.2em] uppercase mb-3">
-                Adaugă umbrelă
+                Adauga umbrela
               </p>
               <div className="flex gap-2 mb-2">
                 <input
@@ -444,7 +584,7 @@ export default function MayaAdminPage() {
                 className="w-full flex items-center justify-center gap-2 bg-[#C9AB81] text-[#0A0A0A] py-2 font-bold text-xs tracking-wider uppercase"
               >
                 <Plus className="w-3.5 h-3.5" />
-                Adaugă
+                Adauga
               </button>
             </div>
 
@@ -455,7 +595,7 @@ export default function MayaAdminPage() {
                 className="flex-1 flex items-center justify-center gap-2 bg-white/[0.06] border border-white/[0.1] py-2.5 text-white/60 text-xs font-bold tracking-wider uppercase active:bg-white/[0.1] transition-colors"
               >
                 <Printer className="w-4 h-4" />
-                Printează toate ({umbrellas.length})
+                Printeaza toate ({umbrellas.length})
               </button>
             </div>
 
@@ -487,7 +627,7 @@ export default function MayaAdminPage() {
                       className="flex-1 flex items-center justify-center gap-1 bg-[#C9AB81] text-[#0A0A0A] py-1.5 text-[10px] font-bold tracking-wider uppercase"
                     >
                       <Download className="w-3 h-3" />
-                      Salvează
+                      Salveaza
                     </button>
                     <button
                       onClick={() => removeUmbrella(u.id)}
@@ -500,6 +640,11 @@ export default function MayaAdminPage() {
               ))}
             </div>
           </>
+        )}
+
+        {/* ── SYSTEM SECTION ── */}
+        {tab === "admins" && adminSession && (
+          <AdminUserManager adminId={adminSession.id} />
         )}
       </div>
     </div>

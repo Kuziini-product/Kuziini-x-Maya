@@ -1,13 +1,19 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Lock, Users, ShoppingBag, Receipt, DollarSign, RefreshCw, Umbrella, ImageIcon, LayoutGrid, FileText, Eye, Trash2, Heart, BarChart3, ArrowUpDown, ExternalLink, Bell, ChevronRight, ArrowLeft, Clock, Smartphone, Monitor, Volume2, VolumeX } from "lucide-react";
+import { Lock, Users, ShoppingBag, Receipt, DollarSign, RefreshCw, Umbrella, ImageIcon, LayoutGrid, FileText, Eye, Trash2, Heart, BarChart3, ArrowUpDown, ExternalLink, Bell, ChevronRight, ArrowLeft, Clock, Smartphone, Monitor, Volume2, VolumeX, UserPlus, CalendarCheck, Map, Shield } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
 import type { PromoBanner } from "@/types";
 import type { GalleryImage, GalleryAspect, LibraryPhoto } from "@/lib/mock-data";
 import BannerManager from "@/components/BannerManager";
 import GalleryManager from "@/components/GalleryManager";
 import SectionHelp from "@/components/SectionHelp";
+import GuestDashboard from "@/components/admin/GuestDashboard";
+import GuestCheckinForm from "@/components/admin/GuestCheckinForm";
+import GuestList from "@/components/admin/GuestList";
+import DailyConfirmationPanel from "@/components/admin/DailyConfirmationPanel";
+import LoungerGrid from "@/components/admin/LoungerGrid";
+import AdminUserManager from "@/components/admin/AdminUserManager";
 
 interface Stats {
   totalLogins: number;
@@ -149,7 +155,7 @@ interface AccessData {
   users: AccessUser[];
 }
 
-type Tab = "overview" | "logins" | "orders" | "bills" | "umbrellas" | "banners" | "gallery" | "offers" | "clients" | "rapoarte";
+type Tab = "overview" | "logins" | "orders" | "bills" | "umbrellas" | "banners" | "gallery" | "offers" | "clients" | "rapoarte" | "guest-dashboard" | "guest-checkin" | "guest-list" | "guest-daily" | "guest-loungers" | "admin-users";
 
 const SESSION_KEY = "kuziini_admin_session";
 const SESSION_HOURS = 24; // Stay logged in for 24h
@@ -270,6 +276,7 @@ export default function AdminPage() {
   const [accessUnread, setAccessUnread] = useState(0);
   const [selectedAccessUser, setSelectedAccessUser] = useState<AccessUser | null>(null);
   const [galleryStats, setGalleryStats] = useState<GalleryStatsData | null>(null);
+  const [mayaAdminId, setMayaAdminId] = useState<string | null>(null);
   const [selectedGalleryUser, setSelectedGalleryUser] = useState<GalleryUserStat | null>(null);
   const [onlineCount, setOnlineCount] = useState(0);
   const [onlinePhones, setOnlinePhones] = useState<Set<string>>(new Set());
@@ -438,6 +445,16 @@ export default function AdminPage() {
       setData(json.data);
       setAuthenticated(true);
       saveSession(pw || password);
+      // Auto-login Maya admin (seed + get ID for guest management)
+      try {
+        const adminRes = await fetch("/api/admin/administrators", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "login", email: "admin@maya.ro", password: "Maya2025" }),
+        });
+        const adminJson = await adminRes.json();
+        if (adminJson.success) setMayaAdminId(adminJson.data.id);
+      } catch {}
       // Fetch Kuziini banners
       const bRes = await fetch("/api/banners", {
         method: "POST",
@@ -597,6 +614,13 @@ export default function AdminPage() {
     { key: "offers", label: "Oferte", icon: <FileText className="w-4 h-4" /> },
     { key: "clients", label: "Clienți", icon: <BarChart3 className="w-4 h-4" /> },
     { key: "rapoarte", label: "Rapoarte", icon: <Bell className="w-4 h-4" /> },
+    // ── MAYA GUEST MANAGEMENT ──
+    { key: "guest-dashboard", label: "Dashboard", icon: <BarChart3 className="w-4 h-4" /> },
+    { key: "guest-checkin", label: "Check-in", icon: <UserPlus className="w-4 h-4" /> },
+    { key: "guest-list", label: "Oaspeți", icon: <Users className="w-4 h-4" /> },
+    { key: "guest-daily", label: "Zilnic", icon: <CalendarCheck className="w-4 h-4" /> },
+    { key: "guest-loungers", label: "Hartă", icon: <Map className="w-4 h-4" /> },
+    { key: "admin-users", label: "Admini", icon: <Shield className="w-4 h-4" /> },
   ];
 
   return (
@@ -670,27 +694,50 @@ export default function AdminPage() {
           </div>
         </div>
 
-        {/* Tabs */}
-        <div className="flex gap-1 mt-3 overflow-x-auto">
-          {tabs.map((t) => (
-            <button
-              key={t.key}
-              onClick={() => setTab(t.key)}
-              className={`flex items-center gap-1.5 px-3 py-2 text-[10px] font-bold tracking-wider uppercase whitespace-nowrap transition-all relative ${
-                tab === t.key
-                  ? "bg-[#C9AB81] text-[#0A0A0A]"
-                  : "bg-white/[0.06] text-white/40"
-              }`}
-            >
-              {t.icon}
-              {t.label}
-              {t.key === "rapoarte" && accessUnread > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] flex items-center justify-center bg-red-500 text-white text-[9px] font-bold rounded-full px-1">
-                  {accessUnread}
-                </span>
-              )}
-            </button>
-          ))}
+        {/* Tabs - Kuziini */}
+        <div className="mt-3">
+          <p className="text-white/20 text-[8px] font-bold tracking-[0.3em] uppercase mb-1">KUZIINI</p>
+          <div className="flex gap-1 overflow-x-auto">
+            {tabs.filter(t => !t.key.startsWith("guest-") && t.key !== "admin-users").map((t) => (
+              <button
+                key={t.key}
+                onClick={() => setTab(t.key)}
+                className={`flex items-center gap-1.5 px-3 py-2 text-[10px] font-bold tracking-wider uppercase whitespace-nowrap transition-all relative ${
+                  tab === t.key
+                    ? "bg-[#C9AB81] text-[#0A0A0A]"
+                    : "bg-white/[0.06] text-white/40"
+                }`}
+              >
+                {t.icon}
+                {t.label}
+                {t.key === "rapoarte" && accessUnread > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] flex items-center justify-center bg-red-500 text-white text-[9px] font-bold rounded-full px-1">
+                    {accessUnread}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+        {/* Tabs - Maya Guest Management */}
+        <div className="mt-2">
+          <p className="text-white/20 text-[8px] font-bold tracking-[0.3em] uppercase mb-1">MAYA · OASPETI</p>
+          <div className="flex gap-1 overflow-x-auto">
+            {tabs.filter(t => t.key.startsWith("guest-") || t.key === "admin-users").map((t) => (
+              <button
+                key={t.key}
+                onClick={() => setTab(t.key)}
+                className={`flex items-center gap-1.5 px-3 py-2 text-[10px] font-bold tracking-wider uppercase whitespace-nowrap transition-all ${
+                  tab === t.key
+                    ? "bg-[#C9AB81] text-[#0A0A0A]"
+                    : "bg-white/[0.06] text-white/40"
+                }`}
+              >
+                {t.icon}
+                {t.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -1580,6 +1627,38 @@ export default function AdminPage() {
               </>
             )}
           </>
+        )}
+
+        {/* ── MAYA GUEST MANAGEMENT TABS ── */}
+        {tab === "guest-dashboard" && mayaAdminId && (
+          <GuestDashboard adminId={mayaAdminId} />
+        )}
+
+        {tab === "guest-checkin" && mayaAdminId && (
+          <GuestCheckinForm adminId={mayaAdminId} />
+        )}
+
+        {tab === "guest-list" && mayaAdminId && (
+          <GuestList adminId={mayaAdminId} />
+        )}
+
+        {tab === "guest-daily" && mayaAdminId && (
+          <DailyConfirmationPanel adminId={mayaAdminId} />
+        )}
+
+        {tab === "guest-loungers" && mayaAdminId && (
+          <LoungerGrid adminId={mayaAdminId} />
+        )}
+
+        {tab === "admin-users" && mayaAdminId && (
+          <AdminUserManager adminId={mayaAdminId} />
+        )}
+
+        {!mayaAdminId && (tab === "guest-dashboard" || tab === "guest-checkin" || tab === "guest-list" || tab === "guest-daily" || tab === "guest-loungers" || tab === "admin-users") && (
+          <div className="bg-white/[0.03] border border-white/[0.06] p-8 text-center">
+            <p className="text-white/30 text-sm">Se incarca modulul de administrare...</p>
+            <RefreshCw className="w-5 h-5 text-white/20 animate-spin mx-auto mt-3" />
+          </div>
         )}
 
         {/* Umbrellas */}

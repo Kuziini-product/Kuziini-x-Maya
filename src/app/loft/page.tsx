@@ -51,10 +51,10 @@ export default function MayaPage() {
 
   // QR state
   const [umbrellas, setUmbrellas] = useState<UmbrellaQR[]>([
-    { id: "A-01", zone: "Zona Lounge" },
-    { id: "A-02", zone: "Zona Lounge" },
-    { id: "B-07", zone: "Zona Beach" },
-    { id: "VIP-03", zone: "VIP Premium" },
+    { id: "A-001", zone: "Zona Lounge" },
+    { id: "A-002", zone: "Zona Lounge" },
+    { id: "B-001", zone: "Zona Beach" },
+    { id: "VIP-001", zone: "VIP Premium" },
   ]);
   const [newId, setNewId] = useState("");
   const [newZone, setNewZone] = useState("Zona Lounge");

@@ -212,3 +212,69 @@ export interface PromoBanner {
 
 export type BannerCategory = "Maya" | "kuziini";
 
+// ─── Admin Users ─────────────────────────────────────────────────────────────
+
+export type AdminRole = "super_admin" | "content_admin" | "guest_admin";
+
+export interface AdminUser {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  role: AdminRole;
+  passwordHash: string;
+  active: boolean;
+  createdAt: string;
+  lastLoginAt: string | null;
+}
+
+// ─── Guest Management ────────────────────────────────────────────────────────
+
+export type GuestStatus = "registered" | "active" | "inactive" | "checked_out";
+
+export interface GuestProfile {
+  id: string;
+  name: string;
+  phone: string;
+  email: string;
+  stayStart: string;
+  stayEnd: string;
+  loungerId: string;
+  status: GuestStatus;
+  creditEnabled: boolean;
+  creditLimit?: number;
+  creditUsed?: number;
+  registeredAt: string;
+  registeredBy: string;
+  notes?: string;
+}
+
+export interface DailyConfirmation {
+  id: string;
+  guestId: string;
+  date: string;
+  confirmedAt: string;
+  confirmedBy: string;
+  loungerId: string;
+  method: "qr_scan" | "manual";
+}
+
+export interface LoungerAssignment {
+  loungerId: string;
+  guestId: string | null;
+  guestName: string | null;
+  guestPhone: string | null;
+  date: string;
+  confirmedToday: boolean;
+}
+
+export interface DashboardStats {
+  totalLoungers: number;
+  loungersInUse: number;
+  freeLoungers: number;
+  activeGuests: number;
+  pendingOrders: number;
+  totalGuestsToday: number;
+  creditGuestsCount: number;
+}
+

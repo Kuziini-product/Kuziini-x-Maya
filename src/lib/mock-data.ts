@@ -9,50 +9,30 @@ import type {
   PromoBanner,
   GuestJoinRequest,
 } from "@/types";
+import { ALL_UMBRELLAS } from "@/lib/umbrella-config";
 
-// ─── Umbrellas ────────────────────────────────────────────────────────────────
+// ─── Umbrellas (400 total: A-001→A-120 Lounge, B-001→B-200 Beach, VIP-001→VIP-080 Premium) ──
 
-export const MOCK_UMBRELLAS: Record<string, Umbrella> = {
-  "A-01": {
-    id: "A-01",
-    number: "A-01",
-    zone: "Zona Lounge",
-    locationName: "Kuziini × Maya",
-    active: true,
-    sessionId: "sess-a01-001",
-  },
-  "A-02": {
-    id: "A-02",
-    number: "A-02",
-    zone: "Zona Lounge",
-    locationName: "Kuziini × Maya",
-    active: true,
-    sessionId: null,
-  },
-  "B-07": {
-    id: "B-07",
-    number: "B-07",
-    zone: "Zona Beach",
-    locationName: "Kuziini × Maya",
-    active: true,
-    sessionId: null,
-  },
-  "VIP-03": {
-    id: "VIP-03",
-    number: "VIP-03",
-    zone: "Zona VIP Premium",
-    locationName: "Kuziini × Maya",
-    active: true,
-    sessionId: null,
-  },
-};
+export const MOCK_UMBRELLAS: Record<string, Umbrella> = Object.fromEntries(
+  ALL_UMBRELLAS.map((u) => [
+    u.id,
+    {
+      id: u.id,
+      number: u.id,
+      zone: u.zone,
+      locationName: "Kuziini × Maya",
+      active: true,
+      sessionId: null,
+    } satisfies Umbrella,
+  ])
+);
 
 // ─── Sessions ─────────────────────────────────────────────────────────────────
 
 export const MOCK_SESSIONS: Record<string, Session> = {
   "sess-a01-001": {
     id: "sess-a01-001",
-    umbrellaId: "A-01",
+    umbrellaId: "A-001",
     ownerId: "user-100",
     ownerPhone: "+40700000001",
     startedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
@@ -1716,9 +1696,9 @@ export const MOCK_MENU_ITEMS: MenuItem[] = [
 export const MOCK_ORDERS: Order[] = [
   {
     id: "ord-001",
-    umbrellaId: "A-01",
-    deliveryUmbrellaId: "A-01",
-    billingUmbrellaId: "A-01",
+    umbrellaId: "A-001",
+    deliveryUmbrellaId: "A-001",
+    billingUmbrellaId: "A-001",
     sessionId: "sess-a01-001",
     guestPhone: "+40700000001",
     role: "owner",
@@ -1751,7 +1731,7 @@ export const MOCK_ORDERS: Order[] = [
 
 export const MOCK_BILL: Bill = {
   id: "bill-a01-001",
-  umbrellaId: "A-01",
+  umbrellaId: "A-001",
   sessionId: "sess-a01-001",
   orders: MOCK_ORDERS,
   subtotal: 185,

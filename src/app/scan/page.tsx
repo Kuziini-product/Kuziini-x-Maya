@@ -6,7 +6,7 @@ import { Phone, User, Mail, ArrowLeft } from "lucide-react";
 import { useSessionStore } from "@/store";
 import Link from "next/link";
 
-const DEFAULT_UMBRELLA = "VIP-03";
+const DEFAULT_UMBRELLA = "VIP-001";
 
 export default function ScanPage() {
   const router = useRouter();
