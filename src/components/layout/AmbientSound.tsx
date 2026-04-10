@@ -1,11 +1,8 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
-import { Sparkles } from "lucide-react";
-import Link from "next/link";
+import { useEffect, useRef } from "react";
 
 export function AmbientSound() {
   const startedRef = useRef(false);
-  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     const audio = document.createElement("audio");
@@ -16,8 +13,6 @@ export function AmbientSound() {
     audio.setAttribute("playsinline", "true");
     audio.id = "ambient-audio";
     document.body.appendChild(audio);
-
-    setVisible(true);
 
     const tryPlay = () => {
       if (startedRef.current) return;
@@ -41,16 +36,6 @@ export function AmbientSound() {
     };
   }, []);
 
-  if (!visible) return null;
-
-  return (
-    <Link
-      href="/"
-      className="fixed top-4 left-4 z-[9998] w-9 h-9 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/60 hover:text-white/90 transition-colors"
-      aria-label="Pagina principală"
-    >
-      <Sparkles className="w-4 h-4" />
-    </Link>
-  );
+  return null;
 }
 
