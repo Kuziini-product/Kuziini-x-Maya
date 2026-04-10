@@ -61,8 +61,8 @@ export default function HomePage() {
         <div className="relative z-10 text-center px-5 w-full max-w-lg flex flex-col flex-1 pb-16 pt-8">
           {/* Logos centered between top and CTA */}
           <div className="flex-1 flex flex-col items-center justify-center">
-            {/* Maya + Mamaia — tap to access Maya admin */}
-            <button onClick={() => router.push("/Maya")} className="mb-6 block mx-auto">
+            {/* Maya + Mamaia — scroll to About */}
+            <button onClick={() => document.getElementById("about")?.scrollIntoView({ behavior: "smooth" })} className="mb-6 block mx-auto">
               <img
                 src="/Maya.png"
                 alt="Maya"
@@ -73,8 +73,8 @@ export default function HomePage() {
               </p>
             </button>
 
-            {/* Logo Kuziini — tap to access Kuziini admin */}
-            <button onClick={() => router.push("/admin")} className="block mx-auto w-fit">
+            {/* Logo Kuziini — scroll to About */}
+            <button onClick={() => document.getElementById("about")?.scrollIntoView({ behavior: "smooth" })} className="block mx-auto w-fit">
               <img
                 src="/kuziini-logo.png"
                 alt="Kuziini Furniture & More"
@@ -112,15 +112,18 @@ export default function HomePage() {
 
         </div>
 
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce">
+        <button
+          onClick={() => document.getElementById("about")?.scrollIntoView({ behavior: "smooth" })}
+          className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce cursor-pointer"
+        >
           <div className="w-5 h-8 rounded-full border-2 border-white/20 flex items-start justify-center p-1.5">
             <div className="w-1 h-2.5 rounded-full bg-white/40" />
           </div>
-        </div>
+        </button>
       </section>
 
       {/* About */}
-      <section className="py-16 px-5">
+      <section id="about" className="py-16 px-5">
         <div className="text-center mb-10">
           <p className="text-[#C9AB81] text-[10px] font-bold tracking-[0.4em] uppercase mb-3">
             Despre noi
