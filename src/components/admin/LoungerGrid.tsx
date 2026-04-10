@@ -111,7 +111,7 @@ export default function LoungerGrid({ adminId }: Props) {
 
   function getLoungerColor(loungerId: string): string {
     const guest = getGuestForLounger(loungerId);
-    if (!guest) return "bg-black/[0.04] border-black/[0.08] text-black/40";
+    if (!guest) return "bg-gray-100 border-gray-200 text-gray-600";
     if (guest.status === "active" && confirmedGuestIds.has(guest.id)) {
       return "bg-emerald-400/15 border-emerald-400/30 text-emerald-400";
     }
@@ -284,14 +284,14 @@ export default function LoungerGrid({ adminId }: Props) {
   }
 
   const inputCls =
-    "w-full bg-gray-50 border border-black/[0.06] px-3 py-2 text-[#1a1a1a] text-sm outline-none focus:border-[#C9AB81]/50 placeholder:text-black/30";
+    "w-full bg-gray-100/80 border border-gray-200 px-3 py-2 text-gray-900 text-sm outline-none focus:border-[#C9AB81]/50 placeholder:text-gray-400";
   const labelCls =
     "text-[10px] font-bold text-[#C9AB81] uppercase tracking-[0.2em] mb-1 block";
 
   if (loading) {
     return (
       <div className="flex justify-center py-20">
-        <RefreshCw className="w-6 h-6 text-black/40 animate-spin" />
+        <RefreshCw className="w-6 h-6 text-gray-600 animate-spin" />
       </div>
     );
   }
@@ -299,7 +299,7 @@ export default function LoungerGrid({ adminId }: Props) {
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-4 text-[10px] text-black/40">
+        <div className="flex items-center gap-4 text-[10px] text-gray-600">
           <span className="flex items-center gap-1">
             <span className="w-3 h-3 bg-emerald-400/30 border border-emerald-400/50 inline-block" />
             Confirmat
@@ -309,13 +309,13 @@ export default function LoungerGrid({ adminId }: Props) {
             Neconfirmat
           </span>
           <span className="flex items-center gap-1">
-            <span className="w-3 h-3 bg-black/[0.04] border border-black/[0.1] inline-block" />
+            <span className="w-3 h-3 bg-gray-100 border border-gray-300 inline-block" />
             Liber
           </span>
         </div>
         <button
           onClick={() => { setLoading(true); fetchData(); }}
-          className="text-black/40"
+          className="text-gray-600"
         >
           <RefreshCw className="w-4 h-4" />
         </button>
@@ -352,13 +352,13 @@ export default function LoungerGrid({ adminId }: Props) {
 
       {/* ── BOTTOM PANEL ── */}
       {selected && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-black/[0.1] p-4 z-50 max-h-[70vh] overflow-y-auto shadow-lg">
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-300 p-4 z-50 max-h-[70vh] overflow-y-auto shadow-lg">
           {/* Header */}
           <div className="flex items-center justify-between mb-3">
-            <p className="text-[#1a1a1a] font-bold text-lg">
+            <p className="text-gray-900 font-bold text-lg">
               Sezlong {selected}
             </p>
-            <button onClick={closePanel} className="text-black/40 p-1">
+            <button onClick={closePanel} className="text-gray-600 p-1">
               <X className="w-5 h-5" />
             </button>
           </div>
@@ -381,12 +381,12 @@ export default function LoungerGrid({ adminId }: Props) {
             <>
               {selectedGuest ? (
                 <div className="mb-4">
-                  <div className="bg-gray-50 border border-black/[0.08] p-3 mb-3">
-                    <p className="text-[#1a1a1a] font-medium">{selectedGuest.name}</p>
-                    <p className="text-black/40 text-xs mt-1">
+                  <div className="bg-gray-100/80 border border-gray-200 p-3 mb-3">
+                    <p className="text-gray-900 font-medium">{selectedGuest.name}</p>
+                    <p className="text-gray-600 text-xs mt-1">
                       {selectedGuest.phone} · {selectedGuest.email || "—"}
                     </p>
-                    <p className="text-black/40 text-xs">
+                    <p className="text-gray-600 text-xs">
                       {selectedGuest.stayStart} → {selectedGuest.stayEnd}
                     </p>
                     <div className="flex items-center gap-3 mt-2">
@@ -414,7 +414,7 @@ export default function LoungerGrid({ adminId }: Props) {
                 </div>
               ) : (
                 <div>
-                  <p className="text-black/40 text-sm mb-4">Acest sezlong este liber.</p>
+                  <p className="text-gray-600 text-sm mb-4">Acest sezlong este liber.</p>
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       onClick={() => setPanelMode("assign")}
@@ -440,14 +440,14 @@ export default function LoungerGrid({ adminId }: Props) {
           {panelMode === "assign" && !success && (
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <button onClick={() => setPanelMode("info")} className="text-black/40 text-xs">&larr; Inapoi</button>
+                <button onClick={() => setPanelMode("info")} className="text-gray-600 text-xs">&larr; Inapoi</button>
                 <p className="text-[#C9AB81] text-[10px] font-bold tracking-[0.2em] uppercase">
                   Asigneaza oaspete pe {selected}
                 </p>
               </div>
 
               <div className="relative mb-3">
-                <Search className="absolute left-3 top-2 w-4 h-4 text-black/30" />
+                <Search className="absolute left-3 top-2 w-4 h-4 text-gray-500" />
                 <input
                   type="text"
                   value={searchQuery}
@@ -466,17 +466,17 @@ export default function LoungerGrid({ adminId }: Props) {
                     className={`w-full text-left px-3 py-2 text-sm border transition-all ${
                       selectedGuestId === g.id
                         ? "bg-[#C9AB81]/10 border-[#C9AB81]/30"
-                        : "bg-gray-50 border-black/[0.06]"
+                        : "bg-gray-50 border-gray-200"
                     }`}
                   >
-                    <p className="text-[#1a1a1a] font-medium">{g.name}</p>
-                    <p className="text-black/40 text-xs">
+                    <p className="text-gray-900 font-medium">{g.name}</p>
+                    <p className="text-gray-600 text-xs">
                       {g.phone} · {g.loungerId || "fara loc"} · {g.status}
                     </p>
                   </button>
                 ))}
                 {assignableGuests.length === 0 && (
-                  <p className="text-black/30 text-xs text-center py-4">Niciun oaspete gasit.</p>
+                  <p className="text-gray-500 text-xs text-center py-4">Niciun oaspete gasit.</p>
                 )}
               </div>
 
@@ -494,7 +494,7 @@ export default function LoungerGrid({ adminId }: Props) {
           {panelMode === "checkin" && !success && (
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <button onClick={() => setPanelMode("info")} className="text-black/40 text-xs">&larr; Inapoi</button>
+                <button onClick={() => setPanelMode("info")} className="text-gray-600 text-xs">&larr; Inapoi</button>
                 <p className="text-[#C9AB81] text-[10px] font-bold tracking-[0.2em] uppercase">
                   Check-in rapid pe {selected}
                 </p>
@@ -525,15 +525,15 @@ export default function LoungerGrid({ adminId }: Props) {
                     <input type="date" value={ciStayEnd} onChange={(e) => setCiStayEnd(e.target.value)} className={inputCls} />
                   </div>
                 </div>
-                <div className="flex items-center justify-between bg-gray-50 border border-black/[0.06] p-3">
+                <div className="flex items-center justify-between bg-gray-100/80 border border-gray-200 p-3">
                   <div className="flex items-center gap-2">
                     <CreditCard className="w-4 h-4 text-purple-400" />
-                    <span className="text-sm text-[#1a1a1a]">Credit</span>
+                    <span className="text-sm text-gray-900">Credit</span>
                   </div>
                   <button
                     type="button"
                     onClick={() => setCiCredit(!ciCredit)}
-                    className={`w-10 h-5 rounded-full transition-colors relative ${ciCredit ? "bg-purple-500" : "bg-black/10"}`}
+                    className={`w-10 h-5 rounded-full transition-colors relative ${ciCredit ? "bg-purple-500" : "bg-gray-200"}`}
                   >
                     <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-transform ${ciCredit ? "left-5" : "left-0.5"}`} />
                   </button>
@@ -554,13 +554,13 @@ export default function LoungerGrid({ adminId }: Props) {
           {panelMode === "relocate" && !success && selectedGuest && (
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <button onClick={() => setPanelMode("info")} className="text-black/40 text-xs">&larr; Inapoi</button>
+                <button onClick={() => setPanelMode("info")} className="text-gray-600 text-xs">&larr; Inapoi</button>
                 <p className="text-[#C9AB81] text-[10px] font-bold tracking-[0.2em] uppercase">
                   Reloca {selectedGuest.name}
                 </p>
               </div>
 
-              <p className="text-black/40 text-xs mb-3">
+              <p className="text-gray-600 text-xs mb-3">
                 Muta de pe {selected} pe alt sezlong:
               </p>
 

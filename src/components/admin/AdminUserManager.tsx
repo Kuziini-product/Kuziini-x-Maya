@@ -153,14 +153,14 @@ export default function AdminUserManager({ adminId }: Props) {
   }
 
   const inputCls =
-    "w-full bg-gray-50 border border-black/[0.06] px-3 py-2 text-[#1a1a1a] text-sm outline-none focus:border-[#C9AB81]/50 placeholder:text-black/30";
+    "w-full bg-gray-100/80 border border-gray-200 px-3 py-2 text-gray-900 text-sm outline-none focus:border-[#C9AB81]/50 placeholder:text-gray-400";
   const labelCls =
     "text-[10px] font-bold text-[#C9AB81] uppercase tracking-[0.2em] mb-1 block";
 
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <p className="text-black/40 text-xs">{admins.length} administratori</p>
+        <p className="text-gray-600 text-xs">{admins.length} administratori</p>
         <button
           onClick={() => { showForm ? resetForm() : setShowForm(true); }}
           className="flex items-center gap-1.5 px-3 py-1.5 bg-[#C9AB81] text-[#0A0A0A] text-[10px] font-bold tracking-wider uppercase"
@@ -172,7 +172,7 @@ export default function AdminUserManager({ adminId }: Props) {
 
       {/* Form */}
       {showForm && (
-        <div className="bg-gray-50 border border-black/[0.08] p-4 mb-4 space-y-3">
+        <div className="bg-gray-100/80 border border-gray-200 p-4 mb-4 space-y-3">
           <p className="text-[#C9AB81] text-[10px] font-bold tracking-[0.2em] uppercase">
             {editing ? "Editeaza admin" : "Admin nou"}
           </p>
@@ -271,7 +271,7 @@ export default function AdminUserManager({ adminId }: Props) {
       {/* Admin list */}
       {loading ? (
         <div className="flex justify-center py-10">
-          <RefreshCw className="w-5 h-5 text-black/40 animate-spin" />
+          <RefreshCw className="w-5 h-5 text-gray-600 animate-spin" />
         </div>
       ) : (
         <div className="space-y-2">
@@ -281,11 +281,11 @@ export default function AdminUserManager({ adminId }: Props) {
               <button
                 key={a.id}
                 onClick={() => startEdit(a)}
-                className="w-full bg-gray-50 border border-black/[0.08] px-4 py-3 flex items-center justify-between text-left"
+                className="w-full bg-gray-100/80 border border-gray-200 px-4 py-3 flex items-center justify-between text-left"
               >
                 <div>
-                  <p className="text-[#1a1a1a] text-sm font-medium">{a.name}</p>
-                  <p className="text-black/40 text-xs">{a.email}</p>
+                  <p className="text-gray-900 text-sm font-medium">{a.name}</p>
+                  <p className="text-gray-600 text-xs">{a.email}</p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   <span

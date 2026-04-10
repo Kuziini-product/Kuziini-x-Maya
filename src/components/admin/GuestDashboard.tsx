@@ -53,7 +53,7 @@ export default function GuestDashboard({ adminId, onNavigate }: Props) {
   if (loading && !stats) {
     return (
       <div className="flex items-center justify-center py-20">
-        <RefreshCw className="w-6 h-6 text-black/40 animate-spin" />
+        <RefreshCw className="w-6 h-6 text-gray-600 animate-spin" />
       </div>
     );
   }
@@ -81,10 +81,10 @@ export default function GuestDashboard({ adminId, onNavigate }: Props) {
       label: "Comenzi nelivrate",
       value: stats.pendingOrders,
       icon: <Clock className="w-6 h-6" />,
-      color: stats.pendingOrders > 0 ? "text-red-400" : "text-black/40",
+      color: stats.pendingOrders > 0 ? "text-red-400" : "text-gray-600",
       bg: stats.pendingOrders > 0
         ? "bg-red-400/10 border-red-400/20"
-        : "bg-gray-50 border-black/[0.08]",
+        : "bg-gray-100/80 border-gray-200",
       tab: "orders",
     },
     {
@@ -116,12 +116,12 @@ export default function GuestDashboard({ adminId, onNavigate }: Props) {
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <p className="text-black/40 text-xs">
+        <p className="text-gray-600 text-xs">
           {stats.totalLoungers} sezlonguri totale · Actualizare la 15s
         </p>
         <button
           onClick={() => { setLoading(true); fetchStats(); }}
-          className="text-black/40 active:text-black/50"
+          className="text-gray-600 active:text-gray-700"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
         </button>
@@ -138,7 +138,7 @@ export default function GuestDashboard({ adminId, onNavigate }: Props) {
             <p className={`text-3xl font-bold mt-2 ${card.color}`}>
               {card.value}
             </p>
-            <p className="text-black/50 text-[10px] font-bold tracking-wider uppercase mt-1">
+            <p className="text-gray-700 text-[10px] font-bold tracking-wider uppercase mt-1">
               {card.label}
             </p>
             <ChevronRight className="w-3.5 h-3.5 text-black/20 mt-1" />

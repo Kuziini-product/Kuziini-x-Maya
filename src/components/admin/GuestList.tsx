@@ -109,7 +109,7 @@ export default function GuestList({ adminId }: Props) {
     const map: Record<GuestStatus, { bg: string; text: string; label: string }> = {
       active: { bg: "bg-emerald-400/20", text: "text-emerald-400", label: "Activ" },
       registered: { bg: "bg-amber-400/20", text: "text-amber-400", label: "Inregistrat" },
-      inactive: { bg: "bg-black/[0.06]", text: "text-black/50", label: "Inactiv" },
+      inactive: { bg: "bg-gray-200", text: "text-gray-700", label: "Inactiv" },
       checked_out: { bg: "bg-red-400/20", text: "text-red-400", label: "Check-out" },
     };
     const s = map[status];
@@ -132,13 +132,13 @@ export default function GuestList({ adminId }: Props) {
     <div>
       {/* Search */}
       <div className="relative mb-3">
-        <Search className="absolute left-3 top-2.5 w-4 h-4 text-black/40" />
+        <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-600" />
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Cauta dupa nume, telefon sau sezlong..."
-          className="w-full bg-gray-50 border border-black/[0.06] pl-9 pr-3 py-2.5 text-[#1a1a1a] text-sm outline-none focus:border-[#C9AB81]/50 placeholder:text-black/30"
+          className="w-full bg-gray-100/80 border border-gray-200 pl-9 pr-3 py-2.5 text-gray-900 text-sm outline-none focus:border-[#C9AB81]/50 placeholder:text-gray-400"
         />
       </div>
 
@@ -151,7 +151,7 @@ export default function GuestList({ adminId }: Props) {
             className={`px-3 py-1.5 text-[10px] font-bold tracking-wider uppercase transition-all ${
               filter === f.key
                 ? "bg-[#C9AB81] text-[#0A0A0A]"
-                : "bg-black/[0.04] text-black/40"
+                : "bg-gray-100 text-gray-600"
             }`}
           >
             {f.label}
@@ -159,7 +159,7 @@ export default function GuestList({ adminId }: Props) {
         ))}
       </div>
 
-      <p className="text-black/40 text-xs mb-3">
+      <p className="text-gray-600 text-xs mb-3">
         {filtered.length} oaspeti{" "}
         <button onClick={() => { setLoading(true); fetchGuests(); }} className="text-[#C9AB81]">
           <RefreshCw className={`w-3 h-3 inline ${loading ? "animate-spin" : ""}`} />
@@ -168,10 +168,10 @@ export default function GuestList({ adminId }: Props) {
 
       {loading && guests.length === 0 ? (
         <div className="flex justify-center py-10">
-          <RefreshCw className="w-5 h-5 text-black/40 animate-spin" />
+          <RefreshCw className="w-5 h-5 text-gray-600 animate-spin" />
         </div>
       ) : filtered.length === 0 ? (
-        <p className="text-black/30 text-sm text-center py-10">
+        <p className="text-gray-500 text-sm text-center py-10">
           Niciun oaspete gasit.
         </p>
       ) : (
@@ -179,7 +179,7 @@ export default function GuestList({ adminId }: Props) {
           {filtered.map((g) => (
             <div
               key={g.id}
-              className="bg-gray-50 border border-black/[0.08] overflow-hidden"
+              className="bg-gray-100/80 border border-gray-200 overflow-hidden"
             >
               {/* Summary row */}
               <button
@@ -188,10 +188,10 @@ export default function GuestList({ adminId }: Props) {
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="min-w-0">
-                    <p className="text-[#1a1a1a] text-sm font-medium truncate">
+                    <p className="text-gray-900 text-sm font-medium truncate">
                       {g.name}
                     </p>
-                    <p className="text-black/40 text-xs">
+                    <p className="text-gray-600 text-xs">
                       {g.loungerId || "—"} · {g.phone}
                     </p>
                   </div>
@@ -202,33 +202,33 @@ export default function GuestList({ adminId }: Props) {
                   )}
                   {statusBadge(g.status)}
                   {expanded === g.id ? (
-                    <ChevronUp className="w-4 h-4 text-black/40" />
+                    <ChevronUp className="w-4 h-4 text-gray-600" />
                   ) : (
-                    <ChevronDown className="w-4 h-4 text-black/40" />
+                    <ChevronDown className="w-4 h-4 text-gray-600" />
                   )}
                 </div>
               </button>
 
               {/* Expanded details */}
               {expanded === g.id && (
-                <div className="px-4 pb-4 border-t border-black/[0.08] pt-3 space-y-2">
+                <div className="px-4 pb-4 border-t border-gray-200 pt-3 space-y-2">
                   <div className="grid grid-cols-2 gap-2 text-xs">
-                    <div className="flex items-center gap-1.5 text-black/50">
+                    <div className="flex items-center gap-1.5 text-gray-700">
                       <Phone className="w-3 h-3" /> {g.phone}
                     </div>
-                    <div className="flex items-center gap-1.5 text-black/50">
+                    <div className="flex items-center gap-1.5 text-gray-700">
                       <Mail className="w-3 h-3" /> {g.email || "—"}
                     </div>
-                    <div className="flex items-center gap-1.5 text-black/50">
+                    <div className="flex items-center gap-1.5 text-gray-700">
                       <Calendar className="w-3 h-3" /> {g.stayStart} → {g.stayEnd}
                     </div>
-                    <div className="flex items-center gap-1.5 text-black/50">
+                    <div className="flex items-center gap-1.5 text-gray-700">
                       <Umbrella className="w-3 h-3" /> {g.loungerId || "neatribuit"}
                     </div>
                   </div>
 
                   {g.notes && (
-                    <p className="text-black/40 text-xs italic">{g.notes}</p>
+                    <p className="text-gray-600 text-xs italic">{g.notes}</p>
                   )}
 
                   <div className="flex gap-2 pt-2">
@@ -238,7 +238,7 @@ export default function GuestList({ adminId }: Props) {
                       className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[10px] font-bold tracking-wider uppercase border ${
                         g.creditEnabled
                           ? "bg-purple-500/20 border-purple-500/30 text-purple-400"
-                          : "bg-black/[0.04] border-black/[0.1] text-black/40"
+                          : "bg-gray-100 border-gray-300 text-gray-600"
                       }`}
                     >
                       <CreditCard className="w-3 h-3" />
