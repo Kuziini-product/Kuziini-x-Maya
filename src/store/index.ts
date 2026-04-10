@@ -6,6 +6,7 @@ import type {
   UserSession,
   Order,
   GuestJoinRequest,
+  ClosedBill,
 } from "@/types";
 import { generateId } from "@/lib/utils";
 
@@ -99,6 +100,7 @@ interface SessionStore {
   userSession: UserSession | null;
   pendingRequests: GuestJoinRequest[];
   orders: Order[];
+  closedBills: ClosedBill[];
   setUserSession: (session: UserSession | null) => void;
   addOrder: (order: Order) => void;
   updateOrderStatus: (orderId: string, status: Order["status"]) => void;
@@ -107,6 +109,7 @@ interface SessionStore {
     reqId: string,
     status: GuestJoinRequest["status"]
   ) => void;
+  addClosedBill: (bill: ClosedBill) => void;
   clearSession: () => void;
 }
 
@@ -116,6 +119,7 @@ export const useSessionStore = create<SessionStore>()(
       userSession: null,
       pendingRequests: [],
       orders: [],
+      closedBills: [],
 
       setUserSession: (session) => set({ userSession: session }),
 
@@ -139,8 +143,11 @@ export const useSessionStore = create<SessionStore>()(
           ),
         })),
 
+      addClosedBill: (bill) =>
+        set((s) => ({ closedBills: [bill, ...s.closedBills] })),
+
       clearSession: () =>
-        set({ userSession: null, pendingRequests: [], orders: [] }),
+        set((s) => ({ userSession: null, pendingRequests: [], orders: [], closedBills: s.closedBills })),
     }),
     {
       name: "kuziini-session",

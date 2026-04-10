@@ -159,6 +159,17 @@ export interface Bill {
   closedAt?: string;
 }
 
+// ─── Closed Bill (History) ───────────────────────────────────────────────────
+
+export interface ClosedBill {
+  id: string;
+  umbrellaId: string;
+  orders: Order[];
+  total: number;
+  paymentMethod: PaymentMethod;
+  closedAt: string;
+}
+
 // ─── Credit ──────────────────────────────────────────────────────────────────
 
 export interface CreditStatus {

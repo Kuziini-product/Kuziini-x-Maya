@@ -21,7 +21,7 @@ async function fetchPaymentOptions(umbrellaId: string) {
 export default function BillPage({ params }: { params: { umbrellaId: string } }) {
   const { umbrellaId } = params;
   const router = useRouter();
-  const { userSession, orders, clearSession } = useSessionStore();
+  const { userSession, orders, clearSession, addClosedBill } = useSessionStore();
   const clearCart = useCartStore((s) => s.clearCart);
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethod | null>(null);
   const [confirming, setConfirming] = useState(false);
@@ -57,6 +57,15 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
       });
       const json = await res.json();
       if (!json.success) throw new Error(json.error);
+      // Save closed bill to history before clearing session
+      addClosedBill({
+        id: `bill-${Date.now()}`,
+        umbrellaId,
+        orders: myOrders,
+        total,
+        paymentMethod: selectedMethod!,
+        closedAt: new Date().toISOString(),
+      });
       // Auto-logout: clear session + cart, then show success
       clearCart();
       clearSession();
