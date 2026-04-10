@@ -30,13 +30,14 @@ function getAspectClass(aspect: GalleryAspect): string {
   }
 }
 
-/** Resize image client-side: max 600px longest side, JPEG quality 0.55
- *  Keeps base64 small enough for Vercel KV (Upstash) storage limits */
+/** Resize image client-side for Vercel KV storage.
+ *  Target: under 60KB base64 per image so 12 images fit in 900KB KV limit.
+ *  Strategy: max 400px, progressive quality reduction until under 60KB. */
 function resizeImage(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => {
-      const MAX = 600;
+      const MAX = 400;
       let w = img.width;
       let h = img.height;
       if (w > MAX || h > MAX) {
@@ -54,13 +55,22 @@ function resizeImage(file: File): Promise<string> {
       const ctx = canvas.getContext("2d");
       if (!ctx) { reject(new Error("Canvas not supported")); return; }
       ctx.drawImage(img, 0, 0, w, h);
-      const dataUrl = canvas.toDataURL("image/jpeg", 0.55);
-      // Safety check: if still over 100KB base64, reduce quality further
-      if (dataUrl.length > 100_000) {
-        resolve(canvas.toDataURL("image/jpeg", 0.35));
-      } else {
-        resolve(dataUrl);
+      // Try progressively lower quality until under 60KB
+      for (const q of [0.5, 0.4, 0.3, 0.2, 0.15]) {
+        const dataUrl = canvas.toDataURL("image/jpeg", q);
+        if (dataUrl.length <= 60_000) {
+          resolve(dataUrl);
+          return;
+        }
       }
+      // Last resort: shrink further
+      const smallCanvas = document.createElement("canvas");
+      smallCanvas.width = Math.round(w * 0.6);
+      smallCanvas.height = Math.round(h * 0.6);
+      const sCtx = smallCanvas.getContext("2d");
+      if (!sCtx) { resolve(canvas.toDataURL("image/jpeg", 0.15)); return; }
+      sCtx.drawImage(canvas, 0, 0, smallCanvas.width, smallCanvas.height);
+      resolve(smallCanvas.toDataURL("image/jpeg", 0.2));
     };
     img.onerror = () => reject(new Error("Failed to load image"));
     img.src = URL.createObjectURL(file);

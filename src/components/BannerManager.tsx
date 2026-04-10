@@ -89,22 +89,47 @@ export default function BannerManager({
     [password, category, onUpdate]
   );
 
+  function resizeBannerImage(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const MAX = 300;
+        let w = img.width;
+        let h = img.height;
+        if (w > MAX || h > MAX) {
+          if (w > h) { h = Math.round(h * (MAX / w)); w = MAX; }
+          else { w = Math.round(w * (MAX / h)); h = MAX; }
+        }
+        const canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) { reject(new Error("Canvas not supported")); return; }
+        ctx.drawImage(img, 0, 0, w, h);
+        for (const q of [0.5, 0.4, 0.3, 0.2]) {
+          const dataUrl = canvas.toDataURL("image/jpeg", q);
+          if (dataUrl.length <= 40_000) { resolve(dataUrl); return; }
+        }
+        resolve(canvas.toDataURL("image/jpeg", 0.15));
+      };
+      img.onerror = () => reject(new Error("Failed to load image"));
+      img.src = URL.createObjectURL(file);
+    });
+  }
+
   function handleImageSelect(callback: (dataUrl: string) => void) {
     const input = document.createElement("input");
     input.type = "file";
     input.accept = "image/*";
-    input.onchange = (e) => {
+    input.onchange = async (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (!file) return;
-      if (file.size > 500 * 1024) {
-        setError("Imaginea trebuie să fie sub 500KB.");
-        return;
+      try {
+        const dataUrl = await resizeBannerImage(file);
+        callback(dataUrl);
+      } catch {
+        setError("Eroare la procesarea imaginii.");
       }
-      const reader = new FileReader();
-      reader.onload = () => {
-        callback(reader.result as string);
-      };
-      reader.readAsDataURL(file);
     };
     input.click();
   }

@@ -30,8 +30,8 @@ export async function kvSet<T>(key: string, value: T): Promise<void> {
   if (isKvConfigured()) {
     const serialized = JSON.stringify(value);
     const sizeKB = Math.round(serialized.length / 1024);
-    if (serialized.length > 900_000) {
-      throw new Error(`Datele sunt prea mari pentru stocare (${sizeKB}KB). Redu dimensiunea imaginilor.`);
+    if (serialized.length > 950_000) {
+      throw new Error(`Datele sunt prea mari (${sizeKB}KB / 950KB max). Șterge câteva imagini sau folosește imagini mai mici.`);
     }
     try {
       await kv.set(key, value);
