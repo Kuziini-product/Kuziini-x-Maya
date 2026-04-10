@@ -140,16 +140,15 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
       ? "Pregătește cardul, ospătarul vine cu POS-ul."
       : "Suma a fost adăugată pe cameră.";
     return (
-      <div className="min-h-dvh bg-gradient-to-b from-white via-white/10 to-[#0A0A0A] flex flex-col items-center px-6 md:px-8 text-center relative">
+      <div className="min-h-dvh bg-gradient-to-b from-white via-white/10 to-[#0A0A0A] flex flex-col items-center text-center relative">
         {/* Emojis separated with Maya logo visible between them */}
         <div className="flex-1 flex items-center justify-center w-full relative">
           <img src="/Maya.png" alt="Maya" className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-64 object-contain pointer-events-none" />
-          <div className="flex items-center w-full px-0 relative z-10">
-            <span className="text-7xl animate-bounce">🏃‍♂️</span>
-            <div className="flex-1" />
-            <div className="relative animate-bounce mr-1" style={{ animationDelay: "0.3s" }}>
+          <div className="flex items-center justify-between w-full px-2 relative z-10">
+            <span className="text-5xl animate-bounce">🏃‍♂️</span>
+            <div className="relative animate-bounce" style={{ animationDelay: "0.3s" }}>
               {/* CSS Receipt */}
-              <div className="w-10 bg-white rounded-t-md shadow-xl -rotate-6" style={{
+              <div className="w-8 bg-white rounded-t-md shadow-xl -rotate-6" style={{
                 clipPath: "polygon(0% 0%, 100% 0%, 100% calc(100% - 8px), 92% 100%, 84% calc(100% - 6px), 76% 100%, 68% calc(100% - 6px), 60% 100%, 52% calc(100% - 6px), 44% 100%, 36% calc(100% - 6px), 28% 100%, 20% calc(100% - 6px), 12% 100%, 4% calc(100% - 6px), 0% 100%)"
               }}>
                 <div className="px-1.5 pt-2 pb-3">
@@ -190,7 +189,7 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
         </div>
 
         {/* Details card with status message as title */}
-        <div className="w-full max-w-xs md:max-w-sm mb-6">
+        <div className="w-full max-w-xs md:max-w-sm mb-6 px-6 md:px-8">
           <div className="bg-white/[0.03] border border-white/[0.06] px-6 py-4 rounded-2xl">
             <p className="text-white font-bold text-sm tracking-wide mb-3">
               {statusMsg}
