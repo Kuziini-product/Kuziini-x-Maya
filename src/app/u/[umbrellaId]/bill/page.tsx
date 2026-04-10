@@ -190,7 +190,7 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
             Kuziini
           </a>
           <button
-            onClick={() => router.push("/")}
+            onClick={() => router.push("/#about")}
             className="flex-1 bg-[#C9AB81] text-[#0A0A0A] py-3 font-bold text-xs tracking-[0.15em] uppercase active:opacity-80"
           >
             Pagina principală
