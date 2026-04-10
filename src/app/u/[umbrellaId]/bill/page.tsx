@@ -133,83 +133,71 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
 
   // Done — waiter animation
   if (step === "done") {
+    const methodLabel = selectedMethod === "cash" ? "Cash" : selectedMethod === "card" ? "Card" : "Room Charge";
+    const statusMsg = selectedMethod === "cash"
+      ? "Un ospătar vine spre tine cu nota."
+      : selectedMethod === "card"
+      ? "Pregătește cardul, ospătarul vine cu POS-ul."
+      : "Suma a fost adăugată pe cameră.";
     return (
-      <div className="min-h-dvh bg-gradient-to-b from-white via-white/10 to-[#0A0A0A] flex flex-col items-center justify-center px-6 text-center relative">
-        {/* Maya logo visible at top */}
-        <img src="/Maya.png" alt="Maya" className="absolute top-6 left-1/2 -translate-x-1/2 h-64 object-contain pointer-events-none" />
-        <div className="flex items-center justify-center gap-1 mb-6 animate-bounce relative z-10">
-          {selectedMethod === "cash" && (
-            <>
-              <span className="text-7xl">🏃‍♂️</span>
-              <div className="relative">
-                <span className="text-6xl">🧾</span>
-                <img src="/kuziini-logo.png" alt="" className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 object-contain invert brightness-200 opacity-60" />
-              </div>
-            </>
-          )}
-          {selectedMethod === "card" && (
-            <>
-              <span className="text-7xl">🏃‍♂️</span>
-              <div className="relative">
-                <span className="text-6xl">🧾</span>
-                <img src="/kuziini-logo.png" alt="" className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 object-contain invert brightness-200 opacity-60" />
-              </div>
-              <span className="text-5xl">💳</span>
-            </>
-          )}
-          {selectedMethod === "room-charge" && (
-            <>
-              <span className="text-7xl">🏃‍♂️</span>
-              <div className="relative">
-                <span className="text-6xl">🧾</span>
-                <img src="/kuziini-logo.png" alt="" className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 object-contain invert brightness-200 opacity-60" />
-              </div>
-              <span className="text-5xl">🔑</span>
-            </>
-          )}
-        </div>
-        <h2 className="text-2xl font-bold text-white mb-3 tracking-wide relative z-10">
-          Nota ta a fost transmisă!
-        </h2>
-        <p className="text-white/50 text-sm mb-6">
-          {selectedMethod === "cash" && "Un ospătar vine spre tine cu nota."}
-          {selectedMethod === "card" && "Pregătește cardul, ospătarul vine cu POS-ul."}
-          {selectedMethod === "room-charge" && "Suma a fost adăugată pe cameră."}
-        </p>
-        <div className="bg-white/[0.03] border border-white/[0.06] px-6 py-4 mb-8 w-full max-w-xs">
-          <p className="text-white/30 text-[10px] font-bold tracking-[0.2em] uppercase mb-2">Detalii</p>
-          <div className="flex justify-between text-sm mb-1">
-            <span className="text-white/40">Total</span>
-            <span className="text-[#C9AB81] font-bold">{formatPrice(savedTotal)}</span>
-          </div>
-          <div className="flex justify-between text-sm mb-1">
-            <span className="text-white/40">Plată</span>
-            <span className="text-white font-bold">
-              {selectedMethod === "cash" ? "Cash" : selectedMethod === "card" ? "Card" : "Room Charge"}
-            </span>
-          </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-white/40">Umbrela</span>
-            <span className="text-white font-bold">{umbrellaId}</span>
+      <div className="min-h-dvh bg-gradient-to-b from-white via-white/10 to-[#0A0A0A] flex flex-col items-center px-6 text-center relative">
+        {/* Emojis separated with Maya logo visible between them */}
+        <div className="flex-1 flex items-center justify-center w-full relative">
+          <img src="/Maya.png" alt="Maya" className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-64 object-contain pointer-events-none" />
+          <div className="flex items-center justify-center gap-16 relative z-10">
+            <span className="text-7xl animate-bounce">🏃‍♂️</span>
+            <div className="relative animate-bounce" style={{ animationDelay: "0.3s" }}>
+              <span className="text-6xl">🧾</span>
+              <img src="/kuziini-logo.png" alt="" className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 object-contain invert brightness-200 opacity-60" />
+              {selectedMethod === "card" && <span className="absolute -bottom-2 -right-4 text-3xl">💳</span>}
+              {selectedMethod === "room-charge" && <span className="absolute -bottom-2 -right-4 text-3xl">🔑</span>}
+            </div>
           </div>
         </div>
-        <p className="text-white/30 text-sm mb-8">
-          Mulțumim că ai ales Maya ✨
-        </p>
+
+        {/* Details card with status message as title */}
+        <div className="w-full max-w-xs mb-6">
+          <div className="bg-white/[0.03] border border-white/[0.06] px-6 py-4">
+            <p className="text-white font-bold text-sm tracking-wide mb-3">
+              {statusMsg}
+            </p>
+            <div className="flex justify-between text-sm mb-1">
+              <span className="text-white/40">Total</span>
+              <span className="text-[#C9AB81] font-bold">{formatPrice(savedTotal)}</span>
+            </div>
+            <div className="flex justify-between text-sm mb-1">
+              <span className="text-white/40">Plată</span>
+              <span className="text-white font-bold">{methodLabel}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-white/40">Umbrela</span>
+              <span className="text-white font-bold">{umbrellaId}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Action button */}
         <button
           onClick={() => router.push("/")}
-          className="bg-[#C9AB81] text-[#0A0A0A] px-8 py-3 font-bold text-sm tracking-[0.15em] uppercase active:opacity-80 mb-10"
+          className="bg-[#C9AB81] text-[#0A0A0A] px-8 py-3 font-bold text-sm tracking-[0.15em] uppercase active:opacity-80 mb-6"
         >
           Înapoi la pagina principală
         </button>
+
+        {/* Kuziini logo → Instagram */}
         <a
           href="https://www.instagram.com/kuziiniconceptstore/"
           target="_blank"
           rel="noopener noreferrer"
-          className="animate-pulse"
+          className="animate-pulse mb-8"
         >
           <img src="/kuziini-logo.png" alt="Kuziini" className="h-16 object-contain invert brightness-200 opacity-70 active:opacity-100 transition-all hover:scale-105" />
         </a>
+
+        {/* Nota a fost transmisă - at the very bottom */}
+        <p className="text-white/30 text-sm mb-6">
+          Nota ta a fost transmisă ✨
+        </p>
       </div>
     );
   }
