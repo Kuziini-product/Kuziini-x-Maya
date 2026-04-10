@@ -144,13 +144,46 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
         {/* Emojis separated with Maya logo visible between them */}
         <div className="flex-1 flex items-center justify-center w-full relative">
           <img src="/Maya.png" alt="Maya" className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-64 object-contain pointer-events-none" />
-          <div className="flex items-center justify-between w-full px-1 relative z-10">
+          <div className="flex items-center justify-between w-full px-4 relative z-10">
             <span className="text-7xl animate-bounce">🏃‍♂️</span>
             <div className="relative animate-bounce" style={{ animationDelay: "0.3s" }}>
-              <span className="text-6xl">🧾</span>
-              <img src="/kuziini-logo.png" alt="" className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 object-contain invert brightness-200 opacity-60" />
-              {selectedMethod === "card" && <span className="absolute -bottom-2 -right-4 text-3xl">💳</span>}
-              {selectedMethod === "room-charge" && <span className="absolute -bottom-2 -right-4 text-3xl">🔑</span>}
+              {/* CSS Receipt */}
+              <div className="w-20 bg-white rounded-t-md shadow-xl -rotate-6" style={{
+                clipPath: "polygon(0% 0%, 100% 0%, 100% calc(100% - 8px), 92% 100%, 84% calc(100% - 6px), 76% 100%, 68% calc(100% - 6px), 60% 100%, 52% calc(100% - 6px), 44% 100%, 36% calc(100% - 6px), 28% 100%, 20% calc(100% - 6px), 12% 100%, 4% calc(100% - 6px), 0% 100%)"
+              }}>
+                <div className="px-2.5 pt-3 pb-4">
+                  <p className="text-[6px] font-bold text-center text-gray-800 tracking-wider uppercase mb-1">Receipt</p>
+                  <div className="w-full h-px bg-gray-300 mb-1.5" />
+                  <img src="/kuziini-logo.png" alt="" className="h-4 object-contain mx-auto mb-1.5 opacity-40" />
+                  <div className="space-y-1">
+                    <div className="h-px bg-gray-200 w-3/4" />
+                    <div className="h-px bg-gray-200 w-full" />
+                    <div className="h-px bg-gray-200 w-2/3" />
+                    <div className="h-px bg-gray-200 w-4/5" />
+                  </div>
+                  <div className="w-full h-px bg-gray-300 mt-1.5 mb-1" />
+                  <div className="flex justify-between">
+                    <span className="text-[5px] text-gray-500 font-bold">TOTAL</span>
+                    <span className="text-[5px] text-gray-800 font-bold">{formatPrice(savedTotal)}</span>
+                  </div>
+                  {/* Barcode */}
+                  <div className="flex gap-px mt-2 justify-center">
+                    {[2,1,3,1,2,1,3,2,1,2,1,3,1,2].map((w, i) => (
+                      <div key={i} className="bg-gray-800 rounded-sm" style={{ width: w * 1.5, height: 10 }} />
+                    ))}
+                  </div>
+                </div>
+              </div>
+              {/* Payment method icon */}
+              {selectedMethod === "card" && (
+                <div className="absolute -bottom-3 -right-5 w-10 h-7 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-md shadow-lg flex items-center justify-end pr-1 gap-0.5">
+                  <div className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-yellow-300/80 -ml-1.5" />
+                </div>
+              )}
+              {selectedMethod === "room-charge" && (
+                <div className="absolute -bottom-3 -right-5 text-3xl">🔑</div>
+              )}
             </div>
           </div>
         </div>
