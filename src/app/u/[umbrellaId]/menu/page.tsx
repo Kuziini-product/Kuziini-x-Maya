@@ -128,28 +128,6 @@ export default function MenuPage({ params }: { params: { umbrellaId: string } })
         )}
       </div>
 
-      {/* Kuziini × Maya Logos */}
-      <div className="flex flex-col items-center pt-8 pb-6 px-4">
-        <div className="flex items-center justify-center gap-4 mb-4">
-          <a href="https://www.instagram.com/kuziiniconceptstore/" target="_blank" rel="noopener noreferrer">
-            <img
-              src="/kuziini-logo.png"
-              alt="Kuziini"
-              className="h-12 object-contain invert brightness-200"
-            />
-          </a>
-          <span className="text-[#C9AB81] text-xl font-bold">×</span>
-          <img
-            src="/Maya.png"
-            alt="Maya"
-            className="h-12 object-contain"
-          />
-        </div>
-        <p className="text-white/30 text-[10px] tracking-[0.4em] uppercase">
-          The best restaurant is a club, and the best club is a restaurant
-        </p>
-      </div>
-
       {/* Menu Tabs - LOFT style */}
       <div className="flex justify-center gap-2 px-4 pb-8">
         {MENU_TABS.map((tab) => (
