@@ -351,31 +351,25 @@ function ClosedBillCard({
   return (
     <div className="bg-white/[0.02] border border-white/[0.04] overflow-hidden">
       <button onClick={() => setExpanded(!expanded)} className="w-full p-4 text-left">
-        <div className="flex items-start justify-between mb-2">
-          <div>
-            <p className="text-xs text-white/30">{dateStr} · {timeStr}</p>
-            <p className="text-xs text-white/20 font-mono">#{bill.id.slice(-6).toUpperCase()}</p>
-          </div>
+        <div className="flex items-center justify-between">
+          <p className="text-xs text-white/40">{dateStr} · {timeStr}</p>
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold tracking-wider uppercase bg-emerald-500/15 text-emerald-400/70">
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              {paymentLabel}
-            </span>
-            {expanded ? <ChevronUp className="w-4 h-4 text-white/30" /> : <ChevronDown className="w-4 h-4 text-white/30" />}
+            <span className="font-bold text-white/50 text-sm">{formatPrice(bill.total)}</span>
+            {expanded ? <ChevronUp className="w-4 h-4 text-white/20" /> : <ChevronDown className="w-4 h-4 text-white/20" />}
           </div>
-        </div>
-
-        <div className="flex items-center justify-between pt-2 border-t border-white/[0.04]">
-          <span className="text-xs text-white/30">
-            {allItems.length} {allItems.length === 1 ? "articol" : "articole"}
-          </span>
-          <span className="font-bold text-white/50">{formatPrice(bill.total)}</span>
         </div>
       </button>
 
       {expanded && (
         <div className="px-4 pb-4 border-t border-white/[0.04]">
-          <div className="space-y-2 py-3">
+          <div className="flex items-center justify-between mb-3 pt-3">
+            <span className="text-xs text-white/30 font-mono">#{bill.id.slice(-6).toUpperCase()}</span>
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase bg-emerald-500/15 text-emerald-400/70">
+              <CheckCircle2 className="w-3 h-3" />
+              {paymentLabel}
+            </span>
+          </div>
+          <div className="space-y-2">
             {allItems.map((item, i) => (
               <div key={i} className="flex items-center justify-between">
                 <span className="text-sm text-white/50">
