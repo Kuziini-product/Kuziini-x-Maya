@@ -157,9 +157,9 @@ export function BottomNav({ umbrellaId }: BottomNavProps) {
             {actionLabel}
           </button>
 
-          {/* Home button - right, balances speaker */}
+          {/* Home button - right, goes to homepage #about */}
           <Link
-            href={`${base}`}
+            href="/#about"
             className="flex items-center justify-center w-9 h-9 text-white/30 active:text-white/50 transition-all duration-200 shrink-0"
           >
             <Home className="w-5 h-5" strokeWidth={1.8} />
