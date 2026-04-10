@@ -135,8 +135,8 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
   if (step === "done") {
     return (
       <div className="min-h-dvh bg-gradient-to-b from-white via-white/10 to-[#0A0A0A] flex flex-col items-center justify-center px-6 text-center relative">
-        {/* Maya logo as background behind emoji */}
-        <img src="/Maya.png" alt="" className="absolute top-0 left-1/2 -translate-x-1/2 h-[22vh] object-contain opacity-[0.15] pointer-events-none" />
+        {/* Maya logo visible at top */}
+        <img src="/Maya.png" alt="Maya" className="absolute top-6 left-1/2 -translate-x-1/2 h-16 object-contain pointer-events-none" />
         <div className="flex items-center justify-center gap-1 mb-6 animate-bounce relative z-10">
           {selectedMethod === "cash" && (
             <>
@@ -206,8 +206,9 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
           href="https://www.instagram.com/kuziiniconceptstore/"
           target="_blank"
           rel="noopener noreferrer"
+          className="animate-pulse"
         >
-          <img src="/kuziini-logo.png" alt="Kuziini" className="h-10 object-contain invert brightness-200 opacity-40 active:opacity-70 transition-opacity" />
+          <img src="/kuziini-logo.png" alt="Kuziini" className="h-16 object-contain invert brightness-200 opacity-70 active:opacity-100 transition-all hover:scale-105" />
         </a>
       </div>
     );
