@@ -66,16 +66,6 @@ export default function CartPage({ params }: { params: { umbrellaId: string } })
               <ArrowLeft className="w-4 h-4 text-white/70" />
             </Link>
           }
-          right={
-            <div className="flex items-center gap-2">
-              <Link href={`/u/${umbrellaId}/menu`} className="text-[10px] text-[#C9AB81] font-bold tracking-[0.15em] uppercase border border-[#C9AB81]/30 px-3 py-1.5 active:bg-[#C9AB81]/10 transition-colors">
-                Continuă
-              </Link>
-              <button onClick={clearCart} className="text-[10px] text-red-400 font-bold tracking-[0.15em] uppercase border border-red-400/30 px-3 py-1.5 active:bg-red-400/10 transition-colors">
-                Golește
-              </button>
-            </div>
-          }
         />
 
         <div className="px-4 py-4 space-y-3">
