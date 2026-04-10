@@ -196,10 +196,17 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
         </p>
         <button
           onClick={() => router.push("/")}
-          className="bg-[#C9AB81] text-[#0A0A0A] px-8 py-3 font-bold text-sm tracking-[0.15em] uppercase active:opacity-80"
+          className="bg-[#C9AB81] text-[#0A0A0A] px-8 py-3 font-bold text-sm tracking-[0.15em] uppercase active:opacity-80 mb-10"
         >
           Înapoi la pagina principală
         </button>
+        <a
+          href="https://www.instagram.com/kuziiniconceptstore/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img src="/kuziini-logo.png" alt="Kuziini" className="h-10 object-contain invert brightness-200 opacity-40 active:opacity-70 transition-opacity" />
+        </a>
       </div>
     );
   }
