@@ -8,22 +8,25 @@ import {
   MapPin,
   CreditCard,
   RefreshCw,
+  ChevronRight,
 } from "lucide-react";
 import type { DashboardStats } from "@/types";
 
 interface Props {
   adminId: string;
+  onNavigate?: (tab: string) => void;
 }
 
-interface StatCard {
+interface StatCardDef {
   label: string;
   value: number;
   icon: React.ReactNode;
   color: string;
   bg: string;
+  tab?: string;
 }
 
-export default function GuestDashboard({ adminId }: Props) {
+export default function GuestDashboard({ adminId, onNavigate }: Props) {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -50,20 +53,21 @@ export default function GuestDashboard({ adminId }: Props) {
   if (loading && !stats) {
     return (
       <div className="flex items-center justify-center py-20">
-        <RefreshCw className="w-6 h-6 text-white/30 animate-spin" />
+        <RefreshCw className="w-6 h-6 text-black/40 animate-spin" />
       </div>
     );
   }
 
   if (!stats) return null;
 
-  const cards: StatCard[] = [
+  const cards: StatCardDef[] = [
     {
       label: "Sezlonguri ocupate",
       value: stats.loungersInUse,
       icon: <Umbrella className="w-6 h-6" />,
       color: "text-amber-400",
       bg: "bg-amber-400/10 border-amber-400/20",
+      tab: "guest-loungers",
     },
     {
       label: "Oaspeti activi",
@@ -71,15 +75,17 @@ export default function GuestDashboard({ adminId }: Props) {
       icon: <Users className="w-6 h-6" />,
       color: "text-emerald-400",
       bg: "bg-emerald-400/10 border-emerald-400/20",
+      tab: "guest-list",
     },
     {
       label: "Comenzi nelivrate",
       value: stats.pendingOrders,
       icon: <Clock className="w-6 h-6" />,
-      color: stats.pendingOrders > 0 ? "text-red-400" : "text-white/40",
+      color: stats.pendingOrders > 0 ? "text-red-400" : "text-black/40",
       bg: stats.pendingOrders > 0
         ? "bg-red-400/10 border-red-400/20"
-        : "bg-white/[0.03] border-white/[0.06]",
+        : "bg-gray-50 border-black/[0.08]",
+      tab: "orders",
     },
     {
       label: "Locuri libere",
@@ -87,6 +93,7 @@ export default function GuestDashboard({ adminId }: Props) {
       icon: <MapPin className="w-6 h-6" />,
       color: "text-sky-400",
       bg: "bg-sky-400/10 border-sky-400/20",
+      tab: "guest-loungers",
     },
     {
       label: "Total oaspeti azi",
@@ -94,6 +101,7 @@ export default function GuestDashboard({ adminId }: Props) {
       icon: <Users className="w-6 h-6" />,
       color: "text-[#C9AB81]",
       bg: "bg-[#C9AB81]/10 border-[#C9AB81]/20",
+      tab: "guest-daily",
     },
     {
       label: "Cu credit activ",
@@ -101,18 +109,19 @@ export default function GuestDashboard({ adminId }: Props) {
       icon: <CreditCard className="w-6 h-6" />,
       color: "text-purple-400",
       bg: "bg-purple-400/10 border-purple-400/20",
+      tab: "guest-list",
     },
   ];
 
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <p className="text-white/30 text-xs">
+        <p className="text-black/40 text-xs">
           {stats.totalLoungers} sezlonguri totale · Actualizare la 15s
         </p>
         <button
           onClick={() => { setLoading(true); fetchStats(); }}
-          className="text-white/40 active:text-white/60"
+          className="text-black/40 active:text-black/50"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
         </button>
@@ -120,18 +129,20 @@ export default function GuestDashboard({ adminId }: Props) {
 
       <div className="grid grid-cols-2 gap-3">
         {cards.map((card) => (
-          <div
+          <button
             key={card.label}
-            className={`border p-4 flex flex-col items-center text-center ${card.bg}`}
+            onClick={() => card.tab && onNavigate?.(card.tab)}
+            className={`border p-4 flex flex-col items-center text-center cursor-pointer active:scale-[0.97] transition-transform ${card.bg}`}
           >
             <div className={card.color}>{card.icon}</div>
             <p className={`text-3xl font-bold mt-2 ${card.color}`}>
               {card.value}
             </p>
-            <p className="text-white/50 text-[10px] font-bold tracking-wider uppercase mt-1">
+            <p className="text-black/50 text-[10px] font-bold tracking-wider uppercase mt-1">
               {card.label}
             </p>
-          </div>
+            <ChevronRight className="w-3.5 h-3.5 text-black/20 mt-1" />
+          </button>
         ))}
       </div>
     </div>

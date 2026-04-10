@@ -316,7 +316,7 @@ export default function MayaAdminPage() {
   // ─── LOGIN SCREEN ─────────────────────────────────────────────────────────
   if (!authenticated) {
     return (
-      <div className="min-h-dvh bg-[#0A0A0A] flex items-center justify-center px-6">
+      <div className="min-h-dvh bg-white flex items-center justify-center px-6">
         <div className="w-full max-w-sm">
           <div className="text-center mb-8">
             <img
@@ -324,10 +324,10 @@ export default function MayaAdminPage() {
               alt="Maya"
               className="h-20 object-contain mx-auto mb-4"
             />
-            <h1 className="text-2xl font-bold text-white tracking-wide">
+            <h1 className="text-2xl font-bold text-[#1a1a1a] tracking-wide">
               Manager Maya
             </h1>
-            <p className="text-white/40 text-xs mt-1">Administrare completa</p>
+            <p className="text-black/40 text-xs mt-1">Administrare completa</p>
           </div>
 
           <div className="space-y-4">
@@ -335,14 +335,14 @@ export default function MayaAdminPage() {
               <label className="text-[10px] font-bold text-[#C9AB81] uppercase tracking-[0.2em] mb-2 block">
                 Email
               </label>
-              <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-3 focus-within:border-[#C9AB81]/50 transition-colors">
-                <Mail className="w-4 h-4 text-white/30 shrink-0" />
+              <div className="flex items-center gap-3 bg-gray-50 border border-black/10 px-4 py-3 focus-within:border-[#C9AB81]/50 transition-colors">
+                <Mail className="w-4 h-4 text-black/40 shrink-0" />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && document.getElementById("pw-input")?.focus()}
-                  className="flex-1 bg-transparent outline-none text-white text-sm placeholder:text-white/20"
+                  className="flex-1 bg-transparent outline-none text-[#1a1a1a] text-sm placeholder:text-black/30"
                   placeholder="admin@maya.ro"
                   autoFocus
                 />
@@ -353,15 +353,15 @@ export default function MayaAdminPage() {
               <label className="text-[10px] font-bold text-[#C9AB81] uppercase tracking-[0.2em] mb-2 block">
                 Parola
               </label>
-              <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-3 focus-within:border-[#C9AB81]/50 transition-colors">
-                <Lock className="w-4 h-4 text-white/30 shrink-0" />
+              <div className="flex items-center gap-3 bg-gray-50 border border-black/10 px-4 py-3 focus-within:border-[#C9AB81]/50 transition-colors">
+                <Lock className="w-4 h-4 text-black/40 shrink-0" />
                 <input
                   id="pw-input"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-                  className="flex-1 bg-transparent outline-none text-white text-sm placeholder:text-white/20"
+                  className="flex-1 bg-transparent outline-none text-[#1a1a1a] text-sm placeholder:text-black/30"
                   placeholder="Introdu parola"
                 />
               </div>
@@ -377,7 +377,7 @@ export default function MayaAdminPage() {
               {loading ? "Se verifica..." : "Autentificare"}
             </button>
 
-            <p className="text-white/20 text-[10px] text-center">
+            <p className="text-black/30 text-[10px] text-center">
               Prima accesare? admin@maya.ro / Maya2025
             </p>
           </div>
@@ -400,9 +400,9 @@ export default function MayaAdminPage() {
 
   // ─── MAIN LAYOUT ──────────────────────────────────────────────────────────
   return (
-    <div className="min-h-dvh bg-[#0A0A0A] text-white">
+    <div className="min-h-dvh bg-white text-[#1a1a1a]">
       {/* Header */}
-      <div className="bg-[#0A0A0A]/95 backdrop-blur-md border-b border-white/[0.06] px-4 py-4 sticky top-0 z-10">
+      <div className="bg-white/95 backdrop-blur-md border-b border-black/[0.08] px-4 py-4 sticky top-0 z-10">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-lg font-bold tracking-wide">Manager Maya</h1>
@@ -424,7 +424,7 @@ export default function MayaAdminPage() {
               className="w-9 h-9 flex items-center justify-center bg-white/10 active:bg-white/20 transition-colors"
             >
               <RefreshCw
-                className={`w-4 h-4 text-white/60 ${loading ? "animate-spin" : ""}`}
+                className={`w-4 h-4 text-[#1a1a1a]/60 ${loading ? "animate-spin" : ""}`}
               />
             </button>
             <button
@@ -440,7 +440,7 @@ export default function MayaAdminPage() {
         <div className="mt-3 space-y-2">
           {Object.entries(sections).map(([section, tabs]) => (
             <div key={section}>
-              <p className="text-white/20 text-[8px] font-bold tracking-[0.3em] uppercase mb-1">
+              <p className="text-black/30 text-[8px] font-bold tracking-[0.3em] uppercase mb-1">
                 {SECTION_LABELS[section]}
               </p>
               <div className="flex gap-1 flex-wrap">
@@ -451,7 +451,7 @@ export default function MayaAdminPage() {
                     className={`flex items-center gap-1.5 px-3 py-2 text-[10px] font-bold tracking-wider uppercase whitespace-nowrap transition-all ${
                       tab === t.key
                         ? "bg-[#C9AB81] text-[#0A0A0A]"
-                        : "bg-white/[0.06] text-white/40"
+                        : "bg-black/[0.04] text-black/40"
                     }`}
                   >
                     {t.icon}
@@ -467,7 +467,7 @@ export default function MayaAdminPage() {
       <div className="px-4 py-4">
         {/* ── GUEST SECTION ── */}
         {tab === "dashboard" && adminSession && (
-          <GuestDashboard adminId={adminSession.id} />
+          <GuestDashboard adminId={adminSession.id} onNavigate={(t) => setTab(t as Tab)} />
         )}
 
         {tab === "checkin" && adminSession && (
@@ -490,7 +490,7 @@ export default function MayaAdminPage() {
         {tab === "banners" && (
           <>
             <div className="flex items-center justify-between mb-4">
-              <p className="text-white/30 text-xs">
+              <p className="text-black/40 text-xs">
                 {banners.length} bannere · Apar pe pagina clientilor in sectiunea Maya
               </p>
               <SectionHelp items={[
@@ -515,7 +515,7 @@ export default function MayaAdminPage() {
         {tab === "gallery" && (
           <>
             <div className="flex items-center justify-between mb-4">
-              <p className="text-white/30 text-xs">
+              <p className="text-black/40 text-xs">
                 Pozele apar pe pagina de landing in sectiunea Maya
               </p>
               <SectionHelp items={[
@@ -545,7 +545,7 @@ export default function MayaAdminPage() {
         {tab === "qrcodes" && (
           <>
             <div className="flex items-center justify-between mb-4">
-              <p className="text-white/30 text-xs">
+              <p className="text-black/40 text-xs">
                 QR codes pentru umbrele
               </p>
               <SectionHelp items={[
@@ -556,7 +556,7 @@ export default function MayaAdminPage() {
               ]} />
             </div>
             {/* Add umbrella */}
-            <div className="bg-white/[0.03] border border-white/[0.06] p-4 mb-4">
+            <div className="bg-gray-50 border border-black/[0.08] p-4 mb-4">
               <p className="text-[#C9AB81] text-[10px] font-bold tracking-[0.2em] uppercase mb-3">
                 Adauga umbrela
               </p>
@@ -566,13 +566,13 @@ export default function MayaAdminPage() {
                   value={newId}
                   onChange={(e) => setNewId(e.target.value)}
                   placeholder="ID (ex: C-01)"
-                  className="flex-1 bg-white/5 border border-white/10 px-3 py-2 text-white text-sm outline-none focus:border-[#C9AB81]/50 placeholder:text-white/20"
+                  className="flex-1 bg-gray-50 border border-black/10 px-3 py-2 text-[#1a1a1a] text-sm outline-none focus:border-[#C9AB81]/50 placeholder:text-black/30"
                   onKeyDown={(e) => e.key === "Enter" && addUmbrella()}
                 />
                 <select
                   value={newZone}
                   onChange={(e) => setNewZone(e.target.value)}
-                  className="bg-white/5 border border-white/10 px-3 py-2 text-white text-sm outline-none focus:border-[#C9AB81]/50"
+                  className="bg-gray-50 border border-black/10 px-3 py-2 text-[#1a1a1a] text-sm outline-none focus:border-[#C9AB81]/50"
                 >
                   <option value="Zona Lounge">Zona Lounge</option>
                   <option value="Zona Beach">Zona Beach</option>
@@ -592,21 +592,21 @@ export default function MayaAdminPage() {
             <div className="flex gap-2 mb-4">
               <button
                 onClick={printAllQRs}
-                className="flex-1 flex items-center justify-center gap-2 bg-white/[0.06] border border-white/[0.1] py-2.5 text-white/60 text-xs font-bold tracking-wider uppercase active:bg-white/[0.1] transition-colors"
+                className="flex-1 flex items-center justify-center gap-2 bg-black/[0.04] border border-white/[0.1] py-2.5 text-[#1a1a1a]/60 text-xs font-bold tracking-wider uppercase active:bg-white/[0.1] transition-colors"
               >
                 <Printer className="w-4 h-4" />
                 Printeaza toate ({umbrellas.length})
               </button>
             </div>
 
-            <p className="text-white/30 text-xs mb-3">{umbrellas.length} umbrele</p>
+            <p className="text-black/40 text-xs mb-3">{umbrellas.length} umbrele</p>
 
             {/* QR Grid */}
             <div ref={printRef} className="grid grid-cols-2 gap-3">
               {umbrellas.map((u) => (
                 <div
                   key={u.id}
-                  className="bg-white/[0.03] border border-white/[0.06] p-4 flex flex-col items-center"
+                  className="bg-gray-50 border border-black/[0.08] p-4 flex flex-col items-center"
                 >
                   <div className="bg-white p-2 mb-3">
                     <QRCodeSVG
@@ -616,7 +616,7 @@ export default function MayaAdminPage() {
                       level="M"
                     />
                   </div>
-                  <p className="font-bold text-sm text-white tracking-wide">{u.id}</p>
+                  <p className="font-bold text-sm text-[#1a1a1a] tracking-wide">{u.id}</p>
                   <p className="text-[#C9AB81] text-[10px] tracking-wider uppercase mb-3">
                     {u.zone}
                   </p>

@@ -557,14 +557,14 @@ export default function AdminPage() {
 
   if (!authenticated) {
     return (
-      <div className="min-h-dvh bg-[#0A0A0A] flex items-center justify-center px-6">
+      <div className="min-h-dvh bg-white flex items-center justify-center px-6">
         <div className="w-full max-w-sm">
           <div className="text-center mb-8">
             <div className="w-16 h-16 bg-[#C9AB81]/20 border border-[#C9AB81]/30 flex items-center justify-center mx-auto mb-4">
               <Lock className="w-8 h-8 text-[#C9AB81]" />
             </div>
-            <h1 className="text-2xl font-bold text-white tracking-wide">Kuziini</h1>
-            <p className="text-white/40 text-xs mt-1">Kuziini × Maya</p>
+            <h1 className="text-2xl font-bold text-[#1a1a1a] tracking-wide">Kuziini</h1>
+            <p className="text-black/40 text-xs mt-1">Kuziini × Maya</p>
           </div>
 
           <div className="space-y-4">
@@ -572,14 +572,14 @@ export default function AdminPage() {
               <label className="text-[10px] font-bold text-[#C9AB81] uppercase tracking-[0.2em] mb-2 block">
                 Parolă
               </label>
-              <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-3 focus-within:border-[#C9AB81]/50 transition-colors">
-                <Lock className="w-4 h-4 text-white/30 shrink-0" />
+              <div className="flex items-center gap-3 bg-gray-50 border border-black/10 px-4 py-3 focus-within:border-[#C9AB81]/50 transition-colors">
+                <Lock className="w-4 h-4 text-black/40 shrink-0" />
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-                  className="flex-1 bg-transparent outline-none text-white text-sm placeholder:text-white/20"
+                  className="flex-1 bg-transparent outline-none text-[#1a1a1a] text-sm placeholder:text-black/30"
                   placeholder="Introdu parola"
                   autoFocus
                 />
@@ -624,9 +624,9 @@ export default function AdminPage() {
   ];
 
   return (
-    <div className="min-h-dvh bg-[#0A0A0A] text-white">
+    <div className="min-h-dvh bg-white text-[#1a1a1a]">
       {/* Header */}
-      <div className="bg-[#0A0A0A]/95 backdrop-blur-md border-b border-white/[0.06] px-4 py-4 sticky top-0 z-10">
+      <div className="bg-white/95 backdrop-blur-md border-b border-black/[0.08] px-4 py-4 sticky top-0 z-10">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-lg font-bold tracking-wide">Kuziini Panel</h1>
@@ -664,7 +664,7 @@ export default function AdminPage() {
                   } catch {}
                 }
               }}
-              className={`w-9 h-9 flex items-center justify-center transition-colors ${soundEnabled ? "bg-emerald-500/20 text-emerald-400" : "bg-white/10 text-white/30"}`}
+              className={`w-9 h-9 flex items-center justify-center transition-colors ${soundEnabled ? "bg-emerald-500/20 text-emerald-400" : "bg-black/[0.06] text-black/40"}`}
               title={soundEnabled ? "Sunet activat" : "Sunet dezactivat"}
             >
               {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
@@ -687,16 +687,16 @@ export default function AdminPage() {
             <button
               onClick={() => fetchData()}
               disabled={loading}
-              className="w-9 h-9 flex items-center justify-center bg-white/10 active:bg-white/20 transition-colors"
+              className="w-9 h-9 flex items-center justify-center bg-black/[0.06] active:bg-white/20 transition-colors"
             >
-              <RefreshCw className={`w-4 h-4 text-white/60 ${loading ? "animate-spin" : ""}`} />
+              <RefreshCw className={`w-4 h-4 text-black/50 ${loading ? "animate-spin" : ""}`} />
             </button>
           </div>
         </div>
 
         {/* Tabs - Kuziini */}
         <div className="mt-3">
-          <p className="text-white/20 text-[8px] font-bold tracking-[0.3em] uppercase mb-1">KUZIINI</p>
+          <p className="text-black/30 text-[8px] font-bold tracking-[0.3em] uppercase mb-1">KUZIINI</p>
           <div className="flex gap-1 overflow-x-auto">
             {tabs.filter(t => !t.key.startsWith("guest-") && t.key !== "admin-users").map((t) => (
               <button
@@ -705,7 +705,7 @@ export default function AdminPage() {
                 className={`flex items-center gap-1.5 px-3 py-2 text-[10px] font-bold tracking-wider uppercase whitespace-nowrap transition-all relative ${
                   tab === t.key
                     ? "bg-[#C9AB81] text-[#0A0A0A]"
-                    : "bg-white/[0.06] text-white/40"
+                    : "bg-black/[0.04] text-black/40"
                 }`}
               >
                 {t.icon}
@@ -721,7 +721,7 @@ export default function AdminPage() {
         </div>
         {/* Tabs - Maya Guest Management */}
         <div className="mt-2">
-          <p className="text-white/20 text-[8px] font-bold tracking-[0.3em] uppercase mb-1">MAYA · OASPETI</p>
+          <p className="text-black/30 text-[8px] font-bold tracking-[0.3em] uppercase mb-1">MAYA · OASPETI</p>
           <div className="flex gap-1 overflow-x-auto">
             {tabs.filter(t => t.key.startsWith("guest-") || t.key === "admin-users").map((t) => (
               <button
@@ -730,7 +730,7 @@ export default function AdminPage() {
                 className={`flex items-center gap-1.5 px-3 py-2 text-[10px] font-bold tracking-wider uppercase whitespace-nowrap transition-all ${
                   tab === t.key
                     ? "bg-[#C9AB81] text-[#0A0A0A]"
-                    : "bg-white/[0.06] text-white/40"
+                    : "bg-black/[0.04] text-black/40"
                 }`}
               >
                 {t.icon}
@@ -746,7 +746,7 @@ export default function AdminPage() {
         {tab === "overview" && (
           <>
             <div className="flex items-center justify-between mb-3">
-              <p className="text-white/30 text-xs">Statistici generale</p>
+              <p className="text-black/40 text-xs">Statistici generale</p>
               <SectionHelp items={[
                 "Aceasta sectiune afiseaza statisticile generale ale platformei in timp real.",
                 "Total logari: numarul total de autentificari ale clientilor prin QR code.",
@@ -771,13 +771,13 @@ export default function AdminPage() {
             </div>
 
             {Object.keys(data.stats.paymentBreakdown).length > 0 && (
-              <div className="bg-white/[0.03] border border-white/[0.06] p-4">
+              <div className="bg-gray-50 border border-black/[0.06] p-4">
                 <h3 className="text-[#C9AB81] text-[10px] font-bold tracking-[0.2em] uppercase mb-3">
                   Metode de plată
                 </h3>
                 {Object.entries(data.stats.paymentBreakdown).map(([method, count]) => (
                   <div key={method} className="flex justify-between text-sm py-1">
-                    <span className="text-white/60 capitalize">{method}</span>
+                    <span className="text-black/50 capitalize">{method}</span>
                     <span className="text-white font-bold">{count}</span>
                   </div>
                 ))}
@@ -790,7 +790,7 @@ export default function AdminPage() {
         {tab === "logins" && (
           <>
             <div className="flex items-center justify-between mb-3">
-              <p className="text-white/30 text-xs">{data.logins.length} inregistrari</p>
+              <p className="text-black/40 text-xs">{data.logins.length} inregistrari</p>
               <SectionHelp items={[
                 "Aici vezi toate logarile clientilor prin QR code, in ordine cronologica.",
                 "Fiecare intrare arata: numele clientului, numarul de telefon si umbrela scanata.",
@@ -802,14 +802,14 @@ export default function AdminPage() {
               <EmptyMsg text="Nicio logare înregistrată." />
             ) : (
               data.logins.map((l, i) => (
-                <div key={i} className="bg-white/[0.03] border border-white/[0.06] p-4">
+                <div key={i} className="bg-gray-50 border border-black/[0.06] p-4">
                   <div className="flex items-center justify-between mb-1">
-                    <p className="font-bold text-sm text-white tracking-wide">
+                    <p className="font-bold text-sm text-[#1a1a1a] tracking-wide">
                       {l.name || "—"}
                     </p>
                     <span className="text-[10px] text-white/70">{formatTime(l.timestamp)}</span>
                   </div>
-                  <div className="flex items-center gap-3 text-xs text-white/40">
+                  <div className="flex items-center gap-3 text-xs text-black/40">
                     <span>{l.phone}</span>
                     <span className="text-[#C9AB81]">⛱️ {l.umbrellaId}</span>
                   </div>
@@ -823,7 +823,7 @@ export default function AdminPage() {
         {tab === "orders" && (
           <>
             <div className="flex items-center justify-between mb-3">
-              <p className="text-white/30 text-xs">{data.orders.length} comenzi</p>
+              <p className="text-black/40 text-xs">{data.orders.length} comenzi</p>
               <SectionHelp items={[
                 "Lista tuturor comenzilor plasate de clienti, cu detalii complete.",
                 "Fiecare comanda arata: ID comanda, telefon client, umbrela, produsele comandate si totalul.",
@@ -834,27 +834,27 @@ export default function AdminPage() {
               <EmptyMsg text="Nicio comandă înregistrată." />
             ) : (
               data.orders.map((o, i) => (
-                <div key={i} className="bg-white/[0.03] border border-white/[0.06] p-4">
+                <div key={i} className="bg-gray-50 border border-black/[0.06] p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <p className="font-bold text-sm text-white tracking-wide">
+                    <p className="font-bold text-sm text-[#1a1a1a] tracking-wide">
                       {o.orderId}
                     </p>
                     <span className="text-[10px] text-white/70">{formatTime(o.timestamp)}</span>
                   </div>
-                  <div className="flex items-center gap-3 text-xs text-white/40 mb-2">
+                  <div className="flex items-center gap-3 text-xs text-black/40 mb-2">
                     <span>{o.phone}</span>
                     <span className="text-[#C9AB81]">⛱️ {o.umbrellaId}</span>
                   </div>
                   <div className="space-y-1">
                     {o.items.map((item, j) => (
-                      <div key={j} className="flex justify-between text-xs text-white/50">
+                      <div key={j} className="flex justify-between text-xs text-black/50">
                         <span>{item.quantity}× {item.name}</span>
                         <span>{formatPrice(item.price * item.quantity)}</span>
                       </div>
                     ))}
                   </div>
-                  <div className="flex justify-between mt-2 pt-2 border-t border-white/[0.06]">
-                    <span className="text-xs text-white/40">Total</span>
+                  <div className="flex justify-between mt-2 pt-2 border-t border-black/[0.08]">
+                    <span className="text-xs text-black/40">Total</span>
                     <span className="text-sm font-bold text-[#C9AB81]">{formatPrice(o.total)}</span>
                   </div>
                 </div>
@@ -867,7 +867,7 @@ export default function AdminPage() {
         {tab === "bills" && (
           <>
             <div className="flex items-center justify-between mb-3">
-              <p className="text-white/30 text-xs">{data.billRequests.length} note solicitate</p>
+              <p className="text-black/40 text-xs">{data.billRequests.length} note solicitate</p>
               <SectionHelp items={[
                 "Aici vezi toate cererile de nota de plata trimise de clienti.",
                 "Fiecare cerere arata: umbrela, metoda de plata aleasa si suma totala.",
@@ -878,12 +878,12 @@ export default function AdminPage() {
               <EmptyMsg text="Nicio notă solicitată." />
             ) : (
               data.billRequests.map((b, i) => (
-                <div key={i} className="bg-white/[0.03] border border-white/[0.06] p-4 flex items-center justify-between">
+                <div key={i} className="bg-gray-50 border border-black/[0.06] p-4 flex items-center justify-between">
                   <div>
-                    <p className="font-bold text-sm text-white tracking-wide">
+                    <p className="font-bold text-sm text-[#1a1a1a] tracking-wide">
                       ⛱️ {b.umbrellaId}
                     </p>
-                    <p className="text-xs text-white/40 mt-0.5 capitalize">{b.paymentMethod}</p>
+                    <p className="text-xs text-black/40 mt-0.5 capitalize">{b.paymentMethod}</p>
                   </div>
                   <div className="text-right">
                     <p className="font-bold text-[#C9AB81]">{formatPrice(b.amount)}</p>
@@ -899,7 +899,7 @@ export default function AdminPage() {
         {tab === "banners" && (
           <>
             <div className="flex items-center justify-between mb-3">
-              <p className="text-white/30 text-xs">
+              <p className="text-black/40 text-xs">
                 {kuziiniBanners.length} bannere Kuziini
               </p>
               <SectionHelp items={[
@@ -925,7 +925,7 @@ export default function AdminPage() {
         {tab === "gallery" && (
           <>
             <div className="flex items-center justify-between mb-4">
-              <p className="text-white/30 text-xs">
+              <p className="text-black/40 text-xs">
                 Pozele apar pe landing in sectiunea Kuziini
               </p>
               <SectionHelp items={[
@@ -959,7 +959,7 @@ export default function AdminPage() {
         {tab === "offers" && (
           <>
             <div className="flex items-center justify-between mb-3">
-              <p className="text-white/30 text-xs">
+              <p className="text-black/40 text-xs">
                 {offers.length} solicitări
                 {offers.filter((o) => !o.read).length > 0 && (
                   <span className="ml-2 text-[#C9AB81] font-bold">
@@ -975,7 +975,7 @@ export default function AdminPage() {
                 <div
                   key={o.id}
                   className={`bg-white/[0.03] border p-4 ${
-                    o.read ? "border-white/[0.06]" : "border-[#C9AB81]/30"
+                    o.read ? "border-black/[0.08]" : "border-[#C9AB81]/30"
                   }`}
                 >
                   <div className="flex items-start gap-3">
@@ -1002,7 +1002,7 @@ export default function AdminPage() {
                     })()}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1">
-                        <p className="font-bold text-sm text-white tracking-wide">
+                        <p className="font-bold text-sm text-[#1a1a1a] tracking-wide">
                           {o.name}
                           {!o.read && (
                             <span className="ml-2 text-[8px] bg-[#C9AB81] text-[#0A0A0A] px-1.5 py-0.5 font-bold tracking-wider uppercase">
@@ -1012,10 +1012,10 @@ export default function AdminPage() {
                         </p>
                         <span className="text-[10px] text-white/70 shrink-0">{formatTime(o.timestamp)}</span>
                       </div>
-                      <p className="text-xs text-white/50">{o.phone}</p>
+                      <p className="text-xs text-black/50">{o.phone}</p>
                       <p className="text-xs text-[#C9AB81]/70">{o.email}</p>
                       {o.message && (
-                        <p className="text-xs text-white/40 mt-1 italic">&ldquo;{o.message}&rdquo;</p>
+                        <p className="text-xs text-black/40 mt-1 italic">&ldquo;{o.message}&rdquo;</p>
                       )}
                     </div>
                   </div>
@@ -1031,7 +1031,7 @@ export default function AdminPage() {
                           const json = await res.json();
                           if (json.success) setOffers(json.data);
                         }}
-                        className="flex items-center gap-1.5 bg-white/[0.06] px-3 py-1.5 text-[10px] font-bold tracking-wider uppercase text-white/60"
+                        className="flex items-center gap-1.5 bg-black/[0.04] px-3 py-1.5 text-[10px] font-bold tracking-wider uppercase text-black/50"
                       >
                         <Eye className="w-3 h-3" />
                         Marchează citit
@@ -1074,19 +1074,19 @@ export default function AdminPage() {
                   <ArrowLeft className="w-3.5 h-3.5" />
                   Înapoi
                 </button>
-                <div className="bg-white/[0.03] border border-white/[0.06] p-4 mb-4">
-                  <p className="font-bold text-lg text-white tracking-wide">{selectedGalleryUser.sessionId.slice(0, 20)}...</p>
+                <div className="bg-gray-50 border border-black/[0.06] p-4 mb-4">
+                  <p className="font-bold text-lg text-[#1a1a1a] tracking-wide">{selectedGalleryUser.sessionId.slice(0, 20)}...</p>
                   <div className="grid grid-cols-3 gap-3 mt-3">
                     <div className="bg-white/[0.03] px-2 py-2 text-center">
-                      <p className="text-[9px] text-white/30 uppercase tracking-wider">Poze văzute</p>
+                      <p className="text-[9px] text-black/40 uppercase tracking-wider">Poze văzute</p>
                       <p className="text-xl font-bold text-white">{selectedGalleryUser.photosViewed}</p>
                     </div>
                     <div className="bg-white/[0.03] px-2 py-2 text-center">
-                      <p className="text-[9px] text-white/30 uppercase tracking-wider">Timp total</p>
+                      <p className="text-[9px] text-black/40 uppercase tracking-wider">Timp total</p>
                       <p className="text-xl font-bold text-white">{formatDuration(selectedGalleryUser.totalTimeSpent)}</p>
                     </div>
                     <div className="bg-white/[0.03] px-2 py-2 text-center">
-                      <p className="text-[9px] text-white/30 uppercase tracking-wider">Like-uri</p>
+                      <p className="text-[9px] text-black/40 uppercase tracking-wider">Like-uri</p>
                       <p className="text-xl font-bold text-red-400">{selectedGalleryUser.likes}</p>
                     </div>
                   </div>
@@ -1101,14 +1101,14 @@ export default function AdminPage() {
                 </p>
                 <div className="space-y-2">
                   {[...selectedGalleryUser.photoDetails].reverse().map((p, i) => (
-                    <div key={i} className="bg-white/[0.03] border border-white/[0.06] p-3 flex items-center justify-between">
+                    <div key={i} className="bg-gray-50 border border-black/[0.06] p-3 flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 flex items-center justify-center bg-purple-500/20 shrink-0">
                           <Eye className="w-4 h-4 text-purple-400" />
                         </div>
                         <div>
                           <p className="text-xs text-white font-bold">Poza #{p.photoIndex + 1}</p>
-                          <div className="flex items-center gap-2 text-[10px] text-white/40">
+                          <div className="flex items-center gap-2 text-[10px] text-black/40">
                             {p.duration > 0 && (
                               <span className="px-1.5 py-0.5 bg-blue-500/20 text-blue-400 font-bold tracking-wider">
                                 {formatDuration(p.duration)}
@@ -1138,7 +1138,7 @@ export default function AdminPage() {
 
                 {/* Detailed gallery stats */}
                 {galleryStats && (
-                  <div className="bg-white/[0.03] border border-white/[0.06] p-4 mb-4">
+                  <div className="bg-gray-50 border border-black/[0.06] p-4 mb-4">
                     <h3 className="text-[#C9AB81] text-[10px] font-bold tracking-[0.2em] uppercase mb-3 flex items-center gap-2">
                       <Heart className="w-3.5 h-3.5" />
                       Statistici Galerie
@@ -1146,18 +1146,18 @@ export default function AdminPage() {
 
                     {/* Total time spent */}
                     <div className="bg-white/[0.03] p-3 mb-3 text-center">
-                      <p className="text-[9px] text-white/30 uppercase tracking-wider mb-1">Timp total vizualizare</p>
+                      <p className="text-[9px] text-black/40 uppercase tracking-wider mb-1">Timp total vizualizare</p>
                       <p className="text-xl font-bold text-[#C9AB81]">{formatDuration(galleryStats.totalTimeSpent)}</p>
                     </div>
 
                     {/* Photo breakdown */}
-                    <p className="text-white/30 text-[10px] font-bold tracking-wider uppercase mb-2">Per poză</p>
+                    <p className="text-black/40 text-[10px] font-bold tracking-wider uppercase mb-2">Per poză</p>
                     <div className="space-y-2 mb-4">
                       {galleryStats.photos.map((p) => (
                         <div key={p.index} className="bg-white/[0.02] p-2.5 flex items-center justify-between">
-                          <span className="text-white/60 text-xs font-bold">Poza #{p.index + 1}</span>
+                          <span className="text-black/50 text-xs font-bold">Poza #{p.index + 1}</span>
                           <div className="flex items-center gap-3 text-[10px]">
-                            <span className="text-white/40">{p.views} vizualizări</span>
+                            <span className="text-black/40">{p.views} vizualizări</span>
                             <span className="text-blue-400 font-bold">{formatDuration(p.avgDuration)} mediu</span>
                             <span className="flex items-center gap-1 text-red-400 font-bold">
                               <Heart className="w-3 h-3 fill-red-400" />
@@ -1169,7 +1169,7 @@ export default function AdminPage() {
                     </div>
 
                     {/* Hourly distribution */}
-                    <p className="text-white/30 text-[10px] font-bold tracking-wider uppercase mb-2 text-center">Vizualizări pe ore</p>
+                    <p className="text-black/40 text-[10px] font-bold tracking-wider uppercase mb-2 text-center">Vizualizări pe ore</p>
                     <div className="flex items-end justify-center gap-0.5 h-16 mb-1 mx-auto max-w-full">
                       {galleryStats.hourlyViews.map((count, hour) => {
                         const max = Math.max(...galleryStats.hourlyViews, 1);
@@ -1177,14 +1177,14 @@ export default function AdminPage() {
                         return (
                           <div
                             key={hour}
-                            className={`flex-1 rounded-t-sm transition-all ${count > 0 ? "bg-[#C9AB81]" : "bg-white/10"}`}
+                            className={`flex-1 rounded-t-sm transition-all ${count > 0 ? "bg-[#C9AB81]" : "bg-black/[0.06]"}`}
                             style={{ height: `${h}%` }}
                             title={`${hour}:00 — ${count} vizualizări`}
                           />
                         );
                       })}
                     </div>
-                    <div className="flex justify-between text-[8px] text-white/20 px-0">
+                    <div className="flex justify-between text-[8px] text-black/30 px-0">
                       <span>00</span>
                       <span>03</span>
                       <span>06</span>
@@ -1197,7 +1197,7 @@ export default function AdminPage() {
                     </div>
 
                     {/* Per-user gallery stats */}
-                    <p className="text-white/30 text-[10px] font-bold tracking-wider uppercase mt-4 mb-2">
+                    <p className="text-black/40 text-[10px] font-bold tracking-wider uppercase mt-4 mb-2">
                       Vizitatori unici ({galleryStats.users.length})
                     </p>
                     <div className="space-y-2">
@@ -1205,12 +1205,12 @@ export default function AdminPage() {
                         <button
                           key={u.sessionId}
                           onClick={() => setSelectedGalleryUser(u)}
-                          className="w-full bg-white/[0.02] p-3 text-left active:bg-white/[0.06] transition-colors"
+                          className="w-full bg-white/[0.02] p-3 text-left active:bg-black/[0.04] transition-colors"
                         >
                           <div className="flex items-center justify-between">
                             <div>
                               <p className="text-xs text-white font-bold">{u.sessionId.slice(0, 24)}...</p>
-                              <div className="flex items-center gap-3 text-[10px] text-white/40 mt-1">
+                              <div className="flex items-center gap-3 text-[10px] text-black/40 mt-1">
                                 <span>{u.photosViewed} poze</span>
                                 <span className="text-blue-400">{formatDuration(u.totalTimeSpent)}</span>
                                 {u.likes > 0 && (
@@ -1220,11 +1220,11 @@ export default function AdminPage() {
                                   </span>
                                 )}
                               </div>
-                              <div className="text-[9px] text-white/60 mt-0.5">
+                              <div className="text-[9px] text-black/50 mt-0.5">
                                 {formatTime(u.firstView)} — {formatTime(u.lastView)}
                               </div>
                             </div>
-                            <ChevronRight className="w-3.5 h-3.5 text-white/20 shrink-0" />
+                            <ChevronRight className="w-3.5 h-3.5 text-black/30 shrink-0" />
                           </div>
                         </button>
                       ))}
@@ -1241,7 +1241,7 @@ export default function AdminPage() {
                       className={`px-3 py-1.5 text-[10px] font-bold tracking-wider uppercase transition-all ${
                         clientFilter === key
                           ? "bg-[#C9AB81] text-[#0A0A0A]"
-                          : "bg-white/[0.06] text-white/40"
+                          : "bg-black/[0.04] text-black/40"
                       }`}
                     >
                       {label}
@@ -1256,7 +1256,7 @@ export default function AdminPage() {
                     placeholder="Caută client (nume, telefon, email)..."
                     value={clientSearch}
                     onChange={(e) => setClientSearch(e.target.value)}
-                    className="flex-1 bg-white/[0.06] border border-white/[0.1] px-3 py-2 text-white text-xs placeholder:text-white/30 outline-none focus:border-[#C9AB81]/50"
+                    className="flex-1 bg-black/[0.04] border border-black/[0.1] px-3 py-2 text-white text-xs placeholder:text-black/40 outline-none focus:border-[#C9AB81]/50"
                   />
                   <button
                     onClick={() => {
@@ -1264,7 +1264,7 @@ export default function AdminPage() {
                       const idx = sorts.indexOf(clientSort);
                       setClientSort(sorts[(idx + 1) % sorts.length]);
                     }}
-                    className="flex items-center gap-1.5 bg-white/[0.06] border border-white/[0.1] px-3 py-2 text-[10px] font-bold tracking-wider uppercase text-white/60"
+                    className="flex items-center gap-1.5 bg-black/[0.04] border border-black/[0.1] px-3 py-2 text-[10px] font-bold tracking-wider uppercase text-black/50"
                   >
                     <ArrowUpDown className="w-3 h-3" />
                     {clientSort === "spent" && "Cheltuieli"}
@@ -1295,14 +1295,14 @@ export default function AdminPage() {
                     case "name": filtered.sort((a, b) => a.name.localeCompare(b.name)); break;
                   }
                   return (<>
-                    <p className="text-white/30 text-xs mb-3">
+                    <p className="text-black/40 text-xs mb-3">
                       {filtered.length} clienți
                       {clientFilter !== "all" && ` (filtru: ${clientFilter === "receptie" ? "recepție" : "cereri ofertă"})`}
                     </p>
                     {filtered.map((c) => {
                       const isOnline = onlinePhones.has(c.phone);
                       return (
-                    <div key={c.phone} className={`p-4 mb-3 border ${isOnline ? "bg-emerald-500/[0.06] border-emerald-500/30" : "bg-white/[0.03] border-white/[0.06]"}`}>
+                    <div key={c.phone} className={`p-4 mb-3 border ${isOnline ? "bg-emerald-500/[0.06] border-emerald-500/30" : "bg-white/[0.03] border-black/[0.08]"}`}>
                       {/* Header */}
                       <div className="flex items-start justify-between mb-2">
                         <div>
@@ -1318,12 +1318,12 @@ export default function AdminPage() {
                               <span className="text-[9px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 font-bold tracking-wider uppercase">Online</span>
                             )}
                           </div>
-                          <p className="text-xs text-white/40">{c.phone}</p>
+                          <p className="text-xs text-black/40">{c.phone}</p>
                           {c.email && <p className="text-xs text-[#C9AB81]/70">{c.email}</p>}
                         </div>
                         <div className="text-right">
                           <p className="text-sm font-bold text-[#C9AB81]">{formatPrice(c.totalSpent)}</p>
-                          <p className="text-[10px] text-white/30">{c.totalVisits} vizite</p>
+                          <p className="text-[10px] text-black/40">{c.totalVisits} vizite</p>
                         </div>
                       </div>
 
@@ -1344,15 +1344,15 @@ export default function AdminPage() {
                       {/* Stats grid */}
                       <div className="grid grid-cols-3 gap-2 mb-2">
                         <div className="bg-white/[0.03] px-2 py-1.5 text-center">
-                          <p className="text-[9px] text-white/30 uppercase tracking-wider">Comenzi</p>
+                          <p className="text-[9px] text-black/40 uppercase tracking-wider">Comenzi</p>
                           <p className="text-sm font-bold text-white">{c.totalOrders}</p>
                         </div>
                         <div className="bg-white/[0.03] px-2 py-1.5 text-center">
-                          <p className="text-[9px] text-white/30 uppercase tracking-wider">Medie/vizită</p>
+                          <p className="text-[9px] text-black/40 uppercase tracking-wider">Medie/vizită</p>
                           <p className="text-sm font-bold text-white">{formatPrice(c.avgPerVisit)}</p>
                         </div>
                         <div className="bg-white/[0.03] px-2 py-1.5 text-center">
-                          <p className="text-[9px] text-white/30 uppercase tracking-wider">Oferte</p>
+                          <p className="text-[9px] text-black/40 uppercase tracking-wider">Oferte</p>
                           <p className="text-sm font-bold text-white">{c.offerRequests}</p>
                         </div>
                       </div>
@@ -1361,7 +1361,7 @@ export default function AdminPage() {
                       {Object.keys(c.paymentMethods).length > 0 && (
                         <div className="flex gap-2 mb-2">
                           {Object.entries(c.paymentMethods).map(([method, count]) => (
-                            <span key={method} className="text-[10px] bg-white/[0.06] px-2 py-1 text-white/50 capitalize">
+                            <span key={method} className="text-[10px] bg-black/[0.04] px-2 py-1 text-black/50 capitalize">
                               {method}: {count}
                             </span>
                           ))}
@@ -1381,7 +1381,7 @@ export default function AdminPage() {
 
                       {/* Offer details */}
                       {c.offerDetails.length > 0 && (
-                        <div className="border-t border-white/[0.06] pt-2 mt-2 space-y-1.5">
+                        <div className="border-t border-black/[0.08] pt-2 mt-2 space-y-1.5">
                           <p className="text-[9px] text-[#C9AB81] font-bold tracking-wider uppercase">Solicitări ofertă</p>
                           {c.offerDetails.map((od, oi) => (
                             <div key={oi} className="flex items-start gap-2 bg-white/[0.02] p-2">
@@ -1389,8 +1389,8 @@ export default function AdminPage() {
                                 <img src={od.photoUrl} alt="" className="w-10 h-10 object-cover shrink-0 border border-white/[0.08]" />
                               )}
                               <div className="flex-1 min-w-0">
-                                {od.message && <p className="text-[10px] text-white/50 italic">&ldquo;{od.message}&rdquo;</p>}
-                                <p className="text-[9px] text-white/60">{formatTime(od.timestamp)}</p>
+                                {od.message && <p className="text-[10px] text-black/50 italic">&ldquo;{od.message}&rdquo;</p>}
+                                <p className="text-[9px] text-black/50">{formatTime(od.timestamp)}</p>
                               </div>
                             </div>
                           ))}
@@ -1502,9 +1502,9 @@ export default function AdminPage() {
                   <ArrowLeft className="w-3.5 h-3.5" />
                   Înapoi la lista
                 </button>
-                <div className={`bg-white/[0.03] border p-4 mb-4 ${onlinePhones.has(selectedAccessUser.phone) ? "border-emerald-500/40" : "border-white/[0.06]"}`}>
+                <div className={`bg-white/[0.03] border p-4 mb-4 ${onlinePhones.has(selectedAccessUser.phone) ? "border-emerald-500/40" : "border-black/[0.08]"}`}>
                   <div className="flex items-center gap-2">
-                    <p className="font-bold text-lg text-white tracking-wide">{selectedAccessUser.name || "—"}</p>
+                    <p className="font-bold text-lg text-[#1a1a1a] tracking-wide">{selectedAccessUser.name || "—"}</p>
                     {onlinePhones.has(selectedAccessUser.phone) && (
                       <span className="flex items-center gap-1 text-[9px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 font-bold tracking-wider uppercase">
                         <span className="relative flex h-1.5 w-1.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span></span>
@@ -1512,15 +1512,15 @@ export default function AdminPage() {
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-white/50">{selectedAccessUser.phone}</p>
+                  <p className="text-xs text-black/50">{selectedAccessUser.phone}</p>
                   {selectedAccessUser.email && <p className="text-xs text-[#C9AB81]/70">{selectedAccessUser.email}</p>}
                   <div className="grid grid-cols-2 gap-3 mt-3">
                     <div className="bg-white/[0.03] px-3 py-2 text-center">
-                      <p className="text-[9px] text-white/30 uppercase tracking-wider">Total accesări</p>
+                      <p className="text-[9px] text-black/40 uppercase tracking-wider">Total accesări</p>
                       <p className="text-xl font-bold text-white">{selectedAccessUser.totalAccess}</p>
                     </div>
                     <div className="bg-white/[0.03] px-3 py-2 text-center">
-                      <p className="text-[9px] text-white/30 uppercase tracking-wider">Prima accesare</p>
+                      <p className="text-[9px] text-black/40 uppercase tracking-wider">Prima accesare</p>
                       <p className="text-xs font-bold text-white mt-1">{formatTime(selectedAccessUser.firstAccess)}</p>
                     </div>
                   </div>
@@ -1531,13 +1531,13 @@ export default function AdminPage() {
                 </p>
                 <div className="space-y-2">
                   {[...selectedAccessUser.pages].reverse().map((p, i) => (
-                    <div key={i} className="bg-white/[0.03] border border-white/[0.06] p-3 flex items-center justify-between">
+                    <div key={i} className="bg-gray-50 border border-black/[0.06] p-3 flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <div className={`w-8 h-8 flex items-center justify-center shrink-0 ${
                           p.action === "scan" ? "bg-emerald-500/20" :
                           p.action === "menu" ? "bg-blue-500/20" :
                           p.action === "menu-return" ? "bg-purple-500/20" :
-                          "bg-white/10"
+                          "bg-black/[0.06]"
                         }`}>
                           {p.action === "scan" ? <Smartphone className="w-4 h-4 text-emerald-400" /> :
                            p.action === "menu" ? <Monitor className="w-4 h-4 text-blue-400" /> :
@@ -1545,7 +1545,7 @@ export default function AdminPage() {
                         </div>
                         <div>
                           <p className="text-xs text-white font-bold">{p.page}</p>
-                          <div className="flex items-center gap-2 text-[10px] text-white/40">
+                          <div className="flex items-center gap-2 text-[10px] text-black/40">
                             <span className={`px-1.5 py-0.5 font-bold tracking-wider uppercase ${
                               p.action === "scan" ? "bg-emerald-500/20 text-emerald-400" :
                               p.action === "menu" ? "bg-blue-500/20 text-blue-400" :
@@ -1569,7 +1569,7 @@ export default function AdminPage() {
               /* ── User list view ── */
               <>
                 <div className="flex items-center justify-between mb-3">
-                  <p className="text-white/30 text-xs">
+                  <p className="text-black/40 text-xs">
                     {accessData.users.length} utilizatori · {accessData.totalEntries} accesări totale
                     {accessUnread > 0 && (
                       <span className="ml-2 text-red-400 font-bold">({accessUnread} noi)</span>
@@ -1586,10 +1586,10 @@ export default function AdminPage() {
                     <button
                       key={u.phone}
                       onClick={() => setSelectedAccessUser(u)}
-                      className={`w-full p-4 mb-3 text-left active:bg-white/[0.06] transition-colors border ${
+                      className={`w-full p-4 mb-3 text-left active:bg-black/[0.04] transition-colors border ${
                         isOnline
                           ? "bg-emerald-500/[0.06] border-emerald-500/30"
-                          : "bg-white/[0.03] border-white/[0.06]"
+                          : "bg-white/[0.03] border-black/[0.08]"
                       }`}
                     >
                       <div className="flex items-center justify-between">
@@ -1611,14 +1611,14 @@ export default function AdminPage() {
                               </span>
                             )}
                           </div>
-                          <p className="text-xs text-white/40">{u.phone}</p>
+                          <p className="text-xs text-black/40">{u.phone}</p>
                           {u.email && <p className="text-xs text-[#C9AB81]/60">{u.email}</p>}
-                          <div className="flex items-center gap-3 mt-1.5 text-[10px] text-white/60">
+                          <div className="flex items-center gap-3 mt-1.5 text-[10px] text-black/50">
                             <span>Prima: {formatTime(u.firstAccess)}</span>
                             <span>Ultima: {formatTime(u.lastAccess)}</span>
                           </div>
                         </div>
-                        <ChevronRight className={`w-4 h-4 shrink-0 ml-2 ${isOnline ? "text-emerald-400/40" : "text-white/20"}`} />
+                        <ChevronRight className={`w-4 h-4 shrink-0 ml-2 ${isOnline ? "text-emerald-400/40" : "text-black/30"}`} />
                       </div>
                     </button>
                     );
@@ -1631,7 +1631,7 @@ export default function AdminPage() {
 
         {/* ── MAYA GUEST MANAGEMENT TABS ── */}
         {tab === "guest-dashboard" && mayaAdminId && (
-          <GuestDashboard adminId={mayaAdminId} />
+          <GuestDashboard adminId={mayaAdminId} onNavigate={(t) => setTab(t as Tab)} />
         )}
 
         {tab === "guest-checkin" && mayaAdminId && (
@@ -1655,9 +1655,9 @@ export default function AdminPage() {
         )}
 
         {!mayaAdminId && (tab === "guest-dashboard" || tab === "guest-checkin" || tab === "guest-list" || tab === "guest-daily" || tab === "guest-loungers" || tab === "admin-users") && (
-          <div className="bg-white/[0.03] border border-white/[0.06] p-8 text-center">
-            <p className="text-white/30 text-sm">Se incarca modulul de administrare...</p>
-            <RefreshCw className="w-5 h-5 text-white/20 animate-spin mx-auto mt-3" />
+          <div className="bg-gray-50 border border-black/[0.06] p-8 text-center">
+            <p className="text-black/40 text-sm">Se incarca modulul de administrare...</p>
+            <RefreshCw className="w-5 h-5 text-black/30 animate-spin mx-auto mt-3" />
           </div>
         )}
 
@@ -1665,7 +1665,7 @@ export default function AdminPage() {
         {tab === "umbrellas" && (
           <>
             <div className="flex items-center justify-between mb-3">
-              <p className="text-white/30 text-xs">{data.umbrellas.length} umbrele</p>
+              <p className="text-black/40 text-xs">{data.umbrellas.length} umbrele</p>
               <SectionHelp items={[
                 "Aici vezi statusul tuturor umbrelelor inregistrate in sistem.",
                 "Verde 'Ocupat' = umbrela are o sesiune activa (un client a scanat QR-ul).",
@@ -1675,17 +1675,17 @@ export default function AdminPage() {
               ]} />
             </div>
             {data.umbrellas.map((u) => (
-              <div key={u.id} className="bg-white/[0.03] border border-white/[0.06] p-4">
+              <div key={u.id} className="bg-gray-50 border border-black/[0.06] p-4">
                 <div className="flex items-center justify-between mb-1">
                   <div className="flex items-center gap-2">
                     <span className="text-lg">⛱️</span>
-                    <p className="font-bold text-sm text-white tracking-wide">{u.id}</p>
+                    <p className="font-bold text-sm text-[#1a1a1a] tracking-wide">{u.id}</p>
                   </div>
                   <span
                     className={`text-[10px] font-bold tracking-wider uppercase px-2 py-1 ${
                       u.hasSession
                         ? "bg-emerald-500/20 text-emerald-400"
-                        : "bg-white/10 text-white/30"
+                        : "bg-black/[0.06] text-black/40"
                     }`}
                   >
                     {u.hasSession ? "Ocupat" : "Liber"}
@@ -1693,10 +1693,10 @@ export default function AdminPage() {
                 </div>
                 <p className="text-xs text-[#C9AB81] tracking-wider uppercase">{u.zone}</p>
                 {u.ownerPhone && (
-                  <p className="text-xs text-white/40 mt-1">{u.ownerPhone}</p>
+                  <p className="text-xs text-black/40 mt-1">{u.ownerPhone}</p>
                 )}
                 {u.sessionStarted && (
-                  <p className="text-[10px] text-white/20 mt-0.5">
+                  <p className="text-[10px] text-black/30 mt-0.5">
                     Din {formatTime(u.sessionStarted)}
                   </p>
                 )}
@@ -1714,13 +1714,13 @@ function StatCard({ label, value, gold, onClick }: { label: string; value: strin
   return (
     <Tag
       onClick={onClick}
-      className={`bg-white/[0.03] border border-white/[0.06] p-4 text-left ${onClick ? "active:bg-white/[0.06] transition-colors cursor-pointer" : ""}`}
+      className={`bg-gray-50 border border-black/[0.06] p-4 text-left ${onClick ? "active:bg-black/[0.04] transition-colors cursor-pointer" : ""}`}
     >
-      <p className="text-[10px] text-white/30 font-bold tracking-[0.15em] uppercase mb-1">
+      <p className="text-[10px] text-black/40 font-bold tracking-[0.15em] uppercase mb-1">
         {label}
         {onClick && <ChevronRight className="w-3 h-3 inline ml-1 opacity-40" />}
       </p>
-      <p className={`text-2xl font-bold tracking-wide ${gold ? "text-[#C9AB81]" : "text-white"}`}>
+      <p className={`text-2xl font-bold tracking-wide ${gold ? "text-[#C9AB81]" : "text-[#1a1a1a]"}`}>
         {value}
       </p>
     </Tag>
@@ -1729,8 +1729,8 @@ function StatCard({ label, value, gold, onClick }: { label: string; value: strin
 
 function EmptyMsg({ text }: { text: string }) {
   return (
-    <div className="bg-white/[0.03] border border-white/[0.06] p-8 text-center">
-      <p className="text-white/30 text-sm">{text}</p>
+    <div className="bg-gray-50 border border-black/[0.06] p-8 text-center">
+      <p className="text-black/40 text-sm">{text}</p>
     </div>
   );
 }

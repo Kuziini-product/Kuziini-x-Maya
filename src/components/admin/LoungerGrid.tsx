@@ -73,7 +73,7 @@ export default function LoungerGrid({ adminId }: Props) {
 
   function getLoungerColor(loungerId: string): string {
     const guest = getGuestForLounger(loungerId);
-    if (!guest) return "bg-white/[0.06] border-white/[0.08] text-white/30";
+    if (!guest) return "bg-black/[0.04] border-black/[0.08] text-black/40";
     if (guest.status === "active" && confirmedGuestIds.has(guest.id)) {
       return "bg-emerald-400/15 border-emerald-400/30 text-emerald-400";
     }
@@ -92,7 +92,7 @@ export default function LoungerGrid({ adminId }: Props) {
   if (loading) {
     return (
       <div className="flex justify-center py-20">
-        <RefreshCw className="w-6 h-6 text-white/30 animate-spin" />
+        <RefreshCw className="w-6 h-6 text-black/40 animate-spin" />
       </div>
     );
   }
@@ -100,7 +100,7 @@ export default function LoungerGrid({ adminId }: Props) {
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-4 text-[10px] text-white/40">
+        <div className="flex items-center gap-4 text-[10px] text-black/40">
           <span className="flex items-center gap-1">
             <span className="w-3 h-3 bg-emerald-400/30 border border-emerald-400/50 inline-block" />
             Confirmat
@@ -110,13 +110,13 @@ export default function LoungerGrid({ adminId }: Props) {
             Neconfirmat
           </span>
           <span className="flex items-center gap-1">
-            <span className="w-3 h-3 bg-white/[0.06] border border-white/[0.1] inline-block" />
+            <span className="w-3 h-3 bg-black/[0.04] border border-black/[0.1] inline-block" />
             Liber
           </span>
         </div>
         <button
           onClick={() => { setLoading(true); fetchData(); }}
-          className="text-white/40"
+          className="text-black/40"
         >
           <RefreshCw className="w-4 h-4" />
         </button>
@@ -153,27 +153,27 @@ export default function LoungerGrid({ adminId }: Props) {
 
       {/* Selected lounger popup */}
       {selected && (
-        <div className="fixed bottom-0 left-0 right-0 bg-[#141414] border-t border-white/[0.1] p-4 z-50">
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-black/[0.1] p-4 z-50">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-white font-bold">
+            <p className="text-[#1a1a1a] font-bold">
               Sezlong {selected}
             </p>
-            <button onClick={() => setSelected(null)} className="text-white/40">
+            <button onClick={() => setSelected(null)} className="text-black/40">
               <X className="w-5 h-5" />
             </button>
           </div>
           {selectedGuest ? (
             <div className="text-sm">
-              <p className="text-white/80">{selectedGuest.name}</p>
-              <p className="text-white/40 text-xs">
+              <p className="text-[#1a1a1a]">{selectedGuest.name}</p>
+              <p className="text-black/40 text-xs">
                 {selectedGuest.phone} · {selectedGuest.stayStart} → {selectedGuest.stayEnd}
               </p>
-              <p className="text-white/40 text-xs">
+              <p className="text-black/40 text-xs">
                 Status: {selectedGuest.status} · Credit: {selectedGuest.creditEnabled ? "DA" : "NU"}
               </p>
             </div>
           ) : (
-            <p className="text-white/30 text-sm">Acest sezlong este liber.</p>
+            <p className="text-black/40 text-sm">Acest sezlong este liber.</p>
           )}
         </div>
       )}

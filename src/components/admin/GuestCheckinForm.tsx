@@ -89,11 +89,11 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
       <div className="bg-emerald-400/10 border border-emerald-400/20 p-6 text-center">
         <Check className="w-12 h-12 text-emerald-400 mx-auto mb-3" />
         <p className="text-emerald-400 font-bold text-lg mb-1">Check-in reusit!</p>
-        <p className="text-white/60 text-sm mb-1">{success.name}</p>
-        <p className="text-white/40 text-xs mb-1">
+        <p className="text-black/50 text-sm mb-1">{success.name}</p>
+        <p className="text-black/40 text-xs mb-1">
           Sezlong: {success.loungerId || "neatribuit"} · {success.stayStart} → {success.stayEnd}
         </p>
-        <p className="text-white/40 text-xs mb-4">
+        <p className="text-black/40 text-xs mb-4">
           Credit: {success.creditEnabled ? "DA" : "NU"}
         </p>
         <button
@@ -107,13 +107,13 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
   }
 
   const inputCls =
-    "w-full bg-white/5 border border-white/10 px-3 py-2.5 text-white text-sm outline-none focus:border-[#C9AB81]/50 placeholder:text-white/20";
+    "w-full bg-gray-50 border border-black/[0.06] px-3 py-2.5 text-[#1a1a1a] text-sm outline-none focus:border-[#C9AB81]/50 placeholder:text-black/30";
   const labelCls =
     "text-[10px] font-bold text-[#C9AB81] uppercase tracking-[0.2em] mb-1.5 block";
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <p className="text-white/30 text-xs mb-2">
+      <p className="text-black/40 text-xs mb-2">
         Inregistreaza un oaspete nou la receptie
       </p>
 
@@ -121,7 +121,7 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
       <div>
         <label className={labelCls}>Nume complet *</label>
         <div className="relative">
-          <UserPlus className="absolute left-3 top-2.5 w-4 h-4 text-white/30" />
+          <UserPlus className="absolute left-3 top-2.5 w-4 h-4 text-black/40" />
           <input
             type="text"
             value={name}
@@ -137,7 +137,7 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
         <div>
           <label className={labelCls}>Telefon *</label>
           <div className="relative">
-            <Phone className="absolute left-3 top-2.5 w-4 h-4 text-white/30" />
+            <Phone className="absolute left-3 top-2.5 w-4 h-4 text-black/40" />
             <input
               type="tel"
               value={phone}
@@ -150,7 +150,7 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
         <div>
           <label className={labelCls}>Email</label>
           <div className="relative">
-            <Mail className="absolute left-3 top-2.5 w-4 h-4 text-white/30" />
+            <Mail className="absolute left-3 top-2.5 w-4 h-4 text-black/40" />
             <input
               type="email"
               value={email}
@@ -167,7 +167,7 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
         <div>
           <label className={labelCls}>De la</label>
           <div className="relative">
-            <Calendar className="absolute left-3 top-2.5 w-4 h-4 text-white/30" />
+            <Calendar className="absolute left-3 top-2.5 w-4 h-4 text-black/40" />
             <input
               type="date"
               value={stayStart}
@@ -179,7 +179,7 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
         <div>
           <label className={labelCls}>Pana la</label>
           <div className="relative">
-            <Calendar className="absolute left-3 top-2.5 w-4 h-4 text-white/30" />
+            <Calendar className="absolute left-3 top-2.5 w-4 h-4 text-black/40" />
             <input
               type="date"
               value={stayEnd}
@@ -194,7 +194,7 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
       <div>
         <label className={labelCls}>Sezlong / Umbrela</label>
         <div className="relative">
-          <Umbrella className="absolute left-3 top-2.5 w-4 h-4 text-white/30" />
+          <Umbrella className="absolute left-3 top-2.5 w-4 h-4 text-black/40" />
           <input
             type="text"
             value={loungerId}
@@ -206,17 +206,17 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
       </div>
 
       {/* Credit toggle */}
-      <div className="bg-white/[0.03] border border-white/[0.06] p-4">
+      <div className="bg-gray-50 border border-black/[0.08] p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <CreditCard className="w-4 h-4 text-purple-400" />
-            <span className="text-sm text-white/80">Plata pe credit</span>
+            <span className="text-sm text-[#1a1a1a]">Plata pe credit</span>
           </div>
           <button
             type="button"
             onClick={() => setCreditEnabled(!creditEnabled)}
             className={`w-12 h-6 rounded-full transition-colors relative ${
-              creditEnabled ? "bg-purple-500" : "bg-white/10"
+              creditEnabled ? "bg-purple-500" : "bg-black/[0.06]"
             }`}
           >
             <span
@@ -245,7 +245,7 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
       <div>
         <label className={labelCls}>Note</label>
         <div className="relative">
-          <StickyNote className="absolute left-3 top-2.5 w-4 h-4 text-white/30" />
+          <StickyNote className="absolute left-3 top-2.5 w-4 h-4 text-black/40" />
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
