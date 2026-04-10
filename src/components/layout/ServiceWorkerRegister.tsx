@@ -3,9 +3,13 @@ import { useEffect } from "react";
 
 export function ServiceWorkerRegister() {
   useEffect(() => {
-    // Register service worker
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/sw.js").catch(() => {});
+      // Force update: unregister old SW, then register fresh
+      navigator.serviceWorker.getRegistrations().then((regs) => {
+        regs.forEach((r) => r.unregister());
+      }).then(() => {
+        navigator.serviceWorker.register("/sw.js").catch(() => {});
+      });
     }
 
     // Auto-refresh when app becomes visible (returning from background)
@@ -14,7 +18,6 @@ export function ServiceWorkerRegister() {
       if (document.visibilityState === "hidden") {
         lastHidden = Date.now();
       } else if (document.visibilityState === "visible" && lastHidden > 0) {
-        // Refresh if was hidden for more than 30 seconds
         if (Date.now() - lastHidden > 30_000) {
           window.location.reload();
         }
@@ -27,4 +30,3 @@ export function ServiceWorkerRegister() {
 
   return null;
 }
-

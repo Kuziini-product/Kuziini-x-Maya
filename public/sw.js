@@ -1,6 +1,12 @@
-const CACHE_NAME = "kuziini-v4";
+const CACHE_NAME = "kuziini-v7";
 
 self.addEventListener("install", (event) => {
+  // Delete ALL caches on install to start fresh
+  event.waitUntil(
+    caches.keys().then((keys) =>
+      Promise.all(keys.map((k) => caches.delete(k)))
+    )
+  );
   self.skipWaiting();
 });
 
@@ -31,7 +37,9 @@ self.addEventListener("fetch", (event) => {
     caches.open(CACHE_NAME).then((cache) =>
       cache.match(event.request).then((cached) => {
         const fetched = fetch(event.request).then((response) => {
-          cache.put(event.request, response.clone());
+          if (response.ok) {
+            cache.put(event.request, response.clone());
+          }
           return response;
         });
         return cached || fetched;
