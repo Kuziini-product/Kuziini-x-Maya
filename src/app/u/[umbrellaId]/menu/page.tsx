@@ -2,9 +2,8 @@
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Search, ShoppingBag, Receipt } from "lucide-react";
+import { ArrowLeft, Search, ShoppingBag } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Spinner } from "@/components/ui";
 import { MenuItemCard } from "@/components/menu/MenuItemCard";
 import { useCartStore } from "@/store";
@@ -27,22 +26,10 @@ const MENU_TABS = [
 
 export default function MenuPage({ params }: { params: { umbrellaId: string } }) {
   const { umbrellaId } = params;
-  const router = useRouter();
   const [activeTab, setActiveTab] = useState("food");
   const [search, setSearch] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const itemCount = useCartStore((s) => s.itemCount());
-
-  const handleAction = () => {
-    if (itemCount > 0) {
-      router.push(`/u/${umbrellaId}/cart`);
-    } else {
-      router.push(`/u/${umbrellaId}/bill`);
-    }
-  };
-
-  const actionLabel = itemCount > 0 ? `Finalizează comanda (${itemCount})` : "Solicită nota";
-  const actionSubtitle = itemCount > 0 ? "Verifică și confirmă produsele selectate" : "Trimite solicitarea notei de plata";
 
   const { data, isLoading } = useQuery({
     queryKey: ["menu", umbrellaId],
@@ -187,24 +174,6 @@ export default function MenuPage({ params }: { params: { umbrellaId: string } })
         </div>
       </div>
 
-      <div className="fixed bottom-6 left-4 right-4 z-40 animate-slide-up">
-        <button
-          onClick={handleAction}
-          className="flex flex-col gap-2 w-full bg-[#C9AB81] text-[#0A0A0A] py-4 px-5 rounded-none font-bold text-sm tracking-[0.15em] uppercase active:opacity-90 transition-opacity"
-        >
-          <span className="flex items-center justify-center gap-3">
-            {itemCount > 0 ? (
-              <ShoppingBag className="w-4 h-4" />
-            ) : (
-              <Receipt className="w-4 h-4" />
-            )}
-            {actionLabel}
-          </span>
-          <span className="text-[10px] font-normal tracking-[0.2em] text-[#0A0A0A]/70">
-            {actionSubtitle}
-          </span>
-        </button>
-      </div>
     </div>
   );
 }

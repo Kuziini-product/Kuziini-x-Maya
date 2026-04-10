@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { ArrowLeft, Minus, Plus, Trash2, ShoppingBag, AlertCircle } from "lucide-react";
+import { useState, useEffect } from "react";
+import { ArrowLeft, Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { PageHeader, Button, EmptyState, Divider } from "@/components/ui";
 import { useCartStore, useSessionStore } from "@/store";
 import { formatPrice } from "@/lib/utils";
@@ -12,48 +11,19 @@ import type { CartItem } from "@/types";
 
 export default function CartPage({ params }: { params: { umbrellaId: string } }) {
   const { umbrellaId } = params;
-  const router = useRouter();
   const { items, updateQuantity, removeItem, clearCart, total } = useCartStore();
-  const { userSession, addOrder } = useSessionStore();
-  const [loading, setLoading] = useState(false);
+  const { userSession } = useSessionStore();
   const [showPhone, setShowPhone] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [globalNotes, setGlobalNotes] = useState("");
 
   const totalAmount = total();
 
-  async function handleOrder() {
-    if (!userSession) {
-      setShowPhone(true);
-      return;
-    }
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch("/api/order", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          umbrellaId,
-          deliveryUmbrellaId: umbrellaId,
-          billingUmbrellaId: umbrellaId,
-          sessionId: userSession.sessionId,
-          guestPhone: userSession.phone,
-          role: "owner",
-          items,
-        }),
-      });
-      const json = await res.json();
-      if (!json.success) throw new Error(json.error);
-      addOrder(json.data.order);
-      clearCart();
-      router.push(`/u/${umbrellaId}/orders`);
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Eroare la trimiterea comenzii.");
-    } finally {
-      setLoading(false);
-    }
-  }
+  // Listen for phone modal request from BottomNav
+  useEffect(() => {
+    const handler = () => setShowPhone(true);
+    window.addEventListener("show-phone-modal", handler);
+    return () => window.removeEventListener("show-phone-modal", handler);
+  }, []);
 
   if (items.length === 0) {
     return (
@@ -155,22 +125,6 @@ export default function CartPage({ params }: { params: { umbrellaId: string } })
             </span>
           </div>
 
-          {error && (
-            <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/20 px-4 py-3 text-red-400 text-sm">
-              <AlertCircle className="w-4 h-4 shrink-0" />
-              {error}
-            </div>
-          )}
-
-          <Button
-            fullWidth
-            size="lg"
-            onClick={handleOrder}
-            loading={loading}
-            icon={<ShoppingBag className="w-5 h-5" />}
-          >
-            Plasează comanda
-          </Button>
         </div>
       </div>
     </>

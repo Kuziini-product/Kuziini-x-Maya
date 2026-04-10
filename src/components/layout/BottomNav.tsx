@@ -1,9 +1,10 @@
 "use client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useRef, useState, useEffect } from "react";
-import { UtensilsCrossed, Volume2, VolumeX } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { useRef, useState, useEffect, useCallback } from "react";
+import { UtensilsCrossed, ShoppingBag, Receipt, Volume2, VolumeX } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useCartStore, useSessionStore } from "@/store";
 
 interface BottomNavProps {
   umbrellaId: string;
@@ -11,8 +12,18 @@ interface BottomNavProps {
 
 export function BottomNav({ umbrellaId }: BottomNavProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [playing, setPlaying] = useState(false);
+  const [ordering, setOrdering] = useState(false);
+  const [orderError, setOrderError] = useState<string | null>(null);
+
+  const itemCount = useCartStore((s) => s.itemCount());
+  const items = useCartStore((s) => s.items);
+  const total = useCartStore((s) => s.total());
+  const clearCart = useCartStore((s) => s.clearCart);
+  const { userSession } = useSessionStore();
+  const addOrder = useSessionStore((s) => s.addOrder);
 
   useEffect(() => {
     const findAudio = () => {
@@ -25,7 +36,6 @@ export function BottomNav({ umbrellaId }: BottomNavProps) {
       }
     };
     findAudio();
-    // Retry after a short delay in case AmbientSound mounts later
     const t = setTimeout(findAudio, 1000);
     return () => clearTimeout(t);
   }, []);
@@ -42,65 +52,125 @@ export function BottomNav({ umbrellaId }: BottomNavProps) {
   };
 
   const base = `/u/${umbrellaId}`;
+  const isOnMenu = pathname.startsWith(`${base}/menu`);
+  const isOnCart = pathname.startsWith(`${base}/cart`);
 
-  const links = [
-    { href: `${base}/menu`, label: "Meniu", icon: UtensilsCrossed },
-  ];
+  const handleAction = useCallback(async () => {
+    if (isOnCart && itemCount > 0) {
+      // Place order
+      if (!userSession) {
+        // Dispatch custom event so cart page can show phone modal
+        window.dispatchEvent(new CustomEvent("show-phone-modal"));
+        return;
+      }
+      setOrdering(true);
+      setOrderError(null);
+      try {
+        const res = await fetch("/api/order", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            umbrellaId,
+            deliveryUmbrellaId: umbrellaId,
+            billingUmbrellaId: umbrellaId,
+            sessionId: userSession.sessionId,
+            guestPhone: userSession.phone,
+            role: "owner",
+            items,
+          }),
+        });
+        const json = await res.json();
+        if (!json.success) throw new Error(json.error);
+        addOrder(json.data.order);
+        clearCart();
+        router.push(`${base}/orders`);
+      } catch (e: unknown) {
+        setOrderError(e instanceof Error ? e.message : "Eroare la trimiterea comenzii.");
+      } finally {
+        setOrdering(false);
+      }
+    } else if (itemCount > 0) {
+      // Go to cart
+      router.push(`${base}/cart`);
+    } else {
+      // Request bill
+      router.push(`${base}/bill`);
+    }
+  }, [isOnCart, itemCount, userSession, umbrellaId, items, addOrder, clearCart, router, base]);
+
+  // Determine button state
+  let actionLabel: string;
+  let actionIcon: React.ReactNode;
+  let actionStyle: string;
+
+  if (isOnCart && itemCount > 0) {
+    actionLabel = ordering ? "Se trimite..." : "Plasează comanda";
+    actionIcon = <ShoppingBag className="w-4 h-4" />;
+    actionStyle = "bg-emerald-500 text-white";
+  } else if (itemCount > 0) {
+    actionLabel = `Finalizează (${itemCount})`;
+    actionIcon = <ShoppingBag className="w-4 h-4" />;
+    actionStyle = "bg-[#C9AB81] text-[#0A0A0A]";
+  } else {
+    actionLabel = "Solicită nota";
+    actionIcon = <Receipt className="w-4 h-4" />;
+    actionStyle = "bg-white/10 text-white/60";
+  }
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-[#0A0A0A]/95 backdrop-blur-md border-t border-white/[0.06] pb-safe">
-      <div className="relative flex items-center justify-center px-1 pt-2 pb-2">
-        {/* Speaker toggle - pinned left */}
-        <button
-          onClick={toggleAudio}
-          className="absolute left-4 flex items-center justify-center w-9 h-9 text-white/30 active:text-white/50 transition-all duration-200"
-        >
-          {playing ? (
-            <Volume2 className="w-5 h-5" strokeWidth={1.8} />
-          ) : (
-            <VolumeX className="w-5 h-5" strokeWidth={1.8} />
-          )}
-        </button>
+    <>
+      {orderError && (
+        <div className="fixed bottom-16 left-4 right-4 z-50 bg-red-500/90 text-white px-4 py-2 text-sm font-bold animate-fade-in">
+          {orderError}
+        </div>
+      )}
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-[#0A0A0A]/95 backdrop-blur-md border-t border-white/[0.06] pb-safe">
+        <div className="flex items-center gap-2 px-4 pt-2 pb-2">
+          {/* Speaker toggle */}
+          <button
+            onClick={toggleAudio}
+            className="flex items-center justify-center w-9 h-9 text-white/30 active:text-white/50 transition-all duration-200 shrink-0"
+          >
+            {playing ? (
+              <Volume2 className="w-5 h-5" strokeWidth={1.8} />
+            ) : (
+              <VolumeX className="w-5 h-5" strokeWidth={1.8} />
+            )}
+          </button>
 
-        {/* Menu link - always centered */}
-        {links.map(({ href, label, icon: Icon }) => {
-          const active = pathname.startsWith(href);
-          return (
-            <Link
-              key={href}
-              href={href}
-              className={cn(
-                "flex flex-col items-center gap-0.5 px-2.5 py-1.5 transition-all duration-200 relative",
-                active
-                  ? "text-[#C9AB81]"
-                  : "text-white/30 active:text-white/50"
-              )}
-            >
-              <div className="relative">
-                <Icon
-                  className={cn(
-                    "w-5 h-5 transition-all",
-                    active && "scale-110"
-                  )}
-                  strokeWidth={active ? 2.2 : 1.8}
-                />
-              </div>
-              <span
-                className={cn(
-                  "text-[9px] font-bold tracking-wider uppercase",
-                  active ? "text-[#C9AB81]" : "text-white/30"
-                )}
-              >
-                {label}
-              </span>
-              {active && (
-                <span className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-[#C9AB81] rounded-full" />
-              )}
-            </Link>
-          );
-        })}
-      </div>
-    </nav>
+          {/* Menu link */}
+          <Link
+            href={`${base}/menu`}
+            className={cn(
+              "flex items-center gap-1.5 px-3 py-2 transition-all duration-200 shrink-0",
+              isOnMenu
+                ? "text-[#C9AB81]"
+                : "text-white/30 active:text-white/50"
+            )}
+          >
+            <UtensilsCrossed
+              className={cn("w-4 h-4 transition-all", isOnMenu && "scale-110")}
+              strokeWidth={isOnMenu ? 2.2 : 1.8}
+            />
+            <span className="text-[9px] font-bold tracking-wider uppercase">
+              Meniu
+            </span>
+          </Link>
+
+          {/* Dynamic action button */}
+          <button
+            onClick={handleAction}
+            disabled={ordering}
+            className={cn(
+              "flex-1 flex items-center justify-center gap-2 py-2.5 font-bold text-xs tracking-wider uppercase transition-all active:opacity-80 disabled:opacity-50",
+              actionStyle
+            )}
+          >
+            {actionIcon}
+            {actionLabel}
+          </button>
+        </div>
+      </nav>
+    </>
   );
 }
-
