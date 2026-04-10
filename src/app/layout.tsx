@@ -19,11 +19,11 @@ const dmSans = DM_Sans({
   display: "swap",
 });
 
+import type { Viewport } from "next";
+
 export const metadata: Metadata = {
   title: "Kuziini x Maya",
   description: "Comanda direct de la sezlong - Kuziini x Maya Mamaia Nord",
-  viewport: "width=device-width, initial-scale=1, maximum-scale=1",
-  themeColor: "#0A0A0A",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
@@ -33,6 +33,13 @@ export const metadata: Metadata = {
   icons: {
     apple: "/icons/icon-192.png",
   },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  themeColor: "#0A0A0A",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
