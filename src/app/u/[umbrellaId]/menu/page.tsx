@@ -86,7 +86,7 @@ export default function MenuPage({ params }: { params: { umbrellaId: string } })
           <div className="flex items-center gap-2">
             <img src="/kuziini-logo.png" alt="Kuziini" className="h-6 object-contain invert brightness-200" />
             <span className="text-white/20 text-xs font-bold">×</span>
-            <img src="/Maya.png" alt="Maya" className="h-6 object-contain" />
+            <img src="/Maya.png" alt="Maya" className="h-12 object-contain" />
           </div>
 
           <div className="flex items-center gap-2">
