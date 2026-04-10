@@ -136,17 +136,29 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
     return (
       <div className="min-h-dvh bg-[#0A0A0A] flex flex-col items-center justify-center px-6 text-center">
         <div className="flex items-center justify-center gap-1 mb-6 animate-bounce">
-          <span className="text-7xl">🏃‍♂️</span>
-          <div className="relative">
-            <span className="text-6xl">🧾</span>
-            <img src="/kuziini-logo.png" alt="" className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 object-contain invert brightness-200 opacity-60" />
-          </div>
+          {selectedMethod === "cash" && (
+            <>
+              <span className="text-7xl">🏃‍♂️</span>
+              <div className="relative">
+                <span className="text-6xl">🧾</span>
+                <img src="/kuziini-logo.png" alt="" className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 object-contain invert brightness-200 opacity-60" />
+              </div>
+            </>
+          )}
+          {selectedMethod === "card" && (
+            <span className="text-7xl">💳✨</span>
+          )}
+          {selectedMethod === "room-charge" && (
+            <span className="text-7xl">🏨🔑</span>
+          )}
         </div>
         <h2 className="text-2xl font-bold text-white mb-3 tracking-wide">
           Nota ta a fost transmisă!
         </h2>
         <p className="text-white/50 text-sm mb-6">
-          Un ospătar vine spre tine cu nota.
+          {selectedMethod === "cash" && "Un ospătar vine spre tine cu nota."}
+          {selectedMethod === "card" && "Pregătește cardul, ospătarul vine cu POS-ul."}
+          {selectedMethod === "room-charge" && "Suma a fost adăugată pe cameră."}
         </p>
         <div className="bg-white/[0.03] border border-white/[0.06] px-6 py-4 mb-8 w-full max-w-xs">
           <p className="text-white/30 text-[10px] font-bold tracking-[0.2em] uppercase mb-2">Detalii</p>
