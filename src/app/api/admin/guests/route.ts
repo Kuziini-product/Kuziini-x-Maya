@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { kvGet, kvSet } from "@/lib/kv";
 import { generateId } from "@/lib/utils";
-import type { GuestProfile, GuestStatus } from "@/types";
+import type { GuestProfile } from "@/types";
 
 const KV_KEY = "guests:registry";
 
@@ -75,6 +75,7 @@ export async function POST(req: Request) {
         });
       }
 
+      const now = new Date().toISOString();
       const guest: GuestProfile = {
         id: generateId(),
         name,
@@ -87,9 +88,16 @@ export async function POST(req: Request) {
         creditEnabled: creditEnabled || false,
         creditLimit: creditLimit || 0,
         creditUsed: 0,
-        registeredAt: new Date().toISOString(),
+        registeredAt: now,
         registeredBy: adminId,
         notes: notes || "",
+        loungerHistory: loungerId ? [{
+          date: today,
+          loungerId,
+          action: "assigned" as const,
+          timestamp: now,
+          by: adminId,
+        }] : [],
       };
       guests.push(guest);
       await saveGuests(guests);
@@ -114,6 +122,60 @@ export async function POST(req: Request) {
       }
       await saveGuests(guests);
       return NextResponse.json({ success: true, data: guests[idx] });
+    }
+
+    // ── RELOCATE (with mandatory reason + history) ──
+    if (action === "relocate") {
+      const { guestId, newLoungerId, reason } = body;
+      if (!guestId || !newLoungerId) {
+        return NextResponse.json({ success: false, error: "guestId si newLoungerId sunt obligatorii." });
+      }
+      if (!reason || !reason.trim()) {
+        return NextResponse.json({ success: false, error: "Motivul relocării este obligatoriu." });
+      }
+      const idx = guests.findIndex((g) => g.id === guestId);
+      if (idx === -1) {
+        return NextResponse.json({ success: false, error: "Oaspete negăsit." });
+      }
+      const oldLoungerId = guests[idx].loungerId;
+      const now = new Date().toISOString();
+      const today = todayRO();
+
+      // Initialize history if not exists
+      if (!guests[idx].loungerHistory) guests[idx].loungerHistory = [];
+
+      // Add history entries
+      guests[idx].loungerHistory!.push({
+        date: today,
+        loungerId: oldLoungerId,
+        action: "relocated_from",
+        reason: reason.trim(),
+        timestamp: now,
+        by: adminId,
+      });
+      guests[idx].loungerHistory!.push({
+        date: today,
+        loungerId: newLoungerId.trim().toUpperCase(),
+        action: "relocated_to",
+        reason: reason.trim(),
+        timestamp: now,
+        by: adminId,
+      });
+
+      // Update lounger
+      guests[idx].loungerId = newLoungerId.trim().toUpperCase();
+      await saveGuests(guests);
+      return NextResponse.json({ success: true, data: guests[idx] });
+    }
+
+    // ── GET HISTORY (lounger history for a guest) ──
+    if (action === "history") {
+      const { guestId } = body;
+      const guest = guests.find((g) => g.id === guestId);
+      if (!guest) {
+        return NextResponse.json({ success: false, error: "Oaspete negăsit." });
+      }
+      return NextResponse.json({ success: true, data: guest.loungerHistory || [] });
     }
 
     // ── CHECKOUT ──

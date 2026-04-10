@@ -42,6 +42,7 @@ export default function LoungerGrid({ adminId }: Props) {
 
   // Relocate
   const [relocateTarget, setRelocateTarget] = useState("");
+  const [relocateReason, setRelocateReason] = useState("");
 
   // Quick check-in form
   const [ciName, setCiName] = useState("");
@@ -142,6 +143,7 @@ export default function LoungerGrid({ adminId }: Props) {
     setSearchQuery("");
     setSelectedGuestId(null);
     setRelocateTarget("");
+    setRelocateReason("");
   }
 
   function closePanel() {
@@ -251,10 +253,14 @@ export default function LoungerGrid({ adminId }: Props) {
     }
   }
 
-  // Relocate guest to another lounger
+  // Relocate guest to another lounger (reason mandatory)
   async function relocateGuest() {
     if (!selectedGuest || !relocateTarget.trim()) {
       setError("Introdu numarul sezlongului destinatie.");
+      return;
+    }
+    if (!relocateReason.trim()) {
+      setError("Motivul relocarii este obligatoriu.");
       return;
     }
     setSaving(true);
@@ -265,10 +271,11 @@ export default function LoungerGrid({ adminId }: Props) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          action: "update",
+          action: "relocate",
           adminId,
           guestId: selectedGuest.id,
-          loungerId: target,
+          newLoungerId: target,
+          reason: relocateReason.trim(),
         }),
       });
       const json = await res.json();
@@ -404,6 +411,42 @@ export default function LoungerGrid({ adminId }: Props) {
                       )}
                     </div>
                   </div>
+                  {/* Lounger history */}
+                  {selectedGuest.loungerHistory && selectedGuest.loungerHistory.length > 0 && (
+                    <div className="bg-gray-50 border border-gray-200 p-3 mb-3">
+                      <p className="text-[10px] font-bold text-[#C9AB81] uppercase tracking-[0.2em] mb-2">
+                        Istoric locuri
+                      </p>
+                      <div className="space-y-1.5">
+                        {selectedGuest.loungerHistory.map((h, i) => (
+                          <div key={i} className="flex items-center justify-between text-xs">
+                            <div className="flex items-center gap-2">
+                              <span className={`w-1.5 h-1.5 rounded-full ${
+                                h.action === "assigned" ? "bg-emerald-400" :
+                                h.action === "relocated_to" ? "bg-sky-400" : "bg-amber-400"
+                              }`} />
+                              <span className="text-gray-700 font-medium">{h.loungerId}</span>
+                              <span className="text-gray-500">
+                                {h.action === "assigned" ? "asignat" :
+                                 h.action === "relocated_to" ? "mutat aici" : "plecat"}
+                              </span>
+                            </div>
+                            <span className="text-gray-400 text-[10px]">{h.date}</span>
+                          </div>
+                        ))}
+                        {selectedGuest.loungerHistory.some(h => h.reason) && (
+                          <div className="mt-1 pt-1 border-t border-gray-100">
+                            {selectedGuest.loungerHistory.filter(h => h.reason).map((h, i) => (
+                              <p key={i} className="text-gray-500 text-[10px] italic">
+                                {h.loungerId}: {h.reason}
+                              </p>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
                   <button
                     onClick={() => setPanelMode("relocate")}
                     className="w-full flex items-center justify-center gap-2 bg-[#C9AB81] text-[#0A0A0A] py-3 font-bold text-xs tracking-wider uppercase"
@@ -564,21 +607,68 @@ export default function LoungerGrid({ adminId }: Props) {
                 Muta de pe {selected} pe alt sezlong:
               </p>
 
-              <div className="flex gap-2 mb-3">
-                <input
-                  type="text"
-                  value={relocateTarget}
-                  onChange={(e) => setRelocateTarget(e.target.value)}
-                  placeholder="Nr. sezlong destinatie (ex: B-015)"
-                  className={`flex-1 ${inputCls}`}
-                  autoFocus
-                />
+              {/* Previous loungers - quick assign */}
+              {selectedGuest.loungerHistory && selectedGuest.loungerHistory.filter(h => h.action !== "relocated_from").length > 0 && (
+                <div className="mb-3">
+                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">
+                    Locuri anterioare (click pentru selectie rapida)
+                  </p>
+                  <div className="flex gap-1.5 flex-wrap">
+                    {Array.from(new Set(
+                      selectedGuest.loungerHistory
+                        .filter(h => h.action !== "relocated_from" && h.loungerId !== selected)
+                        .map(h => h.loungerId)
+                    )).map((lid) => {
+                      const isFree = !getGuestForLounger(lid);
+                      return (
+                        <button
+                          key={lid}
+                          onClick={() => isFree && setRelocateTarget(lid)}
+                          disabled={!isFree}
+                          className={`px-3 py-1.5 text-xs font-bold border transition-all ${
+                            relocateTarget.toUpperCase() === lid
+                              ? "bg-[#C9AB81]/20 border-[#C9AB81] text-[#C9AB81]"
+                              : isFree
+                              ? "bg-emerald-50 border-emerald-200 text-emerald-600"
+                              : "bg-red-50 border-red-200 text-red-400 cursor-not-allowed line-through"
+                          }`}
+                        >
+                          {lid} {isFree ? "" : "(ocupat)"}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              <div className="space-y-3">
+                <div>
+                  <label className={labelCls}>Sezlong destinatie *</label>
+                  <input
+                    type="text"
+                    value={relocateTarget}
+                    onChange={(e) => setRelocateTarget(e.target.value)}
+                    placeholder="Nr. sezlong destinatie (ex: B-015)"
+                    className={inputCls}
+                    autoFocus
+                  />
+                </div>
+
+                <div>
+                  <label className={labelCls}>Motiv relocare *</label>
+                  <textarea
+                    value={relocateReason}
+                    onChange={(e) => setRelocateReason(e.target.value)}
+                    placeholder="Motivul pentru care se face relocarea..."
+                    className={`${inputCls} min-h-[60px] resize-none`}
+                  />
+                </div>
               </div>
 
               <button
                 onClick={relocateGuest}
-                disabled={!relocateTarget.trim() || saving}
-                className="w-full bg-[#C9AB81] text-[#0A0A0A] py-3 font-bold text-xs tracking-wider uppercase disabled:opacity-40"
+                disabled={!relocateTarget.trim() || !relocateReason.trim() || saving}
+                className="w-full bg-[#C9AB81] text-[#0A0A0A] py-3 font-bold text-xs tracking-wider uppercase disabled:opacity-40 mt-3"
               >
                 {saving ? "Se reloca..." : `Muta pe ${relocateTarget.trim().toUpperCase() || "..."}`}
               </button>

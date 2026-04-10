@@ -467,7 +467,14 @@ export default function MayaAdminPage() {
       <div className="px-4 py-4">
         {/* ── GUEST SECTION ── */}
         {tab === "dashboard" && adminSession && (
-          <GuestDashboard adminId={adminSession.id} onNavigate={(t) => setTab(t as Tab)} />
+          <GuestDashboard adminId={adminSession.id} onNavigate={(t) => {
+            // Map dashboard tab names to Maya tab names
+            const map: Record<string, Tab> = {
+              "guest-list": "guests", "guest-loungers": "loungers",
+              "guest-daily": "daily", "guest-checkin": "checkin",
+            };
+            setTab(map[t] || t as Tab);
+          }} />
         )}
 
         {tab === "checkin" && adminSession && (

@@ -231,6 +231,27 @@ export default function GuestList({ adminId }: Props) {
                     <p className="text-gray-600 text-xs italic">{g.notes}</p>
                   )}
 
+                  {/* Lounger history */}
+                  {g.loungerHistory && g.loungerHistory.length > 0 && (
+                    <div className="bg-gray-50 border border-gray-200 p-2 mt-1">
+                      <p className="text-[10px] font-bold text-[#C9AB81] uppercase tracking-wider mb-1">
+                        Istoric locuri
+                      </p>
+                      {g.loungerHistory.map((h, i) => (
+                        <div key={i} className="flex items-center gap-2 text-[10px] text-gray-600">
+                          <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${
+                            h.action === "assigned" ? "bg-emerald-400" :
+                            h.action === "relocated_to" ? "bg-sky-400" : "bg-amber-400"
+                          }`} />
+                          <span className="font-medium">{h.loungerId}</span>
+                          <span>{h.action === "assigned" ? "asignat" : h.action === "relocated_to" ? "mutat aici" : "plecat"}</span>
+                          <span className="text-gray-400 ml-auto">{h.date}</span>
+                          {h.reason && <span className="text-gray-400 italic">({h.reason})</span>}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
                   <div className="flex gap-2 pt-2">
                     <button
                       onClick={() => toggleCredit(g)}

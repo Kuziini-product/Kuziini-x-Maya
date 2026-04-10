@@ -247,6 +247,7 @@ export interface GuestProfile {
   registeredAt: string;
   registeredBy: string;
   notes?: string;
+  loungerHistory?: LoungerHistoryEntry[];
 }
 
 export interface DailyConfirmation {
@@ -266,6 +267,15 @@ export interface LoungerAssignment {
   guestPhone: string | null;
   date: string;
   confirmedToday: boolean;
+}
+
+export interface LoungerHistoryEntry {
+  date: string;
+  loungerId: string;
+  action: "assigned" | "relocated_from" | "relocated_to";
+  reason?: string;
+  timestamp: string;
+  by: string;
 }
 
 export interface DashboardStats {
