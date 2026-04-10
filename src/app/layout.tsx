@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Playfair_Display, DM_Sans } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/layout/Providers";
+import { ErrorBoundary } from "@/components/layout/ErrorBoundary";
 import { ServiceWorkerRegister } from "@/components/layout/ServiceWorkerRegister";
 import { InstallPrompt } from "@/components/layout/InstallPrompt";
 import { AmbientSound } from "@/components/layout/AmbientSound";
@@ -47,7 +48,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="ro" className={`${playfair.variable} ${dmSans.variable}`}>
       <body className="font-body bg-cream antialiased">
         <ServiceWorkerRegister />
-        <Providers>{children}</Providers>
+        <ErrorBoundary>
+          <Providers>{children}</Providers>
+        </ErrorBoundary>
         <InstallPrompt />
         <AmbientSound />
         <BadgeUpdater />
