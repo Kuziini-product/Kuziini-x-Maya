@@ -15,12 +15,19 @@ export function BottomNav({ umbrellaId }: BottomNavProps) {
   const [playing, setPlaying] = useState(false);
 
   useEffect(() => {
-    // Find the existing audio element created by AmbientSound
-    const existing = document.querySelector("audio");
-    if (existing) {
-      audioRef.current = existing;
-      setPlaying(!existing.paused);
-    }
+    const findAudio = () => {
+      const el = document.getElementById("ambient-audio") as HTMLAudioElement | null;
+      if (el) {
+        audioRef.current = el;
+        setPlaying(!el.paused);
+        el.addEventListener("play", () => setPlaying(true));
+        el.addEventListener("pause", () => setPlaying(false));
+      }
+    };
+    findAudio();
+    // Retry after a short delay in case AmbientSound mounts later
+    const t = setTimeout(findAudio, 1000);
+    return () => clearTimeout(t);
   }, []);
 
   const toggleAudio = () => {

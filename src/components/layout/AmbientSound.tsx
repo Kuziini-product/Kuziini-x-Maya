@@ -14,6 +14,8 @@ export function AmbientSound() {
     audio.volume = 0.3;
     audio.preload = "auto";
     audio.setAttribute("playsinline", "true");
+    audio.id = "ambient-audio";
+    document.body.appendChild(audio);
 
     setVisible(true);
 
@@ -35,6 +37,7 @@ export function AmbientSound() {
       document.removeEventListener("touchstart", tryPlay, true);
       audio.pause();
       audio.src = "";
+      audio.remove();
     };
   }, []);
 
