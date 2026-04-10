@@ -6,8 +6,9 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { Spinner } from "@/components/ui";
 import { MenuItemCard } from "@/components/menu/MenuItemCard";
-import { useCartStore } from "@/store";
+import { useCartStore, useSessionStore } from "@/store";
 import { cn } from "@/lib/utils";
+import { PhoneModal } from "@/components/layout/PhoneModal";
 import type { MenuItem, MenuCategory } from "@/types";
 
 async function fetchMenu(umbrellaId: string) {
@@ -32,6 +33,15 @@ export default function MenuPage({ params }: { params: { umbrellaId: string } })
   const [lastVisited, setLastVisited] = useState<string | null>(null);
   const cartItems = useCartStore((s) => s.items);
   const itemCount = cartItems.reduce((sum, i) => sum + i.quantity, 0);
+  const { userSession } = useSessionStore();
+  const [showPhone, setShowPhone] = useState(false);
+
+  // Listen for phone modal request from BottomNav
+  useEffect(() => {
+    const handler = () => setShowPhone(true);
+    window.addEventListener("show-phone-modal", handler);
+    return () => window.removeEventListener("show-phone-modal", handler);
+  }, []);
 
   // Check if user has visited a section before (stored when navigating away)
   useEffect(() => {
@@ -67,6 +77,10 @@ export default function MenuPage({ params }: { params: { umbrellaId: string } })
     }));
 
   return (
+    <>
+    {showPhone && !userSession && (
+      <PhoneModal umbrellaId={umbrellaId} onClose={() => setShowPhone(false)} />
+    )}
     <div className="min-h-dvh bg-[#0A0A0A] text-white">
       {/* Header */}
       <div className="sticky top-0 z-30 bg-[#0A0A0A]/95 backdrop-blur-md border-b border-white/10">
@@ -160,5 +174,6 @@ export default function MenuPage({ params }: { params: { umbrellaId: string } })
       </div>
 
     </div>
+    </>
   );
 }

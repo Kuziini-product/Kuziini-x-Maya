@@ -54,7 +54,6 @@ export function BottomNav({ umbrellaId }: BottomNavProps) {
   const base = `/u/${umbrellaId}`;
   const isOnLanding = pathname === base || pathname === `${base}/`;
   const isOnMenu = pathname.startsWith(`${base}/menu`);
-  const isOnCart = pathname.startsWith(`${base}/cart`);
   const isOnBill = pathname.startsWith(`${base}/bill`);
 
   // Track last visited section (not menu/landing) for forward button
@@ -70,7 +69,8 @@ export function BottomNav({ umbrellaId }: BottomNavProps) {
   const handleAction = useCallback(async () => {
     if (isOnLanding) {
       router.push(`${base}/menu`);
-    } else if (isOnCart && itemCount > 0) {
+    } else if (itemCount > 0) {
+      // Place order directly from any page
       if (!userSession) {
         window.dispatchEvent(new CustomEvent("show-phone-modal"));
         return;
@@ -101,12 +101,10 @@ export function BottomNav({ umbrellaId }: BottomNavProps) {
       } finally {
         setOrdering(false);
       }
-    } else if (itemCount > 0) {
-      router.push(`${base}/cart`);
     } else {
       router.push(`${base}/bill`);
     }
-  }, [isOnLanding, isOnCart, itemCount, userSession, umbrellaId, items, addOrder, clearCart, router, base]);
+  }, [isOnLanding, itemCount, userSession, umbrellaId, items, addOrder, clearCart, router, base]);
 
   // Determine single button state
   let actionLabel: string;
@@ -117,14 +115,10 @@ export function BottomNav({ umbrellaId }: BottomNavProps) {
     actionLabel = "Meniu";
     actionIcon = <UtensilsCrossed className="w-4 h-4" />;
     actionStyle = "bg-[#C9AB81] text-[#0A0A0A]";
-  } else if (isOnCart && itemCount > 0) {
+  } else if (itemCount > 0) {
     actionLabel = ordering ? "Se trimite..." : `Plasează · ${cartTotal} RON`;
     actionIcon = <ShoppingBag className="w-4 h-4" />;
     actionStyle = "bg-emerald-500 text-white";
-  } else if (itemCount > 0) {
-    actionLabel = `Finalizează (${itemCount})`;
-    actionIcon = <ShoppingBag className="w-4 h-4" />;
-    actionStyle = "bg-[#C9AB81] text-[#0A0A0A]";
   } else {
     actionLabel = "Solicită nota";
     actionIcon = <Receipt className="w-4 h-4" />;
