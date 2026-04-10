@@ -176,13 +176,26 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
           </div>
         </div>
 
-        {/* Action button */}
-        <button
-          onClick={() => router.push("/")}
-          className="bg-[#C9AB81] text-[#0A0A0A] px-8 py-3 font-bold text-sm tracking-[0.15em] uppercase active:opacity-80 mb-6"
-        >
-          Înapoi la pagina principală
-        </button>
+        {/* Message + actions */}
+        <p className="text-white/40 text-xs mb-4 tracking-wide">
+          Până ajunge ospătarul poți vizita
+        </p>
+        <div className="flex items-center gap-3 mb-6">
+          <a
+            href="https://www.instagram.com/kuziiniconceptstore/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 flex items-center justify-center gap-2 border border-[#C9AB81]/30 py-3 text-[#C9AB81] font-bold text-xs tracking-[0.15em] uppercase active:bg-[#C9AB81]/10 transition-colors"
+          >
+            Kuziini
+          </a>
+          <button
+            onClick={() => router.push("/")}
+            className="flex-1 bg-[#C9AB81] text-[#0A0A0A] py-3 font-bold text-xs tracking-[0.15em] uppercase active:opacity-80"
+          >
+            Pagina principală
+          </button>
+        </div>
 
         {/* Kuziini logo → Instagram */}
         <a
