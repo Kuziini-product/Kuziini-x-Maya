@@ -144,7 +144,7 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
         {/* Emojis separated with Maya logo visible between them */}
         <div className="flex-1 flex items-center justify-center w-full relative">
           <img src="/Maya.png" alt="Maya" className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-64 object-contain pointer-events-none" />
-          <div className="flex items-center justify-between w-full px-4 relative z-10">
+          <div className="flex items-center justify-between w-full px-1 relative z-10">
             <span className="text-7xl animate-bounce">🏃‍♂️</span>
             <div className="relative animate-bounce" style={{ animationDelay: "0.3s" }}>
               <span className="text-6xl">🧾</span>
