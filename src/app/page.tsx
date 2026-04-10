@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronRight, ChevronLeft, MapPin, Phone, Mail, AtSign, X, Send, CheckCircle, Heart, Share } from "lucide-react";
+import { ChevronRight, ChevronLeft, MapPin, Phone, Mail, AtSign, X, Send, CheckCircle, Heart } from "lucide-react";
 import { useSessionStore } from "@/store";
 import type { GalleryImage, GalleryAspect } from "@/lib/mock-data";
 
@@ -89,22 +89,8 @@ export default function HomePage() {
           </div>
 
           <button
-            onClick={async () => {
-              // If app not installed and install prompt available, trigger install first
-              if (!isInstalled && deferredPromptRef.current) {
-                const p = deferredPromptRef.current as Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: string }> };
-                try {
-                  await p.prompt();
-                  const { outcome } = await p.userChoice;
-                  if (outcome === "accepted") {
-                    deferredPromptRef.current = null;
-                    setCanInstall(false);
-                  }
-                } catch { /* prompt already used */ }
-              }
-              // Then navigate
+            onClick={() => {
               if (userSession?.umbrellaId) {
-                // Track returning user access
                 fetch("/api/access-log", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
@@ -137,48 +123,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* Install tooltip - positioned top-right near Safari download button */}
-      {showInstall && (
-        <div className="fixed inset-0 z-[9999]" onClick={() => setShowInstall(false)}>
-          <div className="absolute top-2 right-3 w-[280px]" onClick={(e) => e.stopPropagation()}>
-            {/* Arrow pointing up-right toward Safari bar */}
-            <div className="flex justify-end pr-4 mb-[-1px]">
-              <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-b-[10px] border-b-[#1a1a1a]" />
-            </div>
-            <div className="bg-[#1a1a1a] border border-[#C9AB81]/30 rounded-2xl p-5 shadow-2xl shadow-black/80">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-white font-bold text-base">Instalează Kuziini</h3>
-                <button onClick={() => setShowInstall(false)} className="text-white/40 hover:text-white/80">
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-
-              <div className="space-y-2.5 mb-4">
-                <div className="flex items-center gap-2.5 text-white/80 text-xs">
-                  <span className="w-5 h-5 rounded-full bg-[#C9AB81] text-[#0A0A0A] flex items-center justify-center text-[10px] font-bold shrink-0">1</span>
-                  <span className="flex items-center gap-1.5">Apasă <Share className="w-3.5 h-3.5 text-[#C9AB81]" /> din bara Safari</span>
-                </div>
-                <div className="flex items-center gap-2.5 text-white/80 text-xs">
-                  <span className="w-5 h-5 rounded-full bg-[#C9AB81] text-[#0A0A0A] flex items-center justify-center text-[10px] font-bold shrink-0">2</span>
-                  <span>Alege <span className="text-[#C9AB81] font-semibold">Add to Home Screen</span></span>
-                </div>
-                <div className="flex items-center gap-2.5 text-white/80 text-xs">
-                  <span className="w-5 h-5 rounded-full bg-[#C9AB81] text-[#0A0A0A] flex items-center justify-center text-[10px] font-bold shrink-0">3</span>
-                  <span>Apasă <span className="text-[#C9AB81] font-semibold">Add</span></span>
-                </div>
-              </div>
-
-              <button
-                onClick={() => setShowInstall(false)}
-                className="w-full bg-[#C9AB81] text-[#0A0A0A] py-2.5 font-bold text-xs tracking-[0.1em] uppercase rounded-lg"
-              >
-                Am înțeles
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* About */}
       <section className="py-16 px-5">
