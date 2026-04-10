@@ -64,8 +64,8 @@ export function BottomNav({ umbrellaId }: BottomNavProps) {
     }
   }, [pathname, isOnMenu, isOnLanding, umbrellaId]);
 
-  // Hide nav on bill page when session is cleared (note was sent)
-  if (isOnBill && !userSession) return null;
+  // Hide nav on bill page entirely (user is in payment flow)
+  if (isOnBill) return null;
 
   const handleAction = useCallback(async () => {
     if (isOnLanding) {
