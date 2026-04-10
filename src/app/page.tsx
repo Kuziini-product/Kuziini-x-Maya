@@ -74,7 +74,7 @@ export default function HomePage() {
               </p>
             </button>
 
-            <ScratchX className="h-3 text-[#C9AB81]/40 my-3" />
+            <ScratchX className="h-6 text-[#C9AB81]/40 my-3" />
 
             {/* Logo Kuziini — scroll to About */}
             <button onClick={() => document.getElementById("about")?.scrollIntoView({ behavior: "smooth" })} className="block mx-auto w-fit">
@@ -195,7 +195,7 @@ export default function HomePage() {
               className="w-[100px] h-auto object-contain opacity-80"
             />
           </button>
-          <ScratchX className="h-3 text-[#C9AB81]/40" />
+          <ScratchX className="h-6 text-[#C9AB81]/40" />
           <button onClick={() => router.push("/admin")}>
             <img
               src="/kuziini-logo.png"

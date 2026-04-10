@@ -179,7 +179,7 @@ export default function LandingPage({
               alt="Maya"
               className="h-20 object-contain opacity-60"
             />
-            <ScratchX className="h-3 text-[#C9AB81]/40" />
+            <ScratchX className="h-6 text-[#C9AB81]/40" />
             <a href="https://www.instagram.com/kuziiniconceptstore/" target="_blank" rel="noopener noreferrer">
               <img src="/kuziini-logo.png" alt="Kuziini" className="h-10 object-contain invert brightness-200" />
             </a>
