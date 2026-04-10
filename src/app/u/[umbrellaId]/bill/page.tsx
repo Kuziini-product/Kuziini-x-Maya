@@ -146,10 +146,24 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
             </>
           )}
           {selectedMethod === "card" && (
-            <span className="text-7xl">💳✨</span>
+            <>
+              <span className="text-7xl">🏃‍♂️</span>
+              <div className="relative">
+                <span className="text-6xl">🧾</span>
+                <img src="/kuziini-logo.png" alt="" className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 object-contain invert brightness-200 opacity-60" />
+              </div>
+              <span className="text-5xl">💳</span>
+            </>
           )}
           {selectedMethod === "room-charge" && (
-            <span className="text-7xl">🏨🔑</span>
+            <>
+              <span className="text-7xl">🏃‍♂️</span>
+              <div className="relative">
+                <span className="text-6xl">🧾</span>
+                <img src="/kuziini-logo.png" alt="" className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 object-contain invert brightness-200 opacity-60" />
+              </div>
+              <span className="text-5xl">🔑</span>
+            </>
           )}
         </div>
         <h2 className="text-2xl font-bold text-white mb-3 tracking-wide">
