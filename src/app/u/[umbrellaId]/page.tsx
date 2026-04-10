@@ -215,8 +215,8 @@ export default function LandingPage({
             </a>
             <span className="text-[#C9AB81]/40 text-lg font-bold">×</span>
             <img
-              src="https://loftlounge.ro/wp-content/uploads/2025/07/LOFT-White-Transparent-LOGO-1024x330.png"
-              alt="LOFT"
+              src="/Maya.png"
+              alt="Maya"
               className="h-8 object-contain opacity-60"
             />
           </div>

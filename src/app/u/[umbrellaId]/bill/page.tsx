@@ -91,7 +91,7 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
           </p>
         </div>
         <p className="text-white/30 text-sm mb-8">
-          Mulțumim că ai ales LOFT
+          Mulțumim că ai ales Maya
         </p>
         <button
           onClick={() => router.push("/")}

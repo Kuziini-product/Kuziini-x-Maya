@@ -85,7 +85,7 @@ export default function MenuPage({ params }: { params: { umbrellaId: string } })
 
           <div className="text-center">
             <h1 className="text-xs font-bold tracking-[0.3em] uppercase text-[#C9AB81]">
-              LOFT
+              Maya
             </h1>
             <p className="text-[10px] text-white/40 tracking-widest uppercase">
               Mamaia
@@ -131,7 +131,7 @@ export default function MenuPage({ params }: { params: { umbrellaId: string } })
         )}
       </div>
 
-      {/* Kuziini × LOFT Logos */}
+      {/* Kuziini × Maya Logos */}
       <div className="flex flex-col items-center pt-8 pb-6 px-4">
         <div className="flex items-center justify-center gap-4 mb-4">
           <a href="https://www.instagram.com/kuziiniconceptstore/" target="_blank" rel="noopener noreferrer">
@@ -143,8 +143,8 @@ export default function MenuPage({ params }: { params: { umbrellaId: string } })
           </a>
           <span className="text-[#C9AB81] text-xl font-bold">×</span>
           <img
-            src="https://loftlounge.ro/wp-content/uploads/2025/07/LOFT-White-Transparent-LOGO-1024x330.png"
-            alt="LOFT"
+            src="/Maya.png"
+            alt="Maya"
             className="h-10 object-contain"
           />
         </div>
