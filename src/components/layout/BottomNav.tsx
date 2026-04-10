@@ -139,7 +139,7 @@ export function BottomNav({ umbrellaId }: BottomNavProps) {
         </div>
       )}
       <nav className="fixed bottom-0 left-0 right-0 z-40 bg-[#0A0A0A]/95 backdrop-blur-md border-t border-white/[0.06] pb-safe">
-        <div className="flex items-center gap-3 px-4 pt-2 pb-2">
+        <div className="flex items-center gap-3 px-4 md:px-6 pt-2 pb-2 max-w-3xl mx-auto">
           {/* Speaker toggle - left */}
           <button
             onClick={toggleAudio}

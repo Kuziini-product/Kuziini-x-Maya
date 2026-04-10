@@ -84,8 +84,8 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
     const methodLabel = selectedMethod === "cash" ? "Cash" : selectedMethod === "card" ? "Card" : "Room Charge";
     const methodIcon = selectedMethod === "cash" ? <Banknote className="w-8 h-8" /> : selectedMethod === "card" ? <CreditCard className="w-8 h-8" /> : <Hotel className="w-8 h-8" />;
     return (
-      <div className="min-h-dvh bg-[#0A0A0A] flex flex-col items-center justify-center px-6 text-center">
-        <div className="w-20 h-20 flex items-center justify-center mb-6 bg-[#C9AB81]/20 border border-[#C9AB81]/30 text-[#C9AB81]">
+      <div className="min-h-dvh bg-[#0A0A0A] flex flex-col items-center justify-center px-6 md:px-8 text-center">
+        <div className="w-20 md:w-24 h-20 md:h-24 flex items-center justify-center mb-6 bg-[#C9AB81]/20 border border-[#C9AB81]/30 text-[#C9AB81] rounded-2xl">
           {methodIcon}
         </div>
         <h2 className="text-2xl font-bold text-white mb-3 tracking-wide">
@@ -107,7 +107,7 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
 
         <button
           onClick={handleConfirm}
-          className="w-full max-w-xs bg-emerald-500 text-white py-4 font-bold text-sm tracking-[0.15em] uppercase active:opacity-80 transition-opacity mb-3"
+          className="w-full max-w-xs md:max-w-sm bg-emerald-500 text-white py-4 font-bold text-sm tracking-[0.15em] uppercase active:opacity-80 transition-opacity mb-3 rounded-xl"
         >
           Confirmă și trimite nota
         </button>
@@ -140,7 +140,7 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
       ? "Pregătește cardul, ospătarul vine cu POS-ul."
       : "Suma a fost adăugată pe cameră.";
     return (
-      <div className="min-h-dvh bg-gradient-to-b from-white via-white/10 to-[#0A0A0A] flex flex-col items-center px-6 text-center relative">
+      <div className="min-h-dvh bg-gradient-to-b from-white via-white/10 to-[#0A0A0A] flex flex-col items-center px-6 md:px-8 text-center relative">
         {/* Emojis separated with Maya logo visible between them */}
         <div className="flex-1 flex items-center justify-center w-full relative">
           <img src="/Maya.png" alt="Maya" className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-64 object-contain pointer-events-none" />
@@ -189,7 +189,7 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
         </div>
 
         {/* Details card with status message as title */}
-        <div className="w-full max-w-xs mb-6">
+        <div className="w-full max-w-xs md:max-w-sm mb-6">
           <div className="bg-white/[0.03] border border-white/[0.06] px-6 py-4 rounded-2xl">
             <p className="text-white font-bold text-sm tracking-wide mb-3">
               {statusMsg}
@@ -213,7 +213,7 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
         <p className="text-white/40 text-xs mb-4 tracking-wide">
           Până ajunge ospătarul poți vizita
         </p>
-        <div className="flex items-center gap-3 mb-6 w-full max-w-xs">
+        <div className="flex items-center gap-3 mb-6 w-full max-w-xs md:max-w-sm">
           <a
             href="https://www.instagram.com/kuziiniconceptstore/"
             target="_blank"
@@ -269,7 +269,7 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
         }
       />
 
-      <div className="px-4 py-4 space-y-4">
+      <div className="px-4 md:px-6 py-4 space-y-4 max-w-2xl mx-auto">
         {/* Orders summary */}
         {myOrders.length > 0 ? (
           <div className="bg-white/[0.03] border border-white/[0.06] p-4">

@@ -126,11 +126,11 @@ export default function LandingPage({
     <>
       <div className="min-h-dvh bg-[#0A0A0A] text-white flex flex-col">
         {/* ═══ TOP: Umbrella number + ad space ═══ */}
-        <div className="flex-1 flex flex-col items-center justify-center px-5 pt-6">
+        <div className="flex-1 flex flex-col items-center justify-center px-5 md:px-8 pt-6">
           {/* Umbrella icon + number - centered, prominent */}
           <div className="text-center mb-6 animate-fade-up">
-            <span className="text-6xl block mb-3">⛱️</span>
-            <h1 className="text-6xl font-bold tracking-wider text-white">
+            <span className="text-6xl md:text-7xl block mb-3">⛱️</span>
+            <h1 className="text-6xl md:text-7xl font-bold tracking-wider text-white">
               {umbrella.number}
             </h1>
             <p className="text-[#C9AB81] text-sm font-semibold tracking-[0.2em] uppercase mt-2">
@@ -145,7 +145,7 @@ export default function LandingPage({
 
           {/* Maya banner */}
           {mayaBanner && (
-            <div className="w-full max-w-sm mb-3">
+            <div className="w-full max-w-sm md:max-w-md mb-3">
               <p className="text-[10px] font-bold text-white/20 tracking-[0.2em] uppercase mb-2">Maya</p>
               <BannerSlide
                 banner={mayaBanner}
@@ -158,7 +158,7 @@ export default function LandingPage({
 
           {/* Kuziini banner */}
           {kuziiniBanner && (
-            <div className="w-full max-w-sm">
+            <div className="w-full max-w-sm md:max-w-md">
               <p className="text-[10px] font-bold text-white/20 tracking-[0.2em] uppercase mb-2">Kuziini</p>
               <BannerSlide
                 banner={kuziiniBanner}

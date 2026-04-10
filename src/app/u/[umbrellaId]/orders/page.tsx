@@ -136,7 +136,7 @@ export default function OrdersPage({ params }: { params: { umbrellaId: string } 
         }
       />
 
-      <div className="px-4 py-4">
+      <div className="px-4 md:px-6 py-4 max-w-2xl mx-auto">
         {/* Active orders */}
         {isLoading && merged.length === 0 ? (
           <div className="flex justify-center py-16"><Spinner /></div>

@@ -70,7 +70,7 @@ export default function MenuPage({ params }: { params: { umbrellaId: string } })
     <div className="min-h-dvh bg-[#0A0A0A] text-white">
       {/* Header */}
       <div className="sticky top-0 z-30 bg-[#0A0A0A]/95 backdrop-blur-md border-b border-white/10">
-        <div className="flex items-center justify-between px-4 py-3">
+        <div className="flex items-center justify-between px-4 md:px-6 py-3 max-w-3xl mx-auto">
           <Link
             href={`/u/${umbrellaId}`}
             className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center shrink-0"
@@ -101,13 +101,13 @@ export default function MenuPage({ params }: { params: { umbrellaId: string } })
       </div>
 
       {/* Menu Tabs - LOFT style */}
-      <div className="flex justify-center gap-2 px-4 pb-8">
+      <div className="flex justify-center gap-2 md:gap-3 px-4 md:px-6 pb-8 max-w-3xl mx-auto">
         {MENU_TABS.map((tab) => (
           <button
             key={tab.id}
             onClick={() => { setActiveTab(tab.id); setSearch(""); }}
             className={cn(
-              "px-4 py-2 text-[10px] font-bold tracking-[0.2em] uppercase border transition-all duration-300",
+              "px-4 md:px-5 py-2 md:py-2.5 text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase border transition-all duration-300",
               activeTab === tab.id
                 ? "bg-white text-[#0A0A0A] border-white"
                 : "bg-transparent text-white border-white/40 active:bg-white/10"
@@ -119,7 +119,7 @@ export default function MenuPage({ params }: { params: { umbrellaId: string } })
       </div>
 
       {/* Content */}
-      <div className="px-5 pb-32">
+      <div className="px-5 md:px-6 pb-32 max-w-3xl mx-auto">
         {isLoading && (
           <div className="flex justify-center py-16">
             <Spinner className="text-[#C9AB81]" />

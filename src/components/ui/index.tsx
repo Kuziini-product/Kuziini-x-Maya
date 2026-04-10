@@ -194,12 +194,12 @@ export function PageHeader({
   right?: ReactNode;
 }) {
   return (
-    <div className="sticky top-0 z-30 bg-[#0A0A0A]/95 backdrop-blur-md border-b border-white/[0.06] px-4 py-3">
-      <div className="relative flex items-center justify-between">
+    <div className="sticky top-0 z-30 bg-[#0A0A0A]/95 backdrop-blur-md border-b border-white/[0.06] px-4 md:px-6 py-3">
+      <div className="relative flex items-center justify-between max-w-3xl mx-auto">
         <div className="shrink-0">{back}</div>
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <div className="text-center">
-            <h1 className="text-xs font-bold tracking-[0.2em] uppercase text-[#C9AB81]">
+            <h1 className="text-xs md:text-sm font-bold tracking-[0.2em] uppercase text-[#C9AB81]">
               {title}
             </h1>
             {subtitle && (

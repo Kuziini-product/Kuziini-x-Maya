@@ -109,7 +109,7 @@ export default function ScanPage() {
 
   return (
     <div className="min-h-dvh bg-[#0A0A0A] text-white flex flex-col">
-      <div className="px-5 pt-6 pb-4">
+      <div className="px-5 md:px-8 pt-6 pb-4 max-w-md mx-auto w-full">
         <Link
           href="/"
           className="w-9 h-9 flex items-center justify-center bg-white/10 mb-4"
@@ -130,7 +130,7 @@ export default function ScanPage() {
         </p>
       </div>
 
-      <div className="flex-1 px-5 pb-8">
+      <div className="flex-1 px-5 md:px-8 pb-8 max-w-md mx-auto w-full">
         <div className="space-y-4 mt-4">
           <div>
             <label className="text-[10px] font-bold text-[#C9AB81] uppercase tracking-[0.2em] mb-2 block">

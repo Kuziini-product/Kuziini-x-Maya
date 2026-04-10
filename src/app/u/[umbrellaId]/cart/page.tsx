@@ -68,7 +68,7 @@ export default function CartPage({ params }: { params: { umbrellaId: string } })
           }
         />
 
-        <div className="px-4 py-4 space-y-3">
+        <div className="px-4 md:px-6 py-4 space-y-3 max-w-2xl mx-auto">
           {/* Items */}
           {items.map((item) => (
             <CartItemRow
