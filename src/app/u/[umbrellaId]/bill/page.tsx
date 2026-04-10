@@ -26,6 +26,7 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethod | null>(null);
   const [step, setStep] = useState<"select" | "confirm" | "sending" | "done">("select");
   const [error, setError] = useState<string | null>(null);
+  const [savedTotal, setSavedTotal] = useState(0);
 
   const { data: payOpts, isLoading: loadingOpts } = useQuery({
     queryKey: ["payment-options", umbrellaId],
@@ -68,6 +69,7 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
         paymentMethod: selectedMethod!,
         closedAt: new Date().toISOString(),
       });
+      setSavedTotal(total);
       clearCart();
       clearSession();
       setStep("done");
@@ -146,7 +148,7 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
           <p className="text-white/30 text-[10px] font-bold tracking-[0.2em] uppercase mb-2">Detalii</p>
           <div className="flex justify-between text-sm mb-1">
             <span className="text-white/40">Total</span>
-            <span className="text-[#C9AB81] font-bold">{formatPrice(total)}</span>
+            <span className="text-[#C9AB81] font-bold">{formatPrice(savedTotal)}</span>
           </div>
           <div className="flex justify-between text-sm mb-1">
             <span className="text-white/40">Plată</span>
