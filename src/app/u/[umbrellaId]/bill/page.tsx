@@ -157,7 +157,7 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
 
         {/* Details card with status message as title */}
         <div className="w-full max-w-xs mb-6">
-          <div className="bg-white/[0.03] border border-white/[0.06] px-6 py-4">
+          <div className="bg-white/[0.03] border border-white/[0.06] px-6 py-4 rounded-2xl">
             <p className="text-white font-bold text-sm tracking-wide mb-3">
               {statusMsg}
             </p>
@@ -185,13 +185,13 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
             href="https://www.instagram.com/kuziiniconceptstore/"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 flex items-center justify-center gap-2 border border-[#C9AB81]/30 py-3 text-[#C9AB81] font-bold text-xs tracking-[0.15em] uppercase active:bg-[#C9AB81]/10 transition-colors"
+            className="flex-1 flex items-center justify-center gap-2 border border-[#C9AB81]/30 py-3 rounded-xl text-[#C9AB81] font-bold text-xs tracking-[0.15em] uppercase active:bg-[#C9AB81]/10 transition-colors"
           >
             Kuziini
           </a>
           <button
             onClick={() => router.push("/#about")}
-            className="flex-1 flex items-center justify-center gap-2 border border-[#C9AB81]/30 py-3 text-[#C9AB81] font-bold text-xs tracking-[0.15em] uppercase active:bg-[#C9AB81]/10 transition-colors"
+            className="flex-1 flex items-center justify-center gap-2 border border-[#C9AB81]/30 py-3 rounded-xl text-[#C9AB81] font-bold text-xs tracking-[0.15em] uppercase active:bg-[#C9AB81]/10 transition-colors"
           >
             Pagina principală
           </button>
