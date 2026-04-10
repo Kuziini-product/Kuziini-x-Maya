@@ -121,6 +121,11 @@ export default function OrdersPage({ params }: { params: { umbrellaId: string } 
       <PageHeader
         title="Comenzile mele"
         subtitle={`Umbrela ${umbrellaId}`}
+        back={
+          <Link href={`/u/${umbrellaId}/menu`} className="w-9 h-9 flex items-center justify-center bg-white/10">
+            <ArrowLeft className="w-4 h-4 text-white/70" />
+          </Link>
+        }
         right={
           <button
             onClick={() => refetch()}

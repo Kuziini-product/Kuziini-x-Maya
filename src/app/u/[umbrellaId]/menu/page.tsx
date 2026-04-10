@@ -63,7 +63,12 @@ export default function MenuPage({ params }: { params: { umbrellaId: string } })
       {/* Header */}
       <div className="sticky top-0 z-30 bg-[#0A0A0A]/95 backdrop-blur-md border-b border-white/10">
         <div className="flex items-center justify-between px-4 py-3">
-          <div className="w-9 h-9 shrink-0" />
+          <Link
+            href={`/u/${umbrellaId}`}
+            className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center shrink-0"
+          >
+            <ArrowLeft className="w-4 h-4 text-white/70" />
+          </Link>
 
           <div className="flex items-center gap-2">
             <img src="/kuziini-logo.png" alt="Kuziini" className="h-6 object-contain invert brightness-200" />
