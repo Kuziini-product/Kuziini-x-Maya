@@ -9,7 +9,6 @@ import {
   UtensilsCrossed,
   ShoppingBag,
   Receipt,
-  HelpCircle,
   ChevronRight,
 } from "lucide-react";
 import { Spinner } from "@/components/ui";
@@ -233,21 +232,6 @@ export default function LandingPage({
             </div>
           </Link>
 
-          {/* Secondary actions - 3 columns */}
-          <div className="grid grid-cols-3 gap-2">
-            <Link href={`/u/${umbrellaId}/cart`}>
-              <ActionCard icon={<ShoppingBag className="w-4 h-4" />} label="Coș" />
-            </Link>
-            <Link href={`/u/${umbrellaId}/bill`}>
-              <ActionCard icon={<Receipt className="w-4 h-4" />} label="Nota" />
-            </Link>
-            <ActionCard
-              icon={<HelpCircle className="w-4 h-4" />}
-              label="Ajutor"
-              onClick={() => alert("Apelează recepția la ext. 0 sau suna la +40 756 385 638")}
-            />
-          </div>
-
           {/* Branding footer */}
           <div className="flex items-center justify-center gap-4 mt-4 pt-4 border-t border-white/[0.04]">
             <a href="https://www.instagram.com/kuziiniconceptstore/" target="_blank" rel="noopener noreferrer">
@@ -310,24 +294,3 @@ function BannerSlide({ banner, onClick }: { banner: PromoBanner; onClick?: () =>
   );
 }
 
-function ActionCard({
-  icon,
-  label,
-  onClick,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  onClick?: () => void;
-}) {
-  return (
-    <div
-      onClick={onClick}
-      className="bg-white/[0.03] border border-white/[0.06] p-3 flex flex-col items-center gap-2 transition-all active:bg-white/[0.06] cursor-pointer"
-    >
-      <div className="w-8 h-8 flex items-center justify-center bg-white/10 text-white/50">
-        {icon}
-      </div>
-      <p className="font-bold text-[10px] tracking-wider text-white/60 uppercase">{label}</p>
-    </div>
-  );
-}

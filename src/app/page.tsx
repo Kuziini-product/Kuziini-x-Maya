@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronRight, ChevronLeft, MapPin, Phone, Mail, AtSign, X, Send, CheckCircle, Heart, Download, Share } from "lucide-react";
+import { ChevronRight, ChevronLeft, MapPin, Phone, Mail, AtSign, X, Send, CheckCircle, Heart, Share } from "lucide-react";
 import { useSessionStore } from "@/store";
 import type { GalleryImage, GalleryAspect } from "@/lib/mock-data";
 
@@ -37,81 +37,6 @@ export default function HomePage() {
   const [MayaGallery, setMayaGallery] = useState<GalleryData | null>(null);
   const [kuziiniGallery, setKuziiniGallery] = useState<GalleryData | null>(null);
   const [lightbox, setLightbox] = useState<{ images: string[]; index: number; isKuziini: boolean; category: string } | null>(null);
-  const [showInstall, setShowInstall] = useState(false);
-  const [isInstalled, setIsInstalled] = useState(false);
-  const [canInstall, setCanInstall] = useState(false);
-  const deferredPromptRef = useRef<Event | null>(null);
-
-  // Detect if already running as installed PWA
-  useEffect(() => {
-    const isStandalone =
-      window.matchMedia("(display-mode: standalone)").matches ||
-      (navigator as unknown as { standalone?: boolean }).standalone === true;
-    if (isStandalone) setIsInstalled(true);
-  }, []);
-
-  // Capture beforeinstallprompt for native install
-  useEffect(() => {
-    const handler = (e: Event) => {
-      e.preventDefault();
-      deferredPromptRef.current = e;
-      setCanInstall(true);
-    };
-    window.addEventListener("beforeinstallprompt", handler);
-
-    // Listen for successful install
-    const installed = () => {
-      setIsInstalled(true);
-      setCanInstall(false);
-      deferredPromptRef.current = null;
-    };
-    window.addEventListener("appinstalled", installed);
-
-    return () => {
-      window.removeEventListener("beforeinstallprompt", handler);
-      window.removeEventListener("appinstalled", installed);
-    };
-  }, []);
-
-  // Auto-trigger install on first user click anywhere (Chrome requires user gesture)
-  useEffect(() => {
-    const triggerInstall = async () => {
-      const prompt = deferredPromptRef.current as (Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: string }> }) | null;
-      if (!prompt) return;
-      // Only auto-prompt once per browser session
-      if (sessionStorage.getItem("install_prompted")) return;
-      sessionStorage.setItem("install_prompted", "1");
-
-      try {
-        await prompt.prompt();
-        const { outcome } = await prompt.userChoice;
-        if (outcome === "accepted") {
-          deferredPromptRef.current = null;
-          setCanInstall(false);
-        }
-      } catch { /* prompt already used */ }
-      // Remove listener after first attempt
-      document.removeEventListener("click", triggerInstall, true);
-    };
-    document.addEventListener("click", triggerInstall, true);
-    return () => document.removeEventListener("click", triggerInstall, true);
-  }, []);
-
-  const handleInstallClick = async () => {
-    const prompt = deferredPromptRef.current as (Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: string }> }) | null;
-    if (prompt) {
-      // Desktop/Android — trigger native install
-      await prompt.prompt();
-      const { outcome } = await prompt.userChoice;
-      if (outcome === "accepted") {
-        deferredPromptRef.current = null;
-        setCanInstall(false);
-      }
-    } else {
-      // iOS/Safari — show manual instructions
-      setShowInstall(true);
-    }
-  };
 
   const openLightbox = useCallback((allImages: string[], clickedIndex: number, isKuziini = false, category = "kuziini") => {
     setLightbox({ images: allImages, index: clickedIndex, isKuziini, category });
@@ -204,15 +129,6 @@ export default function HomePage() {
             <ChevronRight className="w-4 h-4" />
           </button>
 
-          {!isInstalled && (
-            <button
-              onClick={handleInstallClick}
-              className="mt-3 inline-flex items-center justify-center gap-2 text-white/50 text-xs tracking-[0.1em] uppercase hover:text-white/80 transition-colors py-2"
-            >
-              <Download className="w-3.5 h-3.5" />
-              {canInstall ? "Instalează aplicația" : "Instalează aplicația"}
-            </button>
-          )}
         </div>
 
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce">
@@ -263,37 +179,6 @@ export default function HomePage() {
           </div>
         </div>
       )}
-
-      {/* ═══ Advertising Zone ═══ */}
-      <section className="py-10 px-5 border-b border-white/5">
-        <div className="max-w-md mx-auto space-y-4">
-          {/* Featured Ad */}
-          <div className="relative overflow-hidden border border-[#C9AB81]/20">
-            <div className="bg-gradient-to-br from-[#C9AB81]/10 to-transparent p-6 text-center">
-              <p className="text-[10px] font-bold text-[#C9AB81]/60 tracking-[0.3em] uppercase mb-2">
-                Sponsor
-              </p>
-              <h3 className="text-xl font-bold text-white tracking-wide mb-2">
-                Kuziini Furniture & More
-              </h3>
-              <p className="text-white/40 text-xs leading-relaxed mb-4">
-                Mobilier premium pentru terase, restaurante și beach clubs.
-                Design italian, calitate germană.
-              </p>
-              <a
-                href="https://www.instagram.com/kuziiniconceptstore/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-[#C9AB81] text-[#0A0A0A] px-5 py-2.5 font-bold text-[10px] tracking-[0.15em] uppercase active:opacity-80 transition-opacity"
-              >
-                Descoperă colecția
-                <ChevronRight className="w-3 h-3" />
-              </a>
-            </div>
-          </div>
-
-        </div>
-      </section>
 
       {/* About */}
       <section className="py-16 px-5">
