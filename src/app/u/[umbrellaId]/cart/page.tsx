@@ -68,9 +68,14 @@ export default function CartPage({ params }: { params: { umbrellaId: string } })
             </Link>
           }
           right={
-            <button onClick={clearCart} className="text-[10px] text-red-400 font-bold tracking-[0.15em] uppercase">
-              Golește
-            </button>
+            <div className="flex items-center gap-3">
+              <Link href={`/u/${umbrellaId}/menu`} className="text-[10px] text-[#C9AB81] font-bold tracking-[0.15em] uppercase">
+                Continuă
+              </Link>
+              <button onClick={clearCart} className="text-[10px] text-red-400 font-bold tracking-[0.15em] uppercase">
+                Golește
+              </button>
+            </div>
           }
         />
 

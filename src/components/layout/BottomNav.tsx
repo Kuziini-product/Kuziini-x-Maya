@@ -1,5 +1,4 @@
 "use client";
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useRef, useState, useEffect, useCallback } from "react";
 import { UtensilsCrossed, ShoppingBag, Receipt, Volume2, VolumeX } from "lucide-react";
@@ -20,7 +19,6 @@ export function BottomNav({ umbrellaId }: BottomNavProps) {
 
   const itemCount = useCartStore((s) => s.itemCount());
   const items = useCartStore((s) => s.items);
-  const total = useCartStore((s) => s.total());
   const clearCart = useCartStore((s) => s.clearCart);
   const { userSession } = useSessionStore();
   const addOrder = useSessionStore((s) => s.addOrder);
@@ -52,6 +50,7 @@ export function BottomNav({ umbrellaId }: BottomNavProps) {
   };
 
   const base = `/u/${umbrellaId}`;
+  const isOnLanding = pathname === base || pathname === `${base}/`;
   const isOnMenu = pathname.startsWith(`${base}/menu`);
   const isOnCart = pathname.startsWith(`${base}/cart`);
   const isOnBill = pathname.startsWith(`${base}/bill`);
@@ -60,10 +59,10 @@ export function BottomNav({ umbrellaId }: BottomNavProps) {
   if (isOnBill && !userSession) return null;
 
   const handleAction = useCallback(async () => {
-    if (isOnCart && itemCount > 0) {
-      // Place order
+    if (isOnLanding) {
+      router.push(`${base}/menu`);
+    } else if (isOnCart && itemCount > 0) {
       if (!userSession) {
-        // Dispatch custom event so cart page can show phone modal
         window.dispatchEvent(new CustomEvent("show-phone-modal"));
         return;
       }
@@ -94,20 +93,22 @@ export function BottomNav({ umbrellaId }: BottomNavProps) {
         setOrdering(false);
       }
     } else if (itemCount > 0) {
-      // Go to cart
       router.push(`${base}/cart`);
     } else {
-      // Request bill
       router.push(`${base}/bill`);
     }
-  }, [isOnCart, itemCount, userSession, umbrellaId, items, addOrder, clearCart, router, base]);
+  }, [isOnLanding, isOnCart, itemCount, userSession, umbrellaId, items, addOrder, clearCart, router, base]);
 
-  // Determine button state
+  // Determine single button state
   let actionLabel: string;
   let actionIcon: React.ReactNode;
   let actionStyle: string;
 
-  if (isOnCart && itemCount > 0) {
+  if (isOnLanding) {
+    actionLabel = "Meniu";
+    actionIcon = <UtensilsCrossed className="w-4 h-4" />;
+    actionStyle = "bg-[#C9AB81] text-[#0A0A0A]";
+  } else if (isOnCart && itemCount > 0) {
     actionLabel = ordering ? "Se trimite..." : "Plasează comanda";
     actionIcon = <ShoppingBag className="w-4 h-4" />;
     actionStyle = "bg-emerald-500 text-white";
@@ -129,8 +130,8 @@ export function BottomNav({ umbrellaId }: BottomNavProps) {
         </div>
       )}
       <nav className="fixed bottom-0 left-0 right-0 z-40 bg-[#0A0A0A]/95 backdrop-blur-md border-t border-white/[0.06] pb-safe">
-        <div className="flex items-center gap-2 px-4 pt-2 pb-2">
-          {/* Speaker toggle */}
+        <div className="flex items-center gap-3 px-4 pt-2 pb-2">
+          {/* Speaker toggle - left */}
           <button
             onClick={toggleAudio}
             className="flex items-center justify-center w-9 h-9 text-white/30 active:text-white/50 transition-all duration-200 shrink-0"
@@ -142,26 +143,12 @@ export function BottomNav({ umbrellaId }: BottomNavProps) {
             )}
           </button>
 
-          {/* Menu / Continue button */}
-          <Link
-            href={`${base}/menu`}
-            className={cn(
-              "flex-1 flex items-center justify-center gap-2 py-2.5 font-bold text-xs tracking-wider uppercase transition-all active:opacity-80",
-              isOnCart
-                ? "bg-white/10 text-white/60"
-                : "bg-white/[0.06] text-white/40"
-            )}
-          >
-            <UtensilsCrossed className="w-4 h-4" strokeWidth={1.8} />
-            {isOnCart ? "Continuă" : "Meniu"}
-          </Link>
-
-          {/* Dynamic action button */}
+          {/* Single dynamic button - centered, takes remaining space */}
           <button
             onClick={handleAction}
             disabled={ordering}
             className={cn(
-              "flex-1 flex items-center justify-center gap-2 py-2.5 font-bold text-xs tracking-wider uppercase transition-all active:opacity-80 disabled:opacity-50",
+              "flex-1 flex items-center justify-center gap-2 py-3 font-bold text-sm tracking-[0.15em] uppercase transition-all active:opacity-80 disabled:opacity-50",
               actionStyle
             )}
           >
