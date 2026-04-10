@@ -166,6 +166,7 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
             </>
           )}
         </div>
+        <img src="/Maya.png" alt="Maya" className="h-10 object-contain opacity-50 mb-4" />
         <h2 className="text-2xl font-bold text-white mb-3 tracking-wide">
           Nota ta a fost transmisă!
         </h2>
