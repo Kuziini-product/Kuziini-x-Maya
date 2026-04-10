@@ -30,7 +30,8 @@ export default function MenuPage({ params }: { params: { umbrellaId: string } })
   const [search, setSearch] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const [lastVisited, setLastVisited] = useState<string | null>(null);
-  const itemCount = useCartStore((s) => s.itemCount());
+  const cartItems = useCartStore((s) => s.items);
+  const itemCount = cartItems.reduce((sum, i) => sum + i.quantity, 0);
 
   // Check if user has visited a section before (stored when navigating away)
   useEffect(() => {

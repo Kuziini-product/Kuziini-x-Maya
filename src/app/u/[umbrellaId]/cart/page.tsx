@@ -11,12 +11,12 @@ import type { CartItem } from "@/types";
 
 export default function CartPage({ params }: { params: { umbrellaId: string } }) {
   const { umbrellaId } = params;
-  const { items, updateQuantity, removeItem, clearCart, total } = useCartStore();
+  const { items, updateQuantity, removeItem, clearCart } = useCartStore();
   const { userSession } = useSessionStore();
   const [showPhone, setShowPhone] = useState(false);
   const [globalNotes, setGlobalNotes] = useState("");
 
-  const totalAmount = total();
+  const totalAmount = items.reduce((sum, i) => sum + i.menuItem.price * i.quantity, 0);
 
   // Listen for phone modal request from BottomNav
   useEffect(() => {

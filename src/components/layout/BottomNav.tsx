@@ -18,10 +18,10 @@ export function BottomNav({ umbrellaId }: BottomNavProps) {
   const [ordering, setOrdering] = useState(false);
   const [orderError, setOrderError] = useState<string | null>(null);
 
-  const itemCount = useCartStore((s) => s.itemCount());
   const items = useCartStore((s) => s.items);
-  const cartTotal = useCartStore((s) => s.total());
   const clearCart = useCartStore((s) => s.clearCart);
+  const itemCount = items.reduce((sum, i) => sum + i.quantity, 0);
+  const cartTotal = items.reduce((sum, i) => sum + i.menuItem.price * i.quantity, 0);
   const { userSession } = useSessionStore();
   const addOrder = useSessionStore((s) => s.addOrder);
 
