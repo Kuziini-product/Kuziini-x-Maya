@@ -134,8 +134,10 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
   // Done — waiter animation
   if (step === "done") {
     return (
-      <div className="min-h-dvh bg-[#0A0A0A] flex flex-col items-center justify-center px-6 text-center">
-        <div className="flex items-center justify-center gap-1 mb-6 animate-bounce">
+      <div className="min-h-dvh bg-[#0A0A0A] flex flex-col items-center justify-center px-6 text-center relative">
+        {/* Maya logo as background behind emoji */}
+        <img src="/Maya.png" alt="" className="absolute top-0 left-1/2 -translate-x-1/2 h-[45vh] object-contain opacity-[0.06] pointer-events-none" />
+        <div className="flex items-center justify-center gap-1 mb-6 animate-bounce relative z-10">
           {selectedMethod === "cash" && (
             <>
               <span className="text-7xl">🏃‍♂️</span>
@@ -166,8 +168,7 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
             </>
           )}
         </div>
-        <img src="/Maya.png" alt="Maya" className="h-10 object-contain opacity-50 mb-4" />
-        <h2 className="text-2xl font-bold text-white mb-3 tracking-wide">
+        <h2 className="text-2xl font-bold text-white mb-3 tracking-wide relative z-10">
           Nota ta a fost transmisă!
         </h2>
         <p className="text-white/50 text-sm mb-6">
