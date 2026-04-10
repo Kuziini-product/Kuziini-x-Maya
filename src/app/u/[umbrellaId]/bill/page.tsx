@@ -193,7 +193,7 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
             onClick={() => router.push("/#about")}
             className="flex-1 flex items-center justify-center gap-2 border border-[#C9AB81]/30 py-3 rounded-xl text-[#C9AB81] font-bold text-xs tracking-[0.15em] uppercase active:bg-[#C9AB81]/10 transition-colors"
           >
-            Pagina principală
+            Acasă
           </button>
         </div>
 
