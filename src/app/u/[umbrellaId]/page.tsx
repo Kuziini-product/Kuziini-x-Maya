@@ -2,15 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import {
-  UtensilsCrossed,
-  ShoppingBag,
-  Receipt,
-  ChevronRight,
-} from "lucide-react";
 import { Spinner } from "@/components/ui";
 import { useSessionStore, useCartStore } from "@/store";
 import { cn } from "@/lib/utils";
@@ -174,7 +167,7 @@ export default function LandingPage({
           {/* Maya banners */}
           {mayaBanner && (
             <div className="w-full max-w-sm mb-3">
-              <p className="text-[10px] font-bold text-white/20 tracking-[0.2em] uppercase mb-2">LOFT</p>
+              <p className="text-[10px] font-bold text-white/20 tracking-[0.2em] uppercase mb-2">Maya</p>
               <BannerSlide banner={mayaBanner} onClick={() => handleBannerClick(mayaBanner)} />
               {mayaBanners.length > 1 && (
                 <div className="flex gap-1 mt-2">
@@ -214,26 +207,9 @@ export default function LandingPage({
           )}
         </div>
 
-        {/* ═══ BOTTOM: Action buttons grouped at bottom ═══ */}
+        {/* ═══ BOTTOM: Branding footer ═══ */}
         <div className="px-5 pb-6 pt-6">
-          {/* Quick order CTA - main action */}
-          <Link href={`/u/${umbrellaId}/menu`}>
-            <div className="bg-[#C9AB81] p-4 text-[#0A0A0A] flex items-center justify-between active:opacity-80 transition-opacity mb-3">
-              <div className="flex items-center gap-3">
-                <UtensilsCrossed className="w-5 h-5" />
-                <div>
-                  <p className="font-bold text-sm tracking-wide">Comandă acum</p>
-                  <p className="text-[#0A0A0A]/50 text-[10px] tracking-wide">
-                    Livrare direct la șezlong
-                  </p>
-                </div>
-              </div>
-              <ChevronRight className="w-5 h-5 text-[#0A0A0A]/40" />
-            </div>
-          </Link>
-
-          {/* Branding footer */}
-          <div className="flex items-center justify-center gap-4 mt-4 pt-4 border-t border-white/[0.04]">
+          <div className="flex items-center justify-center gap-4 pt-4 border-t border-white/[0.04]">
             <a href="https://www.instagram.com/kuziiniconceptstore/" target="_blank" rel="noopener noreferrer">
               <img src="/kuziini-logo.png" alt="Kuziini" className="h-8 object-contain invert brightness-200" />
             </a>
