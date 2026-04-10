@@ -15,7 +15,7 @@ import { generateId } from "@/lib/utils";
 interface CartStore {
   items: CartItem[];
   umbrellaId: string | null;
-  addItem: (item: MenuItem, quantity?: number, notes?: string) => void;
+  addItem: (item: MenuItem, quantity?: number, notes?: string, promoLabel?: string) => void;
   removeItem: (menuItemId: string) => void;
   updateQuantity: (menuItemId: string, quantity: number) => void;
   updateNotes: (menuItemId: string, notes: string) => void;
@@ -33,7 +33,7 @@ export const useCartStore = create<CartStore>()(
 
       setUmbrellaId: (id) => set({ umbrellaId: id }),
 
-      addItem: (menuItem, quantity = 1, notes = "") => {
+      addItem: (menuItem, quantity = 1, notes = "", promoLabel?: string) => {
         const existing = get().items.find(
           (i) => i.menuItem.id === menuItem.id
         );
@@ -41,13 +41,13 @@ export const useCartStore = create<CartStore>()(
           set((s) => ({
             items: s.items.map((i) =>
               i.menuItem.id === menuItem.id
-                ? { ...i, quantity: i.quantity + quantity }
+                ? { ...i, quantity: i.quantity + quantity, promoLabel: promoLabel || i.promoLabel }
                 : i
             ),
           }));
         } else {
           set((s) => ({
-            items: [...s.items, { menuItem, quantity, notes }],
+            items: [...s.items, { menuItem, quantity, notes, promoLabel }],
           }));
         }
       },

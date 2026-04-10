@@ -29,6 +29,7 @@ export default function LandingPage({
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [addedToast, setAddedToast] = useState<string | null>(null);
   const addItem = useCartStore((s) => s.addItem);
+  const cartItems = useCartStore((s) => s.items);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["umbrella", umbrellaId],
@@ -105,11 +106,11 @@ export default function LandingPage({
   const umbrella: Umbrella = data.umbrella;
 
   function handleBannerClick(banner: PromoBanner) {
-    // If banner has a linked menu product, add it to cart
+    // If banner has a linked menu product, add it to cart with promo label
     if (banner.menuItemId) {
       const item = menuItems.find((m) => m.id === banner.menuItemId);
       if (item) {
-        addItem(item, 1);
+        addItem(item, 1, "", banner.title);
         setAddedToast(banner.title);
         setTimeout(() => setAddedToast(null), 2500);
       }
@@ -146,7 +147,11 @@ export default function LandingPage({
           {mayaBanner && (
             <div className="w-full max-w-sm mb-3">
               <p className="text-[10px] font-bold text-white/20 tracking-[0.2em] uppercase mb-2">Maya</p>
-              <BannerSlide banner={mayaBanner} onClick={() => handleBannerClick(mayaBanner)} />
+              <BannerSlide
+                banner={mayaBanner}
+                onClick={() => handleBannerClick(mayaBanner)}
+                cartQty={mayaBanner.menuItemId ? cartItems.find((i) => i.menuItem.id === mayaBanner.menuItemId)?.quantity : undefined}
+              />
             </div>
           )}
 
@@ -154,7 +159,11 @@ export default function LandingPage({
           {kuziiniBanner && (
             <div className="w-full max-w-sm">
               <p className="text-[10px] font-bold text-white/20 tracking-[0.2em] uppercase mb-2">Kuziini</p>
-              <BannerSlide banner={kuziiniBanner} onClick={() => handleBannerClick(kuziiniBanner)} />
+              <BannerSlide
+                banner={kuziiniBanner}
+                onClick={() => handleBannerClick(kuziiniBanner)}
+                cartQty={kuziiniBanner.menuItemId ? cartItems.find((i) => i.menuItem.id === kuziiniBanner.menuItemId)?.quantity : undefined}
+              />
             </div>
           )}
         </div>
@@ -185,7 +194,7 @@ export default function LandingPage({
   );
 }
 
-function BannerSlide({ banner, onClick }: { banner: PromoBanner; onClick?: () => void }) {
+function BannerSlide({ banner, onClick, cartQty }: { banner: PromoBanner; onClick?: () => void; cartQty?: number }) {
   const isClickable = !!(banner.menuItemId || banner.instagramUrl);
   return (
     <div
@@ -203,7 +212,7 @@ function BannerSlide({ banner, onClick }: { banner: PromoBanner; onClick?: () =>
           )}
           {banner.menuItemId && (
             <p className="text-emerald-400/60 text-[9px] mt-1 font-bold tracking-wider uppercase">
-              + Adaugă în coș
+              {cartQty ? `${cartQty} în coș · + adaugă` : "+ Adaugă în coș"}
             </p>
           )}
         </div>

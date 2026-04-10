@@ -185,16 +185,26 @@ function CartItemRow({
   onUpdateQty: (q: number) => void;
   onRemove: () => void;
 }) {
+  const isPromo = !!item.promoLabel;
   return (
-    <div className="bg-white/[0.03] border border-white/[0.06] p-4 flex items-center gap-3">
+    <div className={`p-4 flex items-center gap-3 ${
+      isPromo
+        ? "bg-emerald-500/[0.08] border border-emerald-500/20"
+        : "bg-white/[0.03] border border-white/[0.06]"
+    }`}>
       <div className="flex-1 min-w-0">
+        {isPromo && (
+          <p className="text-emerald-400 text-[9px] font-bold tracking-[0.15em] uppercase mb-1">
+            {item.promoLabel}
+          </p>
+        )}
         <p className="font-bold text-white text-sm tracking-wide uppercase">
           {item.menuItem.name}
         </p>
         {item.notes && (
           <p className="text-xs text-white/30 mt-0.5">{item.notes}</p>
         )}
-        <p className="text-[#C9AB81] font-bold text-sm mt-1">
+        <p className={`font-bold text-sm mt-1 ${isPromo ? "text-emerald-400" : "text-[#C9AB81]"}`}>
           {formatPrice(item.menuItem.price * item.quantity)}
         </p>
       </div>
@@ -215,7 +225,9 @@ function CartItemRow({
         </span>
         <button
           onClick={() => onUpdateQty(item.quantity + 1)}
-          className="w-8 h-8 flex items-center justify-center bg-[#C9AB81] text-[#0A0A0A]"
+          className={`w-8 h-8 flex items-center justify-center ${
+            isPromo ? "bg-emerald-500 text-white" : "bg-[#C9AB81] text-[#0A0A0A]"
+          }`}
         >
           <Plus className="w-3.5 h-3.5" />
         </button>

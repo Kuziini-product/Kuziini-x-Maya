@@ -84,6 +84,7 @@ export interface CartItem {
   menuItem: MenuItem;
   quantity: number;
   notes?: string;
+  promoLabel?: string; // marketing name from banner (different from menuItem.name)
 }
 
 // ─── Orders ──────────────────────────────────────────────────────────────────
