@@ -151,6 +151,7 @@ export default function LandingPage({
                 banner={mayaBanner}
                 onClick={() => handleBannerClick(mayaBanner)}
                 cartQty={mayaBanner.menuItemId ? cartItems.find((i) => i.menuItem.id === mayaBanner.menuItemId)?.quantity : undefined}
+                menuItemName={mayaBanner.menuItemId ? menuItems.find((m) => m.id === mayaBanner.menuItemId)?.name : undefined}
               />
             </div>
           )}
@@ -163,6 +164,7 @@ export default function LandingPage({
                 banner={kuziiniBanner}
                 onClick={() => handleBannerClick(kuziiniBanner)}
                 cartQty={kuziiniBanner.menuItemId ? cartItems.find((i) => i.menuItem.id === kuziiniBanner.menuItemId)?.quantity : undefined}
+                menuItemName={kuziiniBanner.menuItemId ? menuItems.find((m) => m.id === kuziiniBanner.menuItemId)?.name : undefined}
               />
             </div>
           )}
@@ -194,7 +196,7 @@ export default function LandingPage({
   );
 }
 
-function BannerSlide({ banner, onClick, cartQty }: { banner: PromoBanner; onClick?: () => void; cartQty?: number }) {
+function BannerSlide({ banner, onClick, cartQty, menuItemName }: { banner: PromoBanner; onClick?: () => void; cartQty?: number; menuItemName?: string }) {
   const isClickable = !!(banner.menuItemId || banner.instagramUrl);
   return (
     <div
@@ -207,7 +209,10 @@ function BannerSlide({ banner, onClick, cartQty }: { banner: PromoBanner; onClic
       <div className="flex items-center justify-between">
         <div className="flex-1 min-w-0">
           <p className="text-sm font-bold text-white tracking-wide">{banner.title}</p>
-          {banner.subtitle && (
+          {menuItemName && (
+            <p className="text-white/40 text-xs mt-0.5">{menuItemName}</p>
+          )}
+          {!menuItemName && banner.subtitle && (
             <p className="text-white/40 text-xs mt-0.5">{banner.subtitle}</p>
           )}
           {banner.menuItemId && (
