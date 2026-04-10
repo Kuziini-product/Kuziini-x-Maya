@@ -205,16 +205,6 @@ export default function HomePage() {
           </button>
         </div>
 
-        {/* Admin quick access */}
-        <div className="flex items-center justify-center gap-3 mb-8">
-          <button
-            onClick={() => router.push("/admin")}
-            className="flex items-center gap-2 px-5 py-2.5 bg-white/[0.04] border border-white/[0.08] text-white/40 text-[10px] font-bold tracking-[0.2em] uppercase active:bg-white/[0.08] transition-colors"
-          >
-            Administrare
-          </button>
-        </div>
-
         <div className="space-y-2.5 mb-8 text-center">
           <div className="flex items-center justify-center gap-2 text-white/30 text-xs">
             <MapPin className="w-3 h-3 text-[#C9AB81]/60 shrink-0" />
