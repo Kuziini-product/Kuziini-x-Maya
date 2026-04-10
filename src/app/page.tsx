@@ -111,7 +111,7 @@ export default function HomePage() {
             }}
             className="inline-flex items-center justify-center gap-2 bg-[#C9AB81] text-[#0A0A0A] px-8 py-3.5 font-bold text-sm tracking-[0.15em] uppercase transition-all active:opacity-80"
           >
-            {userSession?.umbrellaId ? "Deschide meniul" : "Scanează QR & Comandă"}
+            {userSession?.umbrellaId ? "Deschide meniul" : "Comandă acum"}
             <ChevronRight className="w-4 h-4" />
           </button>
 
