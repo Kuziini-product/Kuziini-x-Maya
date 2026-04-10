@@ -177,7 +177,7 @@ export default function LandingPage({
             <img
               src="/Maya.png"
               alt="Maya"
-              className="h-10 object-contain opacity-60"
+              className="h-20 object-contain opacity-60"
             />
             <ScratchX className="h-3 text-[#C9AB81]/40" />
             <a href="https://www.instagram.com/kuziiniconceptstore/" target="_blank" rel="noopener noreferrer">
