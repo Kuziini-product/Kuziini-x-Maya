@@ -71,7 +71,7 @@ export default function HomePage() {
               <img
                 src="/Maya.png"
                 alt="Maya"
-                className="h-20 object-contain mx-auto mb-1"
+                className="h-40 object-contain mx-auto mb-1"
               />
               <p className="text-white text-sm font-light tracking-[0.5em] uppercase">
                 Mamaia
