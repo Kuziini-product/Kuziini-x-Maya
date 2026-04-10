@@ -1,7 +1,8 @@
 "use client";
 import { usePathname, useRouter } from "next/navigation";
 import { useRef, useState, useEffect, useCallback } from "react";
-import { UtensilsCrossed, ShoppingBag, Receipt, Volume2, VolumeX } from "lucide-react";
+import Link from "next/link";
+import { UtensilsCrossed, ShoppingBag, Receipt, Volume2, VolumeX, Home } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCartStore, useSessionStore } from "@/store";
 
@@ -156,8 +157,13 @@ export function BottomNav({ umbrellaId }: BottomNavProps) {
             {actionLabel}
           </button>
 
-          {/* Invisible spacer to balance speaker button and center the action button */}
-          <div className="w-9 shrink-0" />
+          {/* Home button - right, balances speaker */}
+          <Link
+            href={`${base}`}
+            className="flex items-center justify-center w-9 h-9 text-white/30 active:text-white/50 transition-all duration-200 shrink-0"
+          >
+            <Home className="w-5 h-5" strokeWidth={1.8} />
+          </Link>
         </div>
       </nav>
     </>
