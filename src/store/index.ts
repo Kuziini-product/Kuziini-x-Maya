@@ -90,6 +90,7 @@ export const useCartStore = create<CartStore>()(
     {
       name: "kuziini-cart",
       partialize: (s) => ({ items: s.items, umbrellaId: s.umbrellaId }),
+      skipHydration: true,
     }
   )
 );
@@ -151,6 +152,7 @@ export const useSessionStore = create<SessionStore>()(
     }),
     {
       name: "kuziini-session",
+      skipHydration: true,
     }
   )
 );
