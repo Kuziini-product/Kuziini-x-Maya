@@ -143,7 +143,7 @@ export function BottomNav({ umbrellaId }: BottomNavProps) {
             )}
           </button>
 
-          {/* Single dynamic button - centered, takes remaining space */}
+          {/* Single dynamic button - centered */}
           <button
             onClick={handleAction}
             disabled={ordering}
@@ -155,6 +155,9 @@ export function BottomNav({ umbrellaId }: BottomNavProps) {
             {actionIcon}
             {actionLabel}
           </button>
+
+          {/* Invisible spacer to balance speaker button and center the action button */}
+          <div className="w-9 shrink-0" />
         </div>
       </nav>
     </>
