@@ -86,7 +86,7 @@ export default function RegisterPage() {
         setGroupError(null);
       } catch {
         setGroupInfo(null);
-        setGroupError("Nu exista un grup cu acest numar. Membrul trebuie sa se inregistreze primul.");
+        setGroupError("not_found");
       } finally {
         setSearchingGroup(false);
       }
@@ -346,10 +346,30 @@ export default function RegisterPage() {
               <p className="text-[#C9AB81] text-xs mt-2 animate-pulse">Se cauta grupul...</p>
             )}
 
-            {groupError && (
+            {groupError && groupError !== "not_found" && (
               <div className="flex items-center gap-2 mt-2">
                 <AlertCircle className="w-3.5 h-3.5 text-red-400 shrink-0" />
                 <p className="text-red-400 text-xs">{groupError}</p>
+              </div>
+            )}
+
+            {groupError === "not_found" && (
+              <div className="mt-3 bg-red-400/5 border border-red-400/20 p-3 space-y-2">
+                <div className="flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-red-400 text-xs font-bold mb-1">Nu exista un grup cu acest numar.</p>
+                    <p className="text-white/50 text-xs">
+                      Membrul trebuie sa se inregistreze primul prin scanarea QR-ului de la receptie.
+                    </p>
+                  </div>
+                </div>
+                <div className="border-t border-white/[0.06] pt-2">
+                  <p className="text-[#C9AB81] text-xs font-bold mb-1">Esti primul din grup?</p>
+                  <p className="text-white/50 text-xs">
+                    Daca tu initiezi grupul, lasa acest camp gol si apasa "Trimite". Ceilalti membri vor introduce numarul TAU de telefon ({phone}) cand se inregistreaza, pentru a se alatura grupului tau.
+                  </p>
+                </div>
               </div>
             )}
 
