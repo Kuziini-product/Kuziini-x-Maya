@@ -3,7 +3,6 @@
 import { useState } from "react";
 import {
   User,
-  Phone,
   Mail,
   Users,
   Check,
@@ -11,6 +10,7 @@ import {
   ArrowLeft,
   Clock,
 } from "lucide-react";
+import PhoneInput from "@/components/PhoneInput";
 
 type Step = "form" | "success";
 
@@ -238,33 +238,28 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {/* Phone + Email */}
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className={labelCls}>Telefon *</label>
-              <div className="relative">
-                <Phone className="absolute left-3 top-3 w-4 h-4 text-white/30" />
-                <input
-                  type="tel"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  className={`${inputCls} pl-9`}
-                  placeholder="+40712345678"
-                />
-              </div>
-            </div>
-            <div>
-              <label className={labelCls}>Email *</label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-3 w-4 h-4 text-white/30" />
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className={`${inputCls} pl-9`}
-                  placeholder="email@exemplu.com"
-                />
-              </div>
+          {/* Phone */}
+          <div>
+            <label className={labelCls}>Telefon *</label>
+            <PhoneInput
+              value={phone}
+              onChange={setPhone}
+              autoFocus={false}
+            />
+          </div>
+
+          {/* Email */}
+          <div>
+            <label className={labelCls}>Email *</label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-3 w-4 h-4 text-white/30" />
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className={`${inputCls} pl-9`}
+                placeholder="email@exemplu.com"
+              />
             </div>
           </div>
 
@@ -321,22 +316,19 @@ export default function RegisterPage() {
               Daca un alt membru al familiei/grupului s-a inregistrat deja, introdu numarul lui de telefon pentru a va uni intr-un grup.
             </p>
 
-            <div className="flex gap-2">
-              <div className="relative flex-1">
-                <Phone className="absolute left-3 top-3 w-4 h-4 text-white/30" />
-                <input
-                  type="tel"
+            <div className="flex gap-2 items-start">
+              <div className="flex-1">
+                <PhoneInput
                   value={groupPhone}
-                  onChange={(e) => { setGroupPhone(e.target.value); setGroupInfo(null); setGroupError(null); }}
-                  className={`${inputCls} pl-9`}
-                  placeholder="Tel. alt membru din grup"
+                  onChange={(v) => { setGroupPhone(v); setGroupInfo(null); setGroupError(null); }}
+                  placeholder="712 345 678"
                 />
               </div>
               <button
                 type="button"
                 onClick={searchGroup}
-                disabled={searchingGroup || !groupPhone.trim()}
-                className="px-4 bg-[#C9AB81] text-[#0A0A0A] font-bold text-xs tracking-wider uppercase disabled:opacity-50"
+                disabled={searchingGroup || groupPhone.replace(/\D/g, "").length < 5}
+                className="px-4 py-3 bg-[#C9AB81] text-[#0A0A0A] font-bold text-xs tracking-wider uppercase disabled:opacity-50 shrink-0"
               >
                 {searchingGroup ? "..." : "Cauta"}
               </button>
