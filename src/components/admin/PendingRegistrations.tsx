@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import {
   RefreshCw,
   Check,
@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import type { GuestProfile } from "@/types";
+import { usePendingGuests, useApproveRegistration, useRejectRegistration } from "@/hooks/use-admin";
 import GuestCardModal from "@/components/admin/GuestCardModal";
 
 interface Props {
@@ -30,67 +31,30 @@ function getRegisterUrl(): string {
 }
 
 export default function PendingRegistrations({ adminId }: Props) {
-  const [pending, setPending] = useState<GuestProfile[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [processing, setProcessing] = useState<string | null>(null);
+  const { data: pending = [], isLoading, refetch } = usePendingGuests({ refetchInterval: 10_000 });
+  const approveMutation = useApproveRegistration();
+  const rejectMutation = useRejectRegistration();
+
   const [editingGuest, setEditingGuest] = useState<GuestProfile | null>(null);
   const [showQR, setShowQR] = useState(false);
 
-  const fetchPending = useCallback(async () => {
-    try {
-      const res = await fetch("/api/admin/guests", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "pending-list", adminId }),
-      });
-      const json = await res.json();
-      if (json.success) setPending(json.data);
-    } finally {
-      setLoading(false);
-    }
-  }, [adminId]);
-
-  useEffect(() => {
-    fetchPending();
-    const interval = setInterval(fetchPending, 10000); // poll every 10s
-    return () => clearInterval(interval);
-  }, [fetchPending]);
+  const processing = approveMutation.isPending || rejectMutation.isPending
+    ? (approveMutation.variables as string) || (rejectMutation.variables as string) || null
+    : null;
 
   async function approve(guestId: string) {
-    setProcessing(guestId);
     try {
-      const res = await fetch("/api/admin/guests", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "approve-registration", adminId, guestId }),
-      });
-      const json = await res.json();
-      if (json.success) {
-        // Open card modal to assign lounger
-        setEditingGuest(json.data);
-        fetchPending();
-      }
-    } finally {
-      setProcessing(null);
-    }
+      const result = await approveMutation.mutateAsync(guestId);
+      setEditingGuest(result);
+    } catch {}
   }
 
-  async function reject(guestId: string) {
+  function reject(guestId: string) {
     if (!confirm("Respingi aceasta inregistrare?")) return;
-    setProcessing(guestId);
-    try {
-      await fetch("/api/admin/guests", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "reject-registration", adminId, guestId }),
-      });
-      fetchPending();
-    } finally {
-      setProcessing(null);
-    }
+    rejectMutation.mutate(guestId);
   }
 
-  if (loading) {
+  if (isLoading && pending.length === 0) {
     return (
       <div className="flex justify-center py-20">
         <RefreshCw className="w-6 h-6 th-text-muted animate-spin" />
@@ -166,48 +130,25 @@ export default function PendingRegistrations({ adminId }: Props) {
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <QrCode className="w-4 h-4 text-[#C9AB81]" />
-            <p className="text-[10px] font-bold text-[#C9AB81] uppercase tracking-[0.2em]">
-              QR Code Receptie
-            </p>
+            <p className="text-[10px] font-bold text-[#C9AB81] uppercase tracking-[0.2em]">QR Code Receptie</p>
           </div>
-          <button
-            onClick={() => setShowQR(!showQR)}
-            className="th-text-muted text-xs font-bold"
-          >
+          <button onClick={() => setShowQR(!showQR)} className="th-text-muted text-xs font-bold">
             {showQR ? "Ascunde" : "Arata"}
           </button>
         </div>
-
         {showQR && (
           <div className="text-center">
             <div className="bg-white p-4 inline-block mb-3 border border-gray-200">
-              <QRCodeSVG
-                id="reception-qr"
-                value={registerUrl}
-                size={200}
-                level="H"
-              />
+              <QRCodeSVG id="reception-qr" value={registerUrl} size={200} level="H" />
             </div>
-            <p className="th-text-muted text-xs mb-1">
-              Oaspetii scaneaza acest cod la receptie
-            </p>
-            <p className="th-text-faint text-[10px] mb-4 break-all">
-              {registerUrl}
-            </p>
+            <p className="th-text-muted text-xs mb-1">Oaspetii scaneaza acest cod la receptie</p>
+            <p className="th-text-faint text-[10px] mb-4 break-all">{registerUrl}</p>
             <div className="flex gap-2 justify-center">
-              <button
-                onClick={downloadQR}
-                className="flex items-center gap-1.5 px-4 py-2 bg-[#C9AB81] text-[#0A0A0A] font-bold text-[10px] tracking-wider uppercase"
-              >
-                <Download className="w-3.5 h-3.5" />
-                Descarca PNG
+              <button onClick={downloadQR} className="flex items-center gap-1.5 px-4 py-2 bg-[#C9AB81] text-[#0A0A0A] font-bold text-[10px] tracking-wider uppercase">
+                <Download className="w-3.5 h-3.5" /> Descarca PNG
               </button>
-              <button
-                onClick={printQR}
-                className="flex items-center gap-1.5 px-4 py-2 th-tab-inactive th-text-muted font-bold text-[10px] tracking-wider uppercase"
-              >
-                <Printer className="w-3.5 h-3.5" />
-                Printeaza
+              <button onClick={printQR} className="flex items-center gap-1.5 px-4 py-2 th-tab-inactive th-text-muted font-bold text-[10px] tracking-wider uppercase">
+                <Printer className="w-3.5 h-3.5" /> Printeaza
               </button>
             </div>
           </div>
@@ -219,8 +160,8 @@ export default function PendingRegistrations({ adminId }: Props) {
         <p className="th-text-muted text-xs">
           {pending.length} {pending.length === 1 ? "cerere" : "cereri"} de validare
         </p>
-        <button onClick={() => { setLoading(true); fetchPending(); }} className="th-text-muted">
-          <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+        <button onClick={() => refetch()} className="th-text-muted">
+          <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
         </button>
       </div>
 
@@ -241,7 +182,6 @@ export default function PendingRegistrations({ adminId }: Props) {
 
             return (
               <div key={g.id} className={`th-card border p-4 ${isGroup && !isGroupComplete ? "border-l-4 border-l-orange-400" : isGroup && isGroupComplete ? "border-l-4 border-l-emerald-400" : ""}`}>
-                {/* Guest info */}
                 <div className="flex items-center justify-between mb-3">
                   <div>
                     <p className="th-text font-bold text-base">{g.name}</p>
@@ -252,27 +192,18 @@ export default function PendingRegistrations({ adminId }: Props) {
                   </div>
                   <div className="flex items-center gap-1.5">
                     {isGroup && (
-                      <span className={`text-[10px] font-bold tracking-wider uppercase px-2 py-1 ${
-                        isGroupComplete
-                          ? "bg-emerald-100 text-emerald-600"
-                          : "bg-orange-100 text-orange-600"
-                      }`}>
+                      <span className={`text-[10px] font-bold tracking-wider uppercase px-2 py-1 ${isGroupComplete ? "bg-emerald-100 text-emerald-600" : "bg-orange-100 text-orange-600"}`}>
                         {currentSize}/{expectedSize}
                       </span>
                     )}
-                    <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-1 bg-amber-100 text-amber-600">
-                      Pending
-                    </span>
+                    <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-1 bg-amber-100 text-amber-600">Pending</span>
                   </div>
                 </div>
 
-                {/* Stay period */}
                 <div className="flex items-center gap-2 text-xs th-text-muted mb-2">
-                  <Calendar className="w-3 h-3" />
-                  {g.stayStart} → {g.stayEnd}
+                  <Calendar className="w-3 h-3" /> {g.stayStart} → {g.stayEnd}
                 </div>
 
-                {/* Group status */}
                 {isGroup && (
                   <div className={`p-2.5 mb-3 border ${isGroupComplete ? "bg-emerald-400/5 border-emerald-400/20" : "bg-orange-400/5 border-orange-400/20"}`}>
                     <div className="flex items-center gap-2 mb-1.5">
@@ -281,16 +212,14 @@ export default function PendingRegistrations({ adminId }: Props) {
                         {isGroupComplete ? "Grup complet" : `Se asteapta ${expectedSize - currentSize} ${expectedSize - currentSize === 1 ? "membru" : "membri"}`}
                       </span>
                     </div>
-                    {/* Member list */}
                     <div className="space-y-1">
-                      {members.map((m, i) => (
+                      {members.map((m) => (
                         <div key={m.phone} className="flex items-center gap-2 text-xs th-text-muted">
                           <Check className="w-3 h-3 text-emerald-400 shrink-0" />
                           <span className="font-medium">{m.name}</span>
                           <span className="th-text-faint">{m.phone}</span>
                         </div>
                       ))}
-                      {/* Empty slots */}
                       {Array.from({ length: Math.max(0, expectedSize - currentSize) }).map((_, i) => (
                         <div key={`empty-${i}`} className="flex items-center gap-2 text-xs text-orange-400/50">
                           <AlertCircle className="w-3 h-3 shrink-0" />
@@ -298,17 +227,12 @@ export default function PendingRegistrations({ adminId }: Props) {
                         </div>
                       ))}
                     </div>
-                    {/* Progress bar */}
                     <div className="mt-2 h-1.5 bg-black/10 rounded-full overflow-hidden">
-                      <div
-                        className={`h-full transition-all ${isGroupComplete ? "bg-emerald-400" : "bg-orange-400"}`}
-                        style={{ width: `${Math.min(100, (currentSize / expectedSize) * 100)}%` }}
-                      />
+                      <div className={`h-full transition-all ${isGroupComplete ? "bg-emerald-400" : "bg-orange-400"}`} style={{ width: `${Math.min(100, (currentSize / expectedSize) * 100)}%` }} />
                     </div>
                   </div>
                 )}
 
-                {/* Single member info */}
                 {!isGroup && members.length > 1 && (
                   <div className="flex items-center gap-2 text-xs th-text-muted mb-3">
                     <Users className="w-3 h-3" />
@@ -316,21 +240,17 @@ export default function PendingRegistrations({ adminId }: Props) {
                   </div>
                 )}
 
-                {/* Registration time */}
                 <p className="th-text-faint text-[10px] mb-3">
                   Inregistrat: {new Date(g.registeredAt).toLocaleString("ro-RO")}
                   {g.registeredBy === "self" && " (self-service)"}
                 </p>
 
-                {/* Actions */}
                 <div className="flex gap-2">
                   <button
                     onClick={() => approve(g.id)}
                     disabled={processing === g.id || (isGroup && !isGroupComplete)}
                     className={`flex-1 flex items-center justify-center gap-2 py-2.5 font-bold text-xs tracking-wider uppercase disabled:opacity-40 ${
-                      isGroup && !isGroupComplete
-                        ? "th-tab-inactive th-text-muted cursor-not-allowed"
-                        : "bg-emerald-500 text-white"
+                      isGroup && !isGroupComplete ? "th-tab-inactive th-text-muted cursor-not-allowed" : "bg-emerald-500 text-white"
                     }`}
                     title={isGroup && !isGroupComplete ? "Asteapta ca toti membrii sa se inregistreze" : ""}
                   >
@@ -351,12 +271,11 @@ export default function PendingRegistrations({ adminId }: Props) {
         </div>
       )}
 
-      {/* Card modal for editing after approval */}
       {editingGuest && (
         <GuestCardModal
           guest={editingGuest}
           adminId={adminId}
-          onClose={() => { setEditingGuest(null); fetchPending(); }}
+          onClose={() => { setEditingGuest(null); refetch(); }}
           onUpdated={(g) => setEditingGuest(g)}
         />
       )}

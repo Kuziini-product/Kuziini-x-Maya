@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { kvGet, kvSet } from "@/lib/kv";
 import { sendPushToAll } from "@/lib/push";
-
-const ADMIN_PASSWORD = "Kuziini1";
+import { requireAuth, AuthError } from "@/lib/auth";
 
 export interface OfferRequest {
   id: string;
@@ -81,13 +80,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true });
   }
 
-  // Admin actions require password
-  const { password } = body as { password: string };
-  if (password !== ADMIN_PASSWORD) {
-    return NextResponse.json(
-      { success: false, error: "Parola incorecta." },
-      { status: 401 }
-    );
+  // Admin actions require authenticated session
+  try {
+    await requireAuth();
+  } catch (e) {
+    if (e instanceof AuthError) {
+      return NextResponse.json({ success: false, error: e.message }, { status: e.status });
+    }
+    return NextResponse.json({ success: false, error: "Neautorizat." }, { status: 401 });
   }
 
   const offers = await getOffers();

@@ -17,7 +17,6 @@ import type { PromoBanner, BannerCategory, MenuItem } from "@/types";
 
 interface BannerManagerProps {
   category: BannerCategory;
-  password: string;
   banners: PromoBanner[];
   onUpdate: (banners: PromoBanner[]) => void;
 }
@@ -42,7 +41,6 @@ const EMPTY_FORM: BannerFormData = {
 
 export default function BannerManager({
   category,
-  password,
   banners,
   onUpdate,
 }: BannerManagerProps) {
@@ -72,7 +70,7 @@ export default function BannerManager({
         const res = await fetch("/api/banners", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ password, category, action, ...extra }),
+          body: JSON.stringify({ category, action, ...extra }),
         });
         const json = await res.json();
         if (!json.success) throw new Error(json.error);
@@ -85,7 +83,7 @@ export default function BannerManager({
         setLoading(false);
       }
     },
-    [password, category, onUpdate]
+    [category, onUpdate]
   );
 
   function resizeBannerImage(file: File): Promise<string> {

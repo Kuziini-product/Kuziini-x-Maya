@@ -3,15 +3,18 @@ import { kvGet } from "@/lib/kv";
 import { ALL_UMBRELLAS } from "@/lib/umbrella-config";
 import { migrateGuests } from "@/lib/migrate-guests";
 import { getOccupiedLoungers, todayRO } from "@/lib/lounger-utils";
+import { requireAuth, AuthError } from "@/lib/auth";
 import type { GuestProfile, DailyConfirmation, DashboardStats } from "@/types";
 
-export async function POST(req: Request) {
+export async function GET() {
   try {
-    const body = await req.json();
-    const { adminId } = body;
-
-    if (!adminId) {
-      return NextResponse.json({ success: false, error: "Neautorizat." });
+    try {
+      await requireAuth(["super_admin", "guest_admin"]);
+    } catch (e) {
+      if (e instanceof AuthError) {
+        return NextResponse.json({ success: false, error: e.message }, { status: e.status });
+      }
+      return NextResponse.json({ success: false, error: "Neautorizat." }, { status: 401 });
     }
 
     const today = todayRO();

@@ -56,13 +56,10 @@ export default function GuestCardModal({ guest, adminId, onClose, onUpdated }: P
     setSaving(true);
     setError(null);
     try {
-      const res = await fetch("/api/admin/guests", {
-        method: "POST",
+      const res = await fetch(`/api/admin/guests/${guest.id}`, {
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          action: "update",
-          adminId,
-          guestId: guest.id,
           status,
           creditEnabled,
           creditLimit: creditEnabled ? creditLimit : 0,
@@ -91,13 +88,10 @@ export default function GuestCardModal({ guest, adminId, onClose, onUpdated }: P
     setSaving(true);
     setError(null);
     try {
-      const res = await fetch("/api/admin/guests", {
+      const res = await fetch(`/api/admin/guests/${guest.id}/members`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          action: "add-member",
-          adminId,
-          guestId: guest.id,
           member: {
             phone: newPhone.trim(),
             name: newName.trim() || guest.name,
@@ -124,10 +118,10 @@ export default function GuestCardModal({ guest, adminId, onClose, onUpdated }: P
     setSaving(true);
     setError(null);
     try {
-      const res = await fetch("/api/admin/guests", {
-        method: "POST",
+      const res = await fetch(`/api/admin/guests/${guest.id}/members`, {
+        method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "remove-member", adminId, guestId: guest.id, phone: memberPhone }),
+        body: JSON.stringify({ phone: memberPhone }),
       });
       const json = await res.json();
       if (!json.success) throw new Error(json.error);
@@ -144,10 +138,10 @@ export default function GuestCardModal({ guest, adminId, onClose, onUpdated }: P
     setSaving(true);
     setError(null);
     try {
-      const res = await fetch("/api/admin/guests", {
+      const res = await fetch(`/api/admin/guests/${guest.id}/loungers`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "add-lounger", adminId, guestId: guest.id, loungerId: newLounger.trim() }),
+        body: JSON.stringify({ loungerId: newLounger.trim() }),
       });
       const json = await res.json();
       if (!json.success) throw new Error(json.error);
@@ -166,10 +160,10 @@ export default function GuestCardModal({ guest, adminId, onClose, onUpdated }: P
     setSaving(true);
     setError(null);
     try {
-      const res = await fetch("/api/admin/guests", {
-        method: "POST",
+      const res = await fetch(`/api/admin/guests/${guest.id}/loungers`, {
+        method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "remove-lounger", adminId, guestId: guest.id, loungerId: lid }),
+        body: JSON.stringify({ loungerId: lid }),
       });
       const json = await res.json();
       if (!json.success) throw new Error(json.error);
@@ -185,10 +179,10 @@ export default function GuestCardModal({ guest, adminId, onClose, onUpdated }: P
     if (!confirm("Confirmi check-out-ul?")) return;
     setSaving(true);
     try {
-      const res = await fetch("/api/admin/guests", {
+      const res = await fetch(`/api/admin/guests/${guest.id}/checkout`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "checkout", adminId, guestId: guest.id }),
+        body: JSON.stringify({}),
       });
       const json = await res.json();
       if (json.success) {
@@ -464,10 +458,10 @@ export default function GuestCardModal({ guest, adminId, onClose, onUpdated }: P
               if (!loungerIds.includes(lid)) {
                 await addLounger();
                 // Direct API call for each new lounger
-                await fetch("/api/admin/guests", {
+                await fetch(`/api/admin/guests/${guest.id}/loungers`, {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ action: "add-lounger", adminId, guestId: guest.id, loungerId: lid }),
+                  body: JSON.stringify({ loungerId: lid }),
                 }).then(r => r.json()).then(json => {
                   if (json.success) onUpdated(json.data);
                 });
@@ -476,10 +470,10 @@ export default function GuestCardModal({ guest, adminId, onClose, onUpdated }: P
             // Remove loungers that were deselected
             for (const lid of loungerIds) {
               if (!newIds.includes(lid) && loungerIds.length > 1) {
-                await fetch("/api/admin/guests", {
-                  method: "POST",
+                await fetch(`/api/admin/guests/${guest.id}/loungers`, {
+                  method: "DELETE",
                   headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ action: "remove-lounger", adminId, guestId: guest.id, loungerId: lid }),
+                  body: JSON.stringify({ loungerId: lid }),
                 }).then(r => r.json()).then(json => {
                   if (json.success) onUpdated(json.data);
                 });

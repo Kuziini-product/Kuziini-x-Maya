@@ -7,7 +7,6 @@ import type { GalleryImage, GalleryAspect, LibraryPhoto } from "@/lib/mock-data"
 
 interface GalleryManagerProps {
   category: BannerCategory;
-  password: string;
   slots: number;
   aspect: GalleryAspect;
   images: GalleryImage[];
@@ -79,7 +78,6 @@ function resizeImage(file: File): Promise<string> {
 
 export default function GalleryManager({
   category,
-  password,
   slots,
   aspect,
   images,
@@ -101,7 +99,7 @@ export default function GalleryManager({
         const res = await fetch("/api/gallery", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ password, category, action, ...extra }),
+          body: JSON.stringify({ category, action, ...extra }),
         });
         const json = await res.json();
         if (!json.success) throw new Error(json.error);
@@ -114,7 +112,7 @@ export default function GalleryManager({
         setLoading(false);
       }
     },
-    [password, category, onUpdate]
+    [category, onUpdate]
   );
 
   async function uploadForSlot(slotIndex: number) {

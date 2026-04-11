@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { kvGet, kvSet } from "@/lib/kv";
-
-const ADMIN_PASSWORD = "Kuziini1";
+import { requireAuth, AuthError } from "@/lib/auth";
 
 export interface AccessEntry {
   name: string;
@@ -105,9 +104,13 @@ export async function POST(req: NextRequest) {
 
   // ── Admin: get log & unread count ──
   if (action === "getLog") {
-    const { password } = body as { password: string };
-    if (password !== ADMIN_PASSWORD) {
-      return NextResponse.json({ success: false, error: "Parola incorecta." }, { status: 401 });
+    try {
+      await requireAuth();
+    } catch (e) {
+      if (e instanceof AuthError) {
+        return NextResponse.json({ success: false, error: e.message }, { status: e.status });
+      }
+      return NextResponse.json({ success: false, error: "Neautorizat." }, { status: 401 });
     }
 
     const log = await getLog();
@@ -162,9 +165,13 @@ export async function POST(req: NextRequest) {
 
   // ── Admin: mark as read (reset unread count) ──
   if (action === "markRead") {
-    const { password } = body as { password: string };
-    if (password !== ADMIN_PASSWORD) {
-      return NextResponse.json({ success: false, error: "Parola incorecta." }, { status: 401 });
+    try {
+      await requireAuth();
+    } catch (e) {
+      if (e instanceof AuthError) {
+        return NextResponse.json({ success: false, error: e.message }, { status: e.status });
+      }
+      return NextResponse.json({ success: false, error: "Neautorizat." }, { status: 401 });
     }
     await setUnread(0);
     return NextResponse.json({ success: true });

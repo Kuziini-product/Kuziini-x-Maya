@@ -63,8 +63,6 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          action: "create",
-          adminId,
           name: name.trim(),
           phone: phone.trim(),
           email: email.trim(),
@@ -83,12 +81,10 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
       if (!json.success) throw new Error(json.error);
       // Also confirm for today
       if (json.data.loungerId) {
-        await fetch("/api/admin/guests/daily", {
+        await fetch("/api/admin/daily/confirm", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            action: "confirm",
-            adminId,
             guestId: json.data.id,
             loungerId: json.data.loungerId,
             method: "manual",

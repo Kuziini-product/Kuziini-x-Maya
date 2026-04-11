@@ -75,11 +75,7 @@ export default function RegisterPage() {
     setGroupInfo(null);
     searchTimer.current = setTimeout(async () => {
       try {
-        const res = await fetch("/api/admin/guests", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action: "find-group", phone: groupPhone.trim() }),
-        });
+        const res = await fetch(`/api/groups/search?phone=${encodeURIComponent(groupPhone.trim())}`);
         const json = await res.json();
         if (!json.success) throw new Error(json.error);
         setGroupInfo(json.data);
@@ -113,11 +109,10 @@ export default function RegisterPage() {
 
     try {
       // Step 1: Self-register
-      const res = await fetch("/api/admin/guests", {
+      const res = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          action: "self-register",
           name: name.trim(),
           phone: phone.trim(),
           email: email.trim(),
@@ -132,11 +127,10 @@ export default function RegisterPage() {
 
       // Step 2: If group found, join it automatically
       if (groupInfo) {
-        await fetch("/api/admin/guests", {
+        await fetch("/api/groups/join", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            action: "join-group",
             guestId: myId,
             targetGroupId: groupInfo.groupId,
           }),

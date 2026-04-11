@@ -1,17 +1,10 @@
 import { NextResponse } from "next/server";
 import { kvGet, kvSet } from "@/lib/kv";
 import { generateId } from "@/lib/utils";
+import { hashPassword, requireAuth, AuthError } from "@/lib/auth";
 import type { AdminUser, AdminRole } from "@/types";
 
 const KV_KEY = "admins:list";
-
-async function hashPassword(pw: string): Promise<string> {
-  const data = new TextEncoder().encode(pw);
-  const buf = await crypto.subtle.digest("SHA-256", data);
-  return Array.from(new Uint8Array(buf))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-}
 
 async function getAdmins(): Promise<AdminUser[]> {
   return kvGet<AdminUser[]>(KV_KEY, []);
@@ -19,26 +12,6 @@ async function getAdmins(): Promise<AdminUser[]> {
 
 async function saveAdmins(list: AdminUser[]) {
   return kvSet(KV_KEY, list);
-}
-
-async function seedIfEmpty(): Promise<AdminUser[]> {
-  let admins = await getAdmins();
-  if (admins.length === 0) {
-    const seed: AdminUser = {
-      id: generateId(),
-      name: "Admin",
-      email: "admin@maya.ro",
-      phone: "+40700000000",
-      role: "super_admin",
-      passwordHash: await hashPassword("Maya2025"),
-      active: true,
-      createdAt: new Date().toISOString(),
-      lastLoginAt: null,
-    };
-    admins = [seed];
-    await saveAdmins(admins);
-  }
-  return admins;
 }
 
 function sanitize(admin: AdminUser) {
@@ -51,31 +24,21 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { action } = body;
 
-    // ── LOGIN ──
-    if (action === "login") {
-      const { email, password } = body;
-      if (!email || !password) {
-        return NextResponse.json({ success: false, error: "Email și parola sunt obligatorii." });
+    // ── All actions require authenticated session ──
+    let session;
+    try {
+      session = await requireAuth();
+    } catch (e) {
+      if (e instanceof AuthError) {
+        return NextResponse.json({ success: false, error: e.message }, { status: e.status });
       }
-      const admins = await seedIfEmpty();
-      const hash = await hashPassword(password);
-      const admin = admins.find(
-        (a) => a.email.toLowerCase() === email.toLowerCase() && a.passwordHash === hash && a.active
-      );
-      if (!admin) {
-        return NextResponse.json({ success: false, error: "Email sau parolă incorectă." });
-      }
-      admin.lastLoginAt = new Date().toISOString();
-      await saveAdmins(admins);
-      return NextResponse.json({ success: true, data: sanitize(admin) });
+      return NextResponse.json({ success: false, error: "Neautorizat." }, { status: 401 });
     }
 
-    // ── All other actions require adminId for auth ──
-    const { adminId } = body;
-    const admins = await seedIfEmpty();
-    const caller = admins.find((a) => a.id === adminId && a.active);
+    const admins = await getAdmins();
+    const caller = admins.find((a) => a.id === session.adminId && a.active);
     if (!caller) {
-      return NextResponse.json({ success: false, error: "Neautorizat." });
+      return NextResponse.json({ success: false, error: "Neautorizat." }, { status: 401 });
     }
 
     // ── LIST ──

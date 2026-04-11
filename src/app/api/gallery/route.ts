@@ -3,9 +3,7 @@ import { Maya_GALLERY, KUZIINI_GALLERY, Maya_LIBRARY, KUZIINI_LIBRARY } from "@/
 import type { GalleryImage, GalleryAspect, LibraryPhoto } from "@/lib/mock-data";
 import type { BannerCategory } from "@/types";
 import { kvGet, kvSet } from "@/lib/kv";
-
-const ADMIN_PASSWORD = "Kuziini1";
-const Maya_PASSWORD = "Maya2025";
+import { requireAuth, AuthError } from "@/lib/auth";
 
 interface StoredGallery {
   slots: number;
@@ -38,10 +36,6 @@ async function saveLibrary(category: BannerCategory, library: LibraryPhoto[]) {
   await kvSet(`library:${category}`, library);
 }
 
-function validatePassword(password: string, category: BannerCategory): boolean {
-  if (category === "Maya") return password === Maya_PASSWORD;
-  return password === ADMIN_PASSWORD;
-}
 
 function galleryResponse(gallery: StoredGallery, library: LibraryPhoto[]) {
   return {
@@ -83,21 +77,25 @@ export async function GET(req: NextRequest) {
   });
 }
 
-// POST - authenticated
+// POST - authenticated via session cookie
 export async function POST(req: NextRequest) {
+  try {
+    await requireAuth(["super_admin", "content_admin"]);
+  } catch (e) {
+    if (e instanceof AuthError) {
+      return NextResponse.json({ success: false, error: e.message }, { status: e.status });
+    }
+    return NextResponse.json({ success: false, error: "Neautorizat." }, { status: 401 });
+  }
+
   const body = await req.json();
-  const { password, category, action } = body as {
-    password: string;
+  const { category, action } = body as {
     category: BannerCategory;
     action: string;
   };
 
   if (!category || (category !== "Maya" && category !== "kuziini")) {
     return NextResponse.json({ success: false, error: "Categorie invalida." }, { status: 400 });
-  }
-
-  if (!validatePassword(password, category)) {
-    return NextResponse.json({ success: false, error: "Parola incorecta." }, { status: 401 });
   }
 
   const gallery = await getGallery(category);

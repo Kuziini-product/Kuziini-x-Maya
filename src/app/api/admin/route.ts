@@ -6,17 +6,16 @@ import {
   ORDER_LOG,
   BILL_REQUESTS_LOG,
 } from "@/lib/mock-data";
-
-const ADMIN_PASSWORD = "Kuziini1";
+import { requireAuth, AuthError } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
-  const { password } = await req.json();
-
-  if (password !== ADMIN_PASSWORD) {
-    return NextResponse.json(
-      { success: false, error: "Parolă incorectă." },
-      { status: 401 }
-    );
+  try {
+    await requireAuth(["super_admin"]);
+  } catch (e) {
+    if (e instanceof AuthError) {
+      return NextResponse.json({ success: false, error: e.message }, { status: e.status });
+    }
+    return NextResponse.json({ success: false, error: "Neautorizat." }, { status: 401 });
   }
 
   // Umbrella stats

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { ChevronRight, ChevronLeft, MapPin, Phone, Mail, AtSign, X, Send, CheckCircle, Heart } from "lucide-react";
 import { ScratchX } from "@/components/ui/ScratchX";
 import { useSessionStore } from "@/store";
@@ -64,10 +65,13 @@ export default function HomePage() {
           <div className="flex-1 flex flex-col items-center justify-center">
             {/* Maya + Mamaia — scroll to About */}
             <button onClick={() => document.getElementById("about")?.scrollIntoView({ behavior: "smooth" })} className="mb-6 block mx-auto">
-              <img
+              <Image
                 src="/Maya.png"
                 alt="Maya"
-                className="h-40 object-contain mx-auto mb-1"
+                width={280}
+                height={160}
+                className="h-40 w-auto object-contain mx-auto mb-1"
+                priority
               />
               <p className="text-white text-sm font-light tracking-[0.5em] uppercase">
                 Mamaia
@@ -78,10 +82,13 @@ export default function HomePage() {
 
             {/* Logo Kuziini — scroll to About */}
             <button onClick={() => document.getElementById("about")?.scrollIntoView({ behavior: "smooth" })} className="block mx-auto w-fit">
-              <img
+              <Image
                 src="/kuziini-logo.png"
                 alt="Kuziini Furniture & More"
+                width={140}
+                height={140}
                 className="w-[140px] h-auto rounded-2xl shadow-2xl shadow-black/60 border border-white/10 invert brightness-200"
+                priority
               />
             </button>
           </div>
@@ -144,10 +151,12 @@ export default function HomePage() {
         {kuziiniGallery && kuziiniGallery.images.length > 0 && (
           <div className="mb-8">
             <div className="flex items-start gap-3 mb-4">
-              <img
+              <Image
                 src="/kuziini-logo.png"
                 alt="Kuziini"
-                className="h-8 object-contain invert brightness-200 opacity-60 mt-0.5 shrink-0"
+                width={60}
+                height={32}
+                className="h-8 w-auto object-contain invert brightness-200 opacity-60 mt-0.5 shrink-0"
               />
               <p className="text-white/40 text-sm leading-relaxed">
                 — inovație, rafinament și design sofisticat. Mobilier premium, interioare personalizate.
@@ -166,10 +175,12 @@ export default function HomePage() {
         {MayaGallery && MayaGallery.images.length > 0 && (
           <div>
             <div className="flex items-start gap-3 mb-4">
-              <img
+              <Image
                 src="/Maya.png"
                 alt="Maya"
-                className="h-10 object-contain opacity-60 mt-0.5 shrink-0"
+                width={70}
+                height={40}
+                className="h-10 w-auto object-contain opacity-60 mt-0.5 shrink-0"
               />
               <p className="text-white/40 text-sm leading-relaxed">
                 — primul day party din România. 10 ani de gastronomie, băuturi craft și entertainment 360°.
@@ -189,17 +200,21 @@ export default function HomePage() {
       <footer className="py-12 px-5 border-t border-white/[0.06]">
         <div className="flex items-center justify-center gap-4 mb-6">
           <button onClick={() => router.push("/Maya")}>
-            <img
+            <Image
               src="/Maya.png"
               alt="Maya"
+              width={100}
+              height={60}
               className="w-[100px] h-auto object-contain opacity-80"
             />
           </button>
           <ScratchX className="h-12 text-[#C9AB81]/40" />
           <button onClick={() => router.push("/admin")}>
-            <img
+            <Image
               src="/kuziini-logo.png"
               alt="Kuziini"
+              width={100}
+              height={100}
               className="w-[100px] h-auto rounded-2xl border border-white/10 invert brightness-200 object-contain"
             />
           </button>

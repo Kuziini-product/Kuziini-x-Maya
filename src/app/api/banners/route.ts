@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Maya_BANNERS, KUZIINI_BANNERS } from "@/lib/mock-data";
 import { kvGet, kvSet } from "@/lib/kv";
+import { requireAuth, AuthError } from "@/lib/auth";
 import type { PromoBanner, BannerCategory } from "@/types";
-
-const ADMIN_PASSWORD = "Kuziini1";
-const Maya_PASSWORD = "Maya2025";
 
 async function getBanners(category: BannerCategory): Promise<PromoBanner[]> {
   const key = `banners:${category}`;
@@ -17,11 +15,6 @@ async function setBanners(category: BannerCategory, banners: PromoBanner[]) {
   await kvSet(`banners:${category}`, banners);
 }
 
-function validatePassword(password: string, category: BannerCategory): boolean {
-  if (category === "Maya") return password === Maya_PASSWORD;
-  return password === ADMIN_PASSWORD;
-}
-
 // GET - public, returns banners for display
 export async function GET(req: NextRequest) {
   const category = (req.nextUrl.searchParams.get("category") || "Maya") as BannerCategory;
@@ -31,21 +24,25 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({ success: true, data: await getBanners(category) });
 }
 
-// POST - authenticated, manage banners
+// POST - authenticated via session cookie
 export async function POST(req: NextRequest) {
+  try {
+    await requireAuth(["super_admin", "content_admin"]);
+  } catch (e) {
+    if (e instanceof AuthError) {
+      return NextResponse.json({ success: false, error: e.message }, { status: e.status });
+    }
+    return NextResponse.json({ success: false, error: "Neautorizat." }, { status: 401 });
+  }
+
   const body = await req.json();
-  const { password, category, action } = body as {
-    password: string;
+  const { category, action } = body as {
     category: BannerCategory;
     action: "list" | "add" | "update" | "delete" | "reorder";
   };
 
   if (!category || (category !== "Maya" && category !== "kuziini")) {
     return NextResponse.json({ success: false, error: "Categorie invalida." }, { status: 400 });
-  }
-
-  if (!validatePassword(password, category)) {
-    return NextResponse.json({ success: false, error: "Parola incorecta." }, { status: 401 });
   }
 
   const banners = await getBanners(category);

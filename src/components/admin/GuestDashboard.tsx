@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
 import {
   Umbrella,
   Users,
@@ -8,8 +7,8 @@ import {
   MapPin,
   CreditCard,
   RefreshCw,
-  ChevronRight,
 } from "lucide-react";
+import { useDashboard } from "@/hooks/use-admin";
 import type { DashboardStats } from "@/types";
 
 interface Props {
@@ -28,30 +27,10 @@ interface StatCardDef {
 }
 
 export default function GuestDashboard({ adminId, onNavigate }: Props) {
-  const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { data, isLoading, refetch } = useDashboard({ refetchInterval: 15_000 });
+  const stats = data?.stats ?? null;
 
-  const fetchStats = useCallback(async () => {
-    try {
-      const res = await fetch("/api/admin/dashboard", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ adminId }),
-      });
-      const json = await res.json();
-      if (json.success) setStats(json.data.stats);
-    } finally {
-      setLoading(false);
-    }
-  }, [adminId]);
-
-  useEffect(() => {
-    fetchStats();
-    const interval = setInterval(fetchStats, 15000);
-    return () => clearInterval(interval);
-  }, [fetchStats]);
-
-  if (loading && !stats) {
+  if (isLoading && !stats) {
     return (
       <div className="flex items-center justify-center py-20">
         <RefreshCw className="w-6 h-6 th-text-muted animate-spin" />
@@ -144,10 +123,10 @@ export default function GuestDashboard({ adminId, onNavigate }: Props) {
           {stats.totalLoungers} sezlonguri totale · Actualizare la 15s
         </p>
         <button
-          onClick={() => { setLoading(true); fetchStats(); }}
+          onClick={() => refetch()}
           className="th-text-muted active:th-text-secondary"
         >
-          <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+          <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
         </button>
       </div>
 

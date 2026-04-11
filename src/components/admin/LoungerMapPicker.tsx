@@ -43,16 +43,8 @@ export default function LoungerMapPicker({
     setLoading(true);
     try {
       const [dashRes, guestRes] = await Promise.all([
-        fetch("/api/admin/dashboard", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ adminId }),
-        }),
-        fetch("/api/admin/guests", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action: "list", adminId }),
-        }),
+        fetch("/api/admin/dashboard"),
+        fetch("/api/admin/guests"),
       ]);
       const [dashJson, guestJson] = await Promise.all([dashRes.json(), guestRes.json()]);
       if (dashJson.success) setLoungers(dashJson.data.loungerConfig);

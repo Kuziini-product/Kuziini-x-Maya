@@ -46,6 +46,10 @@ const config: Config = {
           900: "#831843",
         },
         cream: "#f8f8f8",
+        maya: {
+          gold: "#C9AB81",
+          dark: "#0A0A0A",
+        },
       },
       fontFamily: {
         display: ["var(--font-display)", "Georgia", "serif"],

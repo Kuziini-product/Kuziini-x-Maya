@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { kvGet, kvSet } from "@/lib/kv";
 import { sendPushToAll } from "@/lib/push";
-
-const ADMIN_PASSWORD = "Kuziini1";
+import { requireAuth, AuthError } from "@/lib/auth";
 
 // ── Types ──────────────────────────────────────────────
 
@@ -151,9 +150,13 @@ export async function POST(req: NextRequest) {
 
   // ── Admin actions ──
 
-  const { password } = body as { password: string };
-  if (password !== ADMIN_PASSWORD) {
-    return NextResponse.json({ success: false, error: "Parola incorecta." }, { status: 401 });
+  try {
+    await requireAuth(["super_admin", "content_admin"]);
+  } catch (e) {
+    if (e instanceof AuthError) {
+      return NextResponse.json({ success: false, error: e.message }, { status: e.status });
+    }
+    return NextResponse.json({ success: false, error: "Neautorizat." }, { status: 401 });
   }
 
   if (action === "getClientProfiles") {

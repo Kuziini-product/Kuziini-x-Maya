@@ -69,21 +69,9 @@ export default function LoungerGrid({ adminId }: Props) {
   const fetchData = useCallback(async () => {
     try {
       const [dashRes, guestRes, dailyRes] = await Promise.all([
-        fetch("/api/admin/dashboard", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ adminId }),
-        }),
-        fetch("/api/admin/guests", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action: "list", adminId }),
-        }),
-        fetch("/api/admin/guests/daily", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action: "status", adminId }),
-        }),
+        fetch("/api/admin/dashboard"),
+        fetch("/api/admin/guests"),
+        fetch("/api/admin/daily"),
       ]);
 
       const [dashJson, guestJson, dailyJson] = await Promise.all([
@@ -178,29 +166,17 @@ export default function LoungerGrid({ adminId }: Props) {
     setSaving(true);
     setError(null);
     try {
-      const res = await fetch("/api/admin/guests", {
-        method: "POST",
+      const res = await fetch(`/api/admin/guests/${selectedGuestId}`, {
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "update",
-          adminId,
-          guestId: selectedGuestId,
-          loungerId: selected,
-        }),
+        body: JSON.stringify({ loungerId: selected }),
       });
       const json = await res.json();
       if (!json.success) throw new Error(json.error);
-      // Also confirm for today
-      await fetch("/api/admin/guests/daily", {
+      await fetch("/api/admin/daily/confirm", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "confirm",
-          adminId,
-          guestId: selectedGuestId,
-          loungerId: selected,
-          method: "manual",
-        }),
+        body: JSON.stringify({ guestId: selectedGuestId, loungerId: selected, method: "manual" }),
       });
       setSuccess("Oaspete asignat si confirmat!");
       fetchData();
@@ -225,8 +201,6 @@ export default function LoungerGrid({ adminId }: Props) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          action: "create",
-          adminId,
           name: ciName.trim(),
           phone: ciPhone.trim(),
           email: ciEmail.trim(),
@@ -239,17 +213,10 @@ export default function LoungerGrid({ adminId }: Props) {
       });
       const json = await res.json();
       if (!json.success) throw new Error(json.error);
-      // Also confirm for today
-      await fetch("/api/admin/guests/daily", {
+      await fetch("/api/admin/daily/confirm", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "confirm",
-          adminId,
-          guestId: json.data.id,
-          loungerId: selected,
-          method: "manual",
-        }),
+        body: JSON.stringify({ guestId: json.data.id, loungerId: selected, method: "manual" }),
       });
       setSuccess(`${ciName.trim()} - check-in pe ${selected}!`);
       fetchData();
@@ -275,16 +242,10 @@ export default function LoungerGrid({ adminId }: Props) {
     setError(null);
     try {
       const target = relocateTarget.trim().toUpperCase();
-      const res = await fetch("/api/admin/guests", {
+      const res = await fetch(`/api/admin/guests/${selectedGuest.id}/relocate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "relocate",
-          adminId,
-          guestId: selectedGuest.id,
-          newLoungerId: target,
-          reason: relocateReason.trim(),
-        }),
+        body: JSON.stringify({ newLoungerId: target, reason: relocateReason.trim() }),
       });
       const json = await res.json();
       if (!json.success) throw new Error(json.error);

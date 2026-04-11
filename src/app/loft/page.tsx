@@ -64,43 +64,37 @@ export default function MayaPage() {
   useEffect(() => {
     if (autoLoginDone.current) return;
     autoLoginDone.current = true;
-    const saved = getSavedSession();
-    if (saved) {
-      setPassword(saved);
-      // Auto-login with saved password
-      (async () => {
+    // Check if already authenticated via session cookie
+    (async () => {
+      try {
+        const meRes = await fetch("/api/auth/me");
+        const meJson = await meRes.json();
+        if (!meJson.success) return;
         setLoading(true);
-        try {
-          const res = await fetch("/api/banners", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ password: saved, category: "Maya", action: "list" }),
-          });
-          const json = await res.json();
-          if (json.success) {
-            setBanners(json.data);
-            setStoredPassword(saved);
-            setAuthenticated(true);
-            fetch("/api/gallery", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ password: saved, category: "Maya", action: "get" }),
-            })
-              .then((r) => r.json())
-              .then((j) => {
-                if (j.success) {
-                  setGallerySlots(j.data.slots);
-                  if (j.data.aspect) setGalleryAspect(j.data.aspect);
-                  setGalleryImages(j.data.images);
-                  if (j.data.library) setGalleryLibrary(j.data.library);
-                }
-              });
-          }
-        } finally {
-          setLoading(false);
+        setAuthenticated(true);
+        const res = await fetch("/api/banners", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ category: "Maya", action: "list" }),
+        });
+        const json = await res.json();
+        if (json.success) setBanners(json.data);
+        const gRes = await fetch("/api/gallery", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ category: "Maya", action: "get" }),
+        });
+        const gJson = await gRes.json();
+        if (gJson.success) {
+          setGallerySlots(gJson.data.slots);
+          if (gJson.data.aspect) setGalleryAspect(gJson.data.aspect);
+          setGalleryImages(gJson.data.images);
+          if (gJson.data.library) setGalleryLibrary(gJson.data.library);
         }
-      })();
-    }
+      } catch {} finally {
+        setLoading(false);
+      }
+    })();
   }, []);
 
   async function handleLogin() {
@@ -111,22 +105,28 @@ export default function MayaPage() {
     setLoading(true);
     setError(null);
     try {
+      // Login via auth endpoint to get session cookie
+      const loginRes = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: "admin@maya.ro", password }),
+      });
+      const loginJson = await loginRes.json();
+      if (!loginJson.success) throw new Error(loginJson.error);
       const res = await fetch("/api/banners", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password, category: "Maya", action: "list" }),
+        body: JSON.stringify({ category: "Maya", action: "list" }),
       });
       const json = await res.json();
       if (!json.success) throw new Error(json.error);
       setBanners(json.data);
-      setStoredPassword(password);
       setAuthenticated(true);
-      saveSession(password);
       // Fetch gallery
       fetch("/api/gallery", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password, category: "Maya", action: "get" }),
+        body: JSON.stringify({ category: "Maya", action: "get" }),
       })
         .then((r) => r.json())
         .then((j) => {
@@ -150,7 +150,7 @@ export default function MayaPage() {
       const res = await fetch("/api/banners", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password: storedPassword, category: "Maya", action: "list" }),
+        body: JSON.stringify({ category: "Maya", action: "list" }),
       });
       const json = await res.json();
       if (json.success) setBanners(json.data);
@@ -374,7 +374,6 @@ export default function MayaPage() {
             </div>
             <BannerManager
               category="Maya"
-              password={storedPassword}
               banners={banners}
               onUpdate={setBanners}
             />
@@ -400,7 +399,6 @@ export default function MayaPage() {
             </div>
             <GalleryManager
               category="Maya"
-              password={storedPassword}
               slots={gallerySlots}
               aspect={galleryAspect}
               images={galleryImages}
