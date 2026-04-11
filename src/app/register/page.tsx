@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   User,
   Mail,
@@ -51,33 +51,48 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function searchGroup() {
-    if (!groupPhone.trim() || groupPhone.trim().length < 5) {
-      setGroupError("Introdu un numar de telefon valid.");
+  // Auto-search group when phone changes (debounce 800ms)
+  const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    const digits = groupPhone.replace(/\D/g, "");
+    // Need at least 10 digits (country code + number)
+    if (digits.length < 10) {
+      setGroupInfo(null);
+      setGroupError(null);
+      setSearchingGroup(false);
       return;
     }
     if (groupPhone.trim() === phone.trim()) {
       setGroupError("Nu poti introduce propriul numar de telefon.");
+      setGroupInfo(null);
       return;
     }
+    // Debounce
+    if (searchTimer.current) clearTimeout(searchTimer.current);
     setSearchingGroup(true);
     setGroupError(null);
     setGroupInfo(null);
-    try {
-      const res = await fetch("/api/admin/guests", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "find-group", phone: groupPhone.trim() }),
-      });
-      const json = await res.json();
-      if (!json.success) throw new Error(json.error);
-      setGroupInfo(json.data);
-    } catch (err: unknown) {
-      setGroupError(err instanceof Error ? err.message : "Nu s-a gasit niciun membru cu acest numar. Asigura-te ca membrul s-a inregistrat deja.");
-    } finally {
-      setSearchingGroup(false);
-    }
-  }
+    searchTimer.current = setTimeout(async () => {
+      try {
+        const res = await fetch("/api/admin/guests", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "find-group", phone: groupPhone.trim() }),
+        });
+        const json = await res.json();
+        if (!json.success) throw new Error(json.error);
+        setGroupInfo(json.data);
+        setGroupError(null);
+      } catch {
+        setGroupInfo(null);
+        setGroupError("Nu exista un grup cu acest numar. Membrul trebuie sa se inregistreze primul.");
+      } finally {
+        setSearchingGroup(false);
+      }
+    }, 800);
+    return () => { if (searchTimer.current) clearTimeout(searchTimer.current); };
+  }, [groupPhone, phone]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -309,46 +324,48 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {/* ── GROUP JOIN (before submit) ── */}
-          <div className="bg-white/[0.03] border border-white/[0.08] p-4">
-            <p className={labelCls}>Faci parte dintr-un grup? (optional)</p>
+          {/* ── GROUP JOIN (auto-search) ── */}
+          <div className={`p-4 border-2 transition-colors ${
+            groupInfo ? "bg-emerald-400/5 border-emerald-400/30" :
+            groupError ? "bg-red-400/5 border-red-400/30" :
+            "bg-white/[0.02] border-white/[0.08]"
+          }`}>
+            <p className={labelCls}>Telefon alt membru din grup (optional)</p>
             <p className="text-white/40 text-xs mb-3">
-              Daca un alt membru al familiei/grupului s-a inregistrat deja, introdu numarul lui de telefon pentru a va uni intr-un grup.
+              Introdu numarul de telefon al unui membru care s-a inregistrat deja. Sistemul va gasi grupul automat.
             </p>
 
-            <div className="flex gap-2 items-start">
-              <div className="flex-1">
-                <PhoneInput
-                  value={groupPhone}
-                  onChange={(v) => { setGroupPhone(v); setGroupInfo(null); setGroupError(null); }}
-                  placeholder="712 345 678"
-                />
-              </div>
-              <button
-                type="button"
-                onClick={searchGroup}
-                disabled={searchingGroup || groupPhone.replace(/\D/g, "").length < 5}
-                className="px-4 py-3 bg-[#C9AB81] text-[#0A0A0A] font-bold text-xs tracking-wider uppercase disabled:opacity-50 shrink-0"
-              >
-                {searchingGroup ? "..." : "Cauta"}
-              </button>
-            </div>
+            <PhoneInput
+              value={groupPhone}
+              onChange={setGroupPhone}
+              placeholder="712 345 678"
+            />
 
-            {groupError && <p className="text-red-400 text-xs mt-2">{groupError}</p>}
+            {/* Status indicator */}
+            {searchingGroup && (
+              <p className="text-[#C9AB81] text-xs mt-2 animate-pulse">Se cauta grupul...</p>
+            )}
+
+            {groupError && (
+              <div className="flex items-center gap-2 mt-2">
+                <AlertCircle className="w-3.5 h-3.5 text-red-400 shrink-0" />
+                <p className="text-red-400 text-xs">{groupError}</p>
+              </div>
+            )}
 
             {groupInfo && (
-              <div className="bg-emerald-400/10 border border-emerald-400/20 p-3 mt-3">
-                <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <div>
-                    <p className="text-emerald-400 text-sm font-bold">Grup gasit!</p>
-                    <p className="text-white/60 text-xs">
-                      {groupInfo.primaryName} · {groupInfo.memberCount} {groupInfo.memberCount === 1 ? "membru" : "membri"} ({groupInfo.memberNames.join(", ")})
-                    </p>
-                    <p className="text-emerald-400/70 text-[10px] mt-1">
-                      Te vei alatura automat la trimitere
-                    </p>
-                  </div>
+              <div className="flex items-center gap-2 mt-3">
+                <Check className="w-5 h-5 text-emerald-400 shrink-0" />
+                <div>
+                  <p className="text-emerald-400 text-sm font-bold">
+                    Grup: {groupInfo.primaryName}
+                  </p>
+                  <p className="text-white/60 text-xs">
+                    {groupInfo.memberCount} {groupInfo.memberCount === 1 ? "membru" : "membri"}: {groupInfo.memberNames.join(", ")}
+                  </p>
+                  <p className="text-emerald-400/70 text-[10px] mt-0.5">
+                    Te vei alatura automat la trimitere
+                  </p>
                 </div>
               </div>
             )}
