@@ -16,8 +16,10 @@ import {
   LogOut,
   Clock,
   ArrowRightLeft,
+  Map,
 } from "lucide-react";
 import type { GuestProfile, GuestMember } from "@/types";
+import LoungerMapPicker from "@/components/admin/LoungerMapPicker";
 
 interface Props {
   guest: GuestProfile;
@@ -48,6 +50,7 @@ export default function GuestCardModal({ guest, adminId, onClose, onUpdated }: P
   // New lounger
   const [showAddLounger, setShowAddLounger] = useState(false);
   const [newLounger, setNewLounger] = useState("");
+  const [showMapPicker, setShowMapPicker] = useState(false);
 
   async function saveChanges() {
     setSaving(true);
@@ -290,14 +293,23 @@ export default function GuestCardModal({ guest, adminId, onClose, onUpdated }: P
           {/* ── LOUNGERS ── */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <p className={labelCls}>Sezlonguri alocate</p>
-              <button
-                onClick={() => setShowAddLounger(!showAddLounger)}
-                className="flex items-center gap-1 text-[#C9AB81] text-[10px] font-bold uppercase tracking-wider"
-              >
-                {showAddLounger ? <Minus className="w-3 h-3" /> : <Plus className="w-3 h-3" />}
-                {showAddLounger ? "Anuleaza" : "Adauga"}
-              </button>
+              <p className={labelCls}>Sezlonguri alocate ({loungerIds.length})</p>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setShowMapPicker(true)}
+                  className="flex items-center gap-1 text-[#C9AB81] text-[10px] font-bold uppercase tracking-wider"
+                >
+                  <Map className="w-3 h-3" />
+                  Harta
+                </button>
+                <button
+                  onClick={() => setShowAddLounger(!showAddLounger)}
+                  className="flex items-center gap-1 text-[#C9AB81] text-[10px] font-bold uppercase tracking-wider"
+                >
+                  {showAddLounger ? <Minus className="w-3 h-3" /> : <Plus className="w-3 h-3" />}
+                  Manual
+                </button>
+              </div>
             </div>
 
             <div className="flex gap-1.5 flex-wrap">
@@ -438,6 +450,45 @@ export default function GuestCardModal({ guest, adminId, onClose, onUpdated }: P
           </div>
         </div>
       </div>
+
+      {/* Map picker overlay */}
+      {showMapPicker && (
+        <LoungerMapPicker
+          adminId={adminId}
+          selected={loungerIds}
+          count={0}
+          excludeFromOccupied={loungerIds}
+          onSelect={async (newIds) => {
+            // Add new loungers that aren't already in the list
+            for (const lid of newIds) {
+              if (!loungerIds.includes(lid)) {
+                await addLounger();
+                // Direct API call for each new lounger
+                await fetch("/api/admin/guests", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ action: "add-lounger", adminId, guestId: guest.id, loungerId: lid }),
+                }).then(r => r.json()).then(json => {
+                  if (json.success) onUpdated(json.data);
+                });
+              }
+            }
+            // Remove loungers that were deselected
+            for (const lid of loungerIds) {
+              if (!newIds.includes(lid) && loungerIds.length > 1) {
+                await fetch("/api/admin/guests", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ action: "remove-lounger", adminId, guestId: guest.id, loungerId: lid }),
+                }).then(r => r.json()).then(json => {
+                  if (json.success) onUpdated(json.data);
+                });
+              }
+            }
+          }}
+          onClose={() => setShowMapPicker(false)}
+        />
+      )}
     </div>
   );
 }

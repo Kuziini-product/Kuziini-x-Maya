@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import {
   UserPlus,
   Check,
@@ -14,11 +14,7 @@ import {
   X,
 } from "lucide-react";
 import type { GuestProfile } from "@/types";
-
-interface LoungerConfig {
-  id: string;
-  zone: string;
-}
+import LoungerMapPicker from "@/components/admin/LoungerMapPicker";
 
 interface Props {
   adminId: string;
@@ -41,57 +37,11 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
   const [notes, setNotes] = useState("");
   const [extraMembers, setExtraMembers] = useState<{phone: string; name: string; email: string}[]>([]);
   const [loungerCount, setLoungerCount] = useState(1);
+  const [selectedLoungers, setSelectedLoungers] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<GuestProfile | null>(null);
-
-  // Map picker state
   const [showMap, setShowMap] = useState(false);
-  const [loungers, setLoungers] = useState<LoungerConfig[]>([]);
-  const [occupiedLoungers, setOccupiedLoungers] = useState<Set<string>>(new Set());
-  const [mapLoading, setMapLoading] = useState(false);
-
-  const loadLoungers = useCallback(async () => {
-    setMapLoading(true);
-    try {
-      const [dashRes, guestRes] = await Promise.all([
-        fetch("/api/admin/dashboard", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ adminId }),
-        }),
-        fetch("/api/admin/guests", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action: "list", adminId }),
-        }),
-      ]);
-      const [dashJson, guestJson] = await Promise.all([dashRes.json(), guestRes.json()]);
-      if (dashJson.success) setLoungers(dashJson.data.loungerConfig);
-      if (guestJson.success) {
-        const today = new Date().toLocaleDateString("sv-SE", { timeZone: "Europe/Bucharest" });
-        const occupied = new Set<string>();
-        for (const g of guestJson.data as GuestProfile[]) {
-          if (g.status !== "checked_out" && g.stayStart <= today && g.stayEnd >= today && g.loungerId) {
-            occupied.add(g.loungerId);
-          }
-        }
-        setOccupiedLoungers(occupied);
-      }
-    } finally {
-      setMapLoading(false);
-    }
-  }, [adminId]);
-
-  function openMap() {
-    setShowMap(true);
-    loadLoungers();
-  }
-
-  function selectFromMap(id: string) {
-    setLoungerId(id);
-    setShowMap(false);
-  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -107,13 +57,10 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
         ...extraMembers.filter(m => m.phone.trim()),
       ];
       const mainLounger = loungerId.trim().toUpperCase();
-      const selectedLoungerIds = mainLounger ? [mainLounger] : [];
-      // If more lounger slots requested, add placeholder IDs for adjacent assignment
-      if (loungerCount > 1 && mainLounger) {
-        for (let i = 1; i < loungerCount; i++) {
-          selectedLoungerIds.push(`${mainLounger}+${i}`);
-        }
-      }
+      // Use map-selected loungers if available, otherwise just the typed one
+      const selectedLoungerIds = selectedLoungers.length > 0
+        ? selectedLoungers
+        : mainLounger ? [mainLounger] : [];
       const res = await fetch("/api/admin/guests", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -167,6 +114,7 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
     setNotes("");
     setExtraMembers([]);
     setLoungerCount(1);
+    setSelectedLoungers([]);
     setSuccess(null);
     setError(null);
   }
@@ -197,13 +145,6 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
     "w-full th-input border px-3 py-2.5 text-sm outline-none focus:border-[#C9AB81]/50";
   const labelCls =
     "text-[10px] font-bold text-[#C9AB81] uppercase tracking-[0.2em] mb-1.5 block";
-
-  // Group loungers by zone for map picker
-  const zoneGroups = loungers.reduce<Record<string, LoungerConfig[]>>((acc, l) => {
-    if (!acc[l.zone]) acc[l.zone] = [];
-    acc[l.zone].push(l);
-    return acc;
-  }, {});
 
   return (
     <>
@@ -341,9 +282,23 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
           </div>
         </div>
 
-        {/* Lounger - with map picker */}
+        {/* Lounger selection */}
         <div>
-          <label className={labelCls}>Sezlong / Umbrela</label>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className={labelCls}>Sezlonguri</label>
+            <div className="flex items-center gap-2">
+              <label className="th-text-faint text-[9px]">Cate locuri:</label>
+              <input
+                type="number"
+                value={loungerCount}
+                onChange={(e) => setLoungerCount(Math.max(1, Math.min(10, Number(e.target.value))))}
+                min={1}
+                max={10}
+                className="th-input border px-2 py-1 text-xs w-14 text-center outline-none"
+              />
+            </div>
+          </div>
+
           <div className="flex gap-2">
             <div className="relative flex-1">
               <Umbrella className="absolute left-3 top-2.5 w-4 h-4 th-text-faint" />
@@ -352,34 +307,37 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
                 value={loungerId}
                 onChange={(e) => setLoungerId(e.target.value)}
                 className={`${inputCls} pl-9`}
-                placeholder="A-001, B-015, VIP-003..."
+                placeholder="Introdu manual sau alege din harta..."
               />
             </div>
             <button
               type="button"
-              onClick={openMap}
+              onClick={() => setShowMap(true)}
               className="flex items-center gap-1.5 px-4 bg-[#C9AB81] text-[#0A0A0A] font-bold text-[10px] tracking-wider uppercase"
             >
               <Map className="w-4 h-4" />
               Harta
             </button>
           </div>
-          {loungerId && (
+
+          {/* Show selected loungers */}
+          {selectedLoungers.length > 0 && (
+            <div className="flex gap-1 flex-wrap mt-2">
+              {selectedLoungers.map((lid) => (
+                <span key={lid} className="flex items-center gap-1 bg-[#C9AB81]/10 border border-[#C9AB81]/20 px-2 py-0.5 text-[10px] font-bold text-[#C9AB81]">
+                  {lid}
+                  <button type="button" onClick={() => setSelectedLoungers(selectedLoungers.filter(l => l !== lid))} className="text-red-400">
+                    <X className="w-2.5 h-2.5" />
+                  </button>
+                </span>
+              ))}
+            </div>
+          )}
+          {selectedLoungers.length === 0 && loungerId && (
             <p className="text-emerald-500 text-[10px] mt-1 font-medium">
-              Selectat: {loungerId.toUpperCase()}
+              Manual: {loungerId.toUpperCase()}
             </p>
           )}
-          <div className="mt-2">
-            <label className={labelCls}>Cate locuri?</label>
-            <input
-              type="number"
-              value={loungerCount}
-              onChange={(e) => setLoungerCount(Math.max(1, Math.min(10, Number(e.target.value))))}
-              min={1}
-              max={10}
-              className={`${inputCls} w-24`}
-            />
-          </div>
         </div>
 
         {/* Credit toggle */}
@@ -443,64 +401,18 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
         </button>
       </form>
 
-      {/* ── MAP PICKER OVERLAY ── */}
+      {/* ── MAP PICKER ── */}
       {showMap && (
-        <div className="fixed inset-0 bg-black/40 z-50 flex items-end">
-          <div className="bg-white w-full max-h-[80vh] overflow-y-auto p-4 rounded-t-2xl">
-            <div className="flex items-center justify-between mb-4">
-              <p className="th-text font-bold text-lg">Alege sezlong</p>
-              <button onClick={() => setShowMap(false)} className="th-text-muted p-1">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="flex items-center gap-4 text-[10px] th-text-muted mb-4">
-              <span className="flex items-center gap-1">
-                <span className="w-3 h-3 bg-emerald-100 border border-emerald-300 inline-block" />
-                Liber
-              </span>
-              <span className="flex items-center gap-1">
-                <span className="w-3 h-3 bg-red-100 border border-red-300 inline-block" />
-                Ocupat
-              </span>
-            </div>
-
-            {mapLoading ? (
-              <div className="flex justify-center py-10">
-                <div className="w-5 h-5 border-2 border-[#C9AB81] border-t-transparent rounded-full animate-spin" />
-              </div>
-            ) : (
-              Object.entries(zoneGroups).map(([zone, zLoungers]) => (
-                <div key={zone} className="mb-4">
-                  <p className="text-[#C9AB81] text-[10px] font-bold tracking-[0.2em] uppercase mb-2">
-                    {zone}
-                  </p>
-                  <div className="grid grid-cols-6 gap-1.5">
-                    {zLoungers.map((l) => {
-                      const isOccupied = occupiedLoungers.has(l.id);
-                      return (
-                        <button
-                          key={l.id}
-                          onClick={() => !isOccupied && selectFromMap(l.id)}
-                          disabled={isOccupied}
-                          className={`border p-1.5 text-center text-[9px] font-bold transition-all ${
-                            isOccupied
-                              ? "bg-red-50 border-red-200 text-red-300 cursor-not-allowed"
-                              : loungerId === l.id
-                              ? "bg-[#C9AB81]/20 border-[#C9AB81] text-[#C9AB81] ring-1 ring-[#C9AB81]"
-                              : "bg-emerald-50 border-emerald-200 text-emerald-600 active:bg-emerald-100"
-                          }`}
-                        >
-                          {l.id}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
+        <LoungerMapPicker
+          adminId={adminId}
+          selected={selectedLoungers}
+          count={loungerCount}
+          onSelect={(ids) => {
+            setSelectedLoungers(ids);
+            if (ids.length > 0) setLoungerId(ids[0]);
+          }}
+          onClose={() => setShowMap(false)}
+        />
       )}
     </>
   );
