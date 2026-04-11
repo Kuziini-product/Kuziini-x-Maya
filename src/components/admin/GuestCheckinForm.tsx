@@ -6,7 +6,6 @@ import {
   Check,
   Phone,
   Mail,
-  Calendar,
   Umbrella,
   CreditCard,
   StickyNote,
@@ -25,12 +24,8 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("+40");
   const [email, setEmail] = useState("");
-  const [stayStart, setStayStart] = useState(
-    new Date().toLocaleDateString("sv-SE", { timeZone: "Europe/Bucharest" })
-  );
-  const [stayEnd, setStayEnd] = useState(
-    new Date().toLocaleDateString("sv-SE", { timeZone: "Europe/Bucharest" })
-  );
+  const [stayDays, setStayDays] = useState(1);
+  const [groupSize, setGroupSize] = useState(1);
   const [loungerId, setLoungerId] = useState("");
   const [creditEnabled, setCreditEnabled] = useState(false);
   const [creditLimit, setCreditLimit] = useState(500);
@@ -57,10 +52,13 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
         ...extraMembers.filter(m => m.phone.trim()),
       ];
       const mainLounger = loungerId.trim().toUpperCase();
-      // Use map-selected loungers if available, otherwise just the typed one
       const selectedLoungerIds = selectedLoungers.length > 0
         ? selectedLoungers
         : mainLounger ? [mainLounger] : [];
+      const today = new Date().toLocaleDateString("sv-SE", { timeZone: "Europe/Bucharest" });
+      const endDate = new Date();
+      endDate.setDate(endDate.getDate() + stayDays - 1);
+      const stayEnd = endDate.toLocaleDateString("sv-SE");
       const res = await fetch("/api/admin/guests", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -70,8 +68,9 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
           name: name.trim(),
           phone: phone.trim(),
           email: email.trim(),
-          stayStart,
+          stayStart: today,
           stayEnd,
+          groupSize,
           loungerId: mainLounger,
           creditEnabled,
           creditLimit: creditEnabled ? creditLimit : 0,
@@ -254,31 +253,34 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
           </button>
         </div>
 
-        {/* Stay period */}
+        {/* Stay duration + Group size */}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className={labelCls}>De la</label>
-            <div className="relative">
-              <Calendar className="absolute left-3 top-2.5 w-4 h-4 th-text-faint" />
-              <input
-                type="date"
-                value={stayStart}
-                onChange={(e) => setStayStart(e.target.value)}
-                className={`${inputCls} pl-9`}
-              />
-            </div>
+            <label className={labelCls}>Cate zile?</label>
+            <select
+              value={stayDays}
+              onChange={(e) => setStayDays(Number(e.target.value))}
+              className={inputCls}
+            >
+              {Array.from({ length: 30 }, (_, i) => i + 1).map((d) => (
+                <option key={d} value={d}>{d} {d === 1 ? "zi" : "zile"}</option>
+              ))}
+            </select>
+            <p className="th-text-faint text-[9px] mt-1">
+              {new Date().toLocaleDateString("ro-RO")} → {(() => { const d = new Date(); d.setDate(d.getDate() + stayDays - 1); return d.toLocaleDateString("ro-RO"); })()}
+            </p>
           </div>
           <div>
-            <label className={labelCls}>Pana la</label>
-            <div className="relative">
-              <Calendar className="absolute left-3 top-2.5 w-4 h-4 th-text-faint" />
-              <input
-                type="date"
-                value={stayEnd}
-                onChange={(e) => setStayEnd(e.target.value)}
-                className={`${inputCls} pl-9`}
-              />
-            </div>
+            <label className={labelCls}>Persoane</label>
+            <select
+              value={groupSize}
+              onChange={(e) => setGroupSize(Number(e.target.value))}
+              className={inputCls}
+            >
+              {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
+                <option key={n} value={n}>{n} {n === 1 ? "persoana" : "persoane"}</option>
+              ))}
+            </select>
           </div>
         </div>
 

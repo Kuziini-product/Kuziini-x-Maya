@@ -27,18 +27,33 @@ export async function POST(req: Request) {
     const activeGuests = todayGuests.filter((g) => g.status === "active");
     const confirmedIds = new Set(confirmations.map((c) => c.guestId));
     const occupiedLoungers = getOccupiedLoungers(activeGuests, today);
+    const pendingValidation = guests.filter((g) => g.status === "pending_validation").length;
 
-    // Pending orders count (from KV when real order system is integrated)
+    // Count persons (members) not just cards
+    const countPersons = (list: typeof guests) =>
+      list.reduce((sum, g) => sum + (g.members?.length || 1), 0);
+    const totalPersons = countPersons(guests.filter(g => g.status !== "checked_out"));
+    const totalPersonsToday = countPersons(todayGuests);
+    const activePersons = countPersons(activeGuests);
+    const loungersInUsePersons = countPersons(activeGuests.filter(g => (g.loungerIds?.length || 0) > 0 || g.loungerId));
+    const creditPersonsCount = countPersons(todayGuests.filter(g => g.creditEnabled));
+
     const pendingOrders = 0;
 
     const stats: DashboardStats = {
       totalLoungers: loungerConfig.length,
+      totalPersons,
       loungersInUse: occupiedLoungers.size,
+      loungersInUsePersons,
       freeLoungers: loungerConfig.length - occupiedLoungers.size,
       activeGuests: activeGuests.length,
+      activePersons,
       pendingOrders,
       totalGuestsToday: todayGuests.length,
+      totalPersonsToday,
       creditGuestsCount: todayGuests.filter((g) => g.creditEnabled).length,
+      creditPersonsCount,
+      pendingValidation,
     };
 
     return NextResponse.json({ success: true, data: { stats, loungerConfig } });

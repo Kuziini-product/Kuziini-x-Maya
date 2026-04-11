@@ -20,6 +20,7 @@ interface Props {
 interface StatCardDef {
   label: string;
   value: number;
+  subValue?: string;
   icon: React.ReactNode;
   color: string;
   bg: string;
@@ -62,8 +63,18 @@ export default function GuestDashboard({ adminId, onNavigate }: Props) {
 
   const cards: StatCardDef[] = [
     {
+      label: "Total sezlonguri",
+      value: stats.totalLoungers,
+      subValue: `${stats.totalPersons} oaspeti`,
+      icon: <Umbrella className="w-6 h-6" />,
+      color: "text-sky-400",
+      bg: "bg-sky-400/10 border-sky-400/20",
+      tab: "guest-loungers",
+    },
+    {
       label: "Sezlonguri ocupate",
       value: stats.loungersInUse,
+      subValue: `${stats.loungersInUsePersons} oaspeti`,
       icon: <Umbrella className="w-6 h-6" />,
       color: "text-amber-400",
       bg: "bg-amber-400/10 border-amber-400/20",
@@ -72,9 +83,36 @@ export default function GuestDashboard({ adminId, onNavigate }: Props) {
     {
       label: "Oaspeti activi",
       value: stats.activeGuests,
+      subValue: `${stats.activePersons} persoane`,
       icon: <Users className="w-6 h-6" />,
       color: "text-emerald-400",
       bg: "bg-emerald-400/10 border-emerald-400/20",
+      tab: "guest-list",
+    },
+    {
+      label: "Locuri libere",
+      value: stats.freeLoungers,
+      icon: <MapPin className="w-6 h-6" />,
+      color: "text-sky-400",
+      bg: "bg-sky-400/10 border-sky-400/20",
+      tab: "guest-loungers",
+    },
+    {
+      label: "Total azi",
+      value: stats.totalGuestsToday,
+      subValue: `${stats.totalPersonsToday} persoane`,
+      icon: <Users className="w-6 h-6" />,
+      color: "text-[#C9AB81]",
+      bg: "bg-[#C9AB81]/10 border-[#C9AB81]/20",
+      tab: "guest-daily",
+    },
+    {
+      label: "Cu credit",
+      value: stats.creditGuestsCount,
+      subValue: `${stats.creditPersonsCount} persoane`,
+      icon: <CreditCard className="w-6 h-6" />,
+      color: "text-purple-400",
+      bg: "bg-purple-400/10 border-purple-400/20",
       tab: "guest-list",
     },
     {
@@ -88,28 +126,14 @@ export default function GuestDashboard({ adminId, onNavigate }: Props) {
       tab: "orders",
     },
     {
-      label: "Locuri libere",
-      value: stats.freeLoungers,
-      icon: <MapPin className="w-6 h-6" />,
-      color: "text-sky-400",
-      bg: "bg-sky-400/10 border-sky-400/20",
-      tab: "guest-loungers",
-    },
-    {
-      label: "Total oaspeti azi",
-      value: stats.totalGuestsToday,
-      icon: <Users className="w-6 h-6" />,
-      color: "text-[#C9AB81]",
-      bg: "bg-[#C9AB81]/10 border-[#C9AB81]/20",
-      tab: "guest-daily",
-    },
-    {
-      label: "Cu credit activ",
-      value: stats.creditGuestsCount,
-      icon: <CreditCard className="w-6 h-6" />,
-      color: "text-purple-400",
-      bg: "bg-purple-400/10 border-purple-400/20",
-      tab: "guest-list",
+      label: "Cereri validare",
+      value: stats.pendingValidation,
+      icon: <Clock className="w-6 h-6" />,
+      color: stats.pendingValidation > 0 ? "text-orange-400" : "th-text-muted",
+      bg: stats.pendingValidation > 0
+        ? "bg-orange-400/10 border-orange-400/20"
+        : "th-card th-border",
+      tab: "guest-pending",
     },
   ];
 
@@ -135,13 +159,15 @@ export default function GuestDashboard({ adminId, onNavigate }: Props) {
             className={`border p-4 flex flex-col items-center text-center cursor-pointer active:scale-[0.97] transition-transform ${card.bg}`}
           >
             <div className={card.color}>{card.icon}</div>
-            <p className={`text-3xl font-bold mt-2 ${card.color}`}>
+            <p className={`text-3xl font-bold mt-1 ${card.color}`}>
               {card.value}
             </p>
+            {card.subValue && (
+              <p className="th-text-faint text-[10px] mt-0.5">{card.subValue}</p>
+            )}
             <p className="th-text-secondary text-[10px] font-bold tracking-wider uppercase mt-1">
               {card.label}
             </p>
-            <ChevronRight className="w-3.5 h-3.5 text-black/20 mt-1" />
           </button>
         ))}
       </div>

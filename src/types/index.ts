@@ -291,11 +291,17 @@ export interface LoungerHistoryEntry {
 
 export interface DashboardStats {
   totalLoungers: number;
+  totalPersons: number;
   loungersInUse: number;
+  loungersInUsePersons: number;
   freeLoungers: number;
   activeGuests: number;
+  activePersons: number;
   pendingOrders: number;
   totalGuestsToday: number;
+  totalPersonsToday: number;
   creditGuestsCount: number;
+  creditPersonsCount: number;
+  pendingValidation: number;
 }
 
