@@ -21,11 +21,119 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { action, adminId } = body;
 
+    const guests = await getGuests();
+
+    // ── SELF-SERVICE ACTIONS (no adminId required) ──
+
+    // ── SELF-REGISTER ── guest registers themselves at reception QR
+    if (action === "self-register") {
+      const { name, phone, email, stayStart, stayEnd } = body;
+      if (!name?.trim() || !phone?.trim()) {
+        return NextResponse.json({ success: false, error: "Numele si telefonul sunt obligatorii." });
+      }
+      // Check if phone already exists
+      const existing = guests.find((g) =>
+        g.status !== "checked_out" &&
+        (g.phone === phone.trim() || g.members?.some((m) => m.phone === phone.trim()))
+      );
+      if (existing) {
+        return NextResponse.json({ success: false, error: "Acest numar de telefon este deja inregistrat." });
+      }
+      const today = todayRO();
+      const now = new Date().toISOString();
+      const guest: GuestProfile = {
+        id: generateId(),
+        name: name.trim(),
+        phone: phone.trim(),
+        email: (email || "").trim(),
+        members: [{ phone: phone.trim(), name: name.trim(), email: (email || "").trim() }],
+        loungerIds: [],
+        loungerId: "",
+        stayStart: stayStart || today,
+        stayEnd: stayEnd || today,
+        status: "pending_validation",
+        creditEnabled: false,
+        creditLimit: 0,
+        creditUsed: 0,
+        registeredAt: now,
+        registeredBy: "self",
+        notes: "",
+        loungerHistory: [],
+      };
+      guests.push(guest);
+      await saveGuests(guests);
+      return NextResponse.json({ success: true, data: { id: guest.id, name: guest.name, phone: guest.phone } });
+    }
+
+    // ── FIND-GROUP ── search for a group by member phone (public, limited data)
+    if (action === "find-group") {
+      const { phone } = body;
+      if (!phone?.trim()) {
+        return NextResponse.json({ success: false, error: "Telefonul este obligatoriu." });
+      }
+      const today = todayRO();
+      const group = guests.find((g) =>
+        g.status !== "checked_out" &&
+        g.stayStart <= today && g.stayEnd >= today &&
+        (g.phone === phone.trim() || g.members?.some((m) => m.phone === phone.trim()))
+      );
+      if (!group) {
+        return NextResponse.json({ success: false, error: "Nu s-a gasit niciun grup cu acest numar." });
+      }
+      // Return limited data (no sensitive info)
+      return NextResponse.json({
+        success: true,
+        data: {
+          groupId: group.id,
+          primaryName: group.name,
+          memberCount: group.members?.length || 1,
+          memberNames: group.members?.map((m) => m.name.split(" ")[0]) || [group.name.split(" ")[0]],
+        },
+      });
+    }
+
+    // ── JOIN-GROUP ── add self as member to existing group
+    if (action === "join-group") {
+      const { guestId, targetGroupId } = body;
+      if (!guestId || !targetGroupId) {
+        return NextResponse.json({ success: false, error: "Date incomplete." });
+      }
+      const selfIdx = guests.findIndex((g) => g.id === guestId);
+      const groupIdx = guests.findIndex((g) => g.id === targetGroupId);
+      if (selfIdx === -1) {
+        return NextResponse.json({ success: false, error: "Profilul tau nu a fost gasit." });
+      }
+      if (groupIdx === -1) {
+        return NextResponse.json({ success: false, error: "Grupul nu a fost gasit." });
+      }
+      // Add self as member to the group
+      const self = guests[selfIdx];
+      if (!guests[groupIdx].members) guests[groupIdx].members = [];
+      const alreadyInGroup = guests[groupIdx].members.some((m) => m.phone === self.phone);
+      if (!alreadyInGroup) {
+        guests[groupIdx].members.push({
+          phone: self.phone,
+          name: self.name,
+          email: self.email,
+        });
+      }
+      // Remove the individual profile (merged into group)
+      guests.splice(selfIdx, 1);
+      await saveGuests(guests);
+      const updatedGroupIdx = guests.findIndex((g) => g.id === targetGroupId);
+      return NextResponse.json({
+        success: true,
+        data: {
+          groupId: targetGroupId,
+          memberCount: guests[updatedGroupIdx]?.members?.length || 1,
+        },
+      });
+    }
+
+    // ── ADMIN ACTIONS (require adminId) ──
     if (!adminId) {
       return NextResponse.json({ success: false, error: "Neautorizat." });
     }
-
-    const guests = await getGuests();
 
     // ── LIST ──
     if (action === "list") {
@@ -299,6 +407,37 @@ export async function POST(req: Request) {
       guests[idx].status = "checked_out";
       await saveGuests(guests);
       return NextResponse.json({ success: true, data: guests[idx] });
+    }
+
+    // ── PENDING-LIST ── get all pending validation guests
+    if (action === "pending-list") {
+      const pending = guests.filter((g) => g.status === "pending_validation");
+      return NextResponse.json({ success: true, data: pending });
+    }
+
+    // ── APPROVE-REGISTRATION ──
+    if (action === "approve-registration") {
+      const { guestId } = body;
+      const idx = guests.findIndex((g) => g.id === guestId);
+      if (idx === -1) {
+        return NextResponse.json({ success: false, error: "Oaspete negăsit." });
+      }
+      guests[idx].status = "registered";
+      guests[idx].registeredBy = adminId;
+      await saveGuests(guests);
+      return NextResponse.json({ success: true, data: guests[idx] });
+    }
+
+    // ── REJECT-REGISTRATION ──
+    if (action === "reject-registration") {
+      const { guestId } = body;
+      const idx = guests.findIndex((g) => g.id === guestId);
+      if (idx === -1) {
+        return NextResponse.json({ success: false, error: "Oaspete negăsit." });
+      }
+      guests.splice(idx, 1);
+      await saveGuests(guests);
+      return NextResponse.json({ success: true });
     }
 
     return NextResponse.json({ success: false, error: "Acțiune necunoscută." });

@@ -111,6 +111,7 @@ export default function GuestList({ adminId }: Props) {
 
   const statusBadge = (status: GuestStatus) => {
     const map: Record<GuestStatus, { bg: string; text: string; label: string }> = {
+      pending_validation: { bg: "bg-orange-400/20", text: "text-orange-400", label: "Pending" },
       active: { bg: "bg-emerald-400/20", text: "text-emerald-400", label: "Activ" },
       registered: { bg: "bg-amber-400/20", text: "text-amber-400", label: "Inregistrat" },
       inactive: { bg: "th-tab-inactive", text: "th-text-secondary", label: "Inactiv" },

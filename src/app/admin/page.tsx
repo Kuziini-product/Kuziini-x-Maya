@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Lock, Users, ShoppingBag, Receipt, DollarSign, RefreshCw, Umbrella, ImageIcon, LayoutGrid, FileText, Eye, Trash2, Heart, BarChart3, ArrowUpDown, ExternalLink, Bell, ChevronRight, ArrowLeft, Clock, Smartphone, Monitor, Volume2, VolumeX, UserPlus, CalendarCheck, Map, Shield, Palette } from "lucide-react";
+import { Lock, Users, ShoppingBag, Receipt, DollarSign, RefreshCw, Umbrella, ImageIcon, LayoutGrid, FileText, Eye, Trash2, Heart, BarChart3, ArrowUpDown, ExternalLink, Bell, ChevronRight, ArrowLeft, Clock, Smartphone, Monitor, Volume2, VolumeX, UserPlus, CalendarCheck, Map, Shield, Palette, Inbox } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
 import type { PromoBanner } from "@/types";
 import type { GalleryImage, GalleryAspect, LibraryPhoto } from "@/lib/mock-data";
@@ -15,6 +15,7 @@ import GuestList from "@/components/admin/GuestList";
 import DailyConfirmationPanel from "@/components/admin/DailyConfirmationPanel";
 import LoungerGrid from "@/components/admin/LoungerGrid";
 import AdminUserManager from "@/components/admin/AdminUserManager";
+import PendingRegistrations from "@/components/admin/PendingRegistrations";
 
 interface Stats {
   totalLogins: number;
@@ -157,7 +158,7 @@ interface AccessData {
   users: AccessUser[];
 }
 
-type Tab = "overview" | "logins" | "orders" | "bills" | "umbrellas" | "banners" | "gallery" | "offers" | "clients" | "rapoarte" | "guest-dashboard" | "guest-checkin" | "guest-list" | "guest-daily" | "guest-loungers" | "admin-users";
+type Tab = "overview" | "logins" | "orders" | "bills" | "umbrellas" | "banners" | "gallery" | "offers" | "clients" | "rapoarte" | "guest-dashboard" | "guest-checkin" | "guest-pending" | "guest-list" | "guest-daily" | "guest-loungers" | "admin-users";
 
 const SESSION_KEY = "kuziini_admin_session";
 const SESSION_HOURS = 24; // Stay logged in for 24h
@@ -628,6 +629,7 @@ export default function AdminPage() {
     // ── MAYA GUEST MANAGEMENT ──
     { key: "guest-dashboard", label: "Dashboard", icon: <BarChart3 className="w-4 h-4" /> },
     { key: "guest-checkin", label: "Check-in", icon: <UserPlus className="w-4 h-4" /> },
+    { key: "guest-pending", label: "Cereri", icon: <Inbox className="w-4 h-4" /> },
     { key: "guest-list", label: "Oaspeți", icon: <Users className="w-4 h-4" /> },
     { key: "guest-daily", label: "Zilnic", icon: <CalendarCheck className="w-4 h-4" /> },
     { key: "guest-loungers", label: "Hartă", icon: <Map className="w-4 h-4" /> },
@@ -1655,6 +1657,10 @@ export default function AdminPage() {
 
         {tab === "guest-checkin" && mayaAdminId && (
           <GuestCheckinForm adminId={mayaAdminId} />
+        )}
+
+        {tab === "guest-pending" && mayaAdminId && (
+          <PendingRegistrations adminId={mayaAdminId} />
         )}
 
         {tab === "guest-list" && mayaAdminId && (

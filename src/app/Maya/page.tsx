@@ -20,6 +20,7 @@ import {
   Map,
   Shield,
   Palette,
+  Inbox,
 } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { type AdminTheme, THEME_LABELS, getSavedTheme, saveTheme } from "@/lib/admin-theme";
@@ -35,10 +36,12 @@ import GuestList from "@/components/admin/GuestList";
 import DailyConfirmationPanel from "@/components/admin/DailyConfirmationPanel";
 import LoungerGrid from "@/components/admin/LoungerGrid";
 import AdminUserManager from "@/components/admin/AdminUserManager";
+import PendingRegistrations from "@/components/admin/PendingRegistrations";
 
 type Tab =
   | "dashboard"
   | "checkin"
+  | "pending"
   | "guests"
   | "daily"
   | "loungers"
@@ -98,6 +101,7 @@ const ALL_TABS: TabDef[] = [
   // OASPETI section
   { key: "dashboard", label: "Dashboard", icon: <BarChart3 className="w-4 h-4" />, section: "guests", roles: ["super_admin", "guest_admin"] },
   { key: "checkin", label: "Check-in", icon: <UserPlus className="w-4 h-4" />, section: "guests", roles: ["super_admin", "guest_admin"] },
+  { key: "pending", label: "Cereri", icon: <Inbox className="w-4 h-4" />, section: "guests", roles: ["super_admin", "guest_admin"] },
   { key: "guests", label: "Oaspeti", icon: <Users className="w-4 h-4" />, section: "guests", roles: ["super_admin", "guest_admin"] },
   { key: "daily", label: "Zilnic", icon: <CalendarCheck className="w-4 h-4" />, section: "guests", roles: ["super_admin", "guest_admin"] },
   { key: "loungers", label: "Harta", icon: <Map className="w-4 h-4" />, section: "guests", roles: ["super_admin", "guest_admin"] },
@@ -497,6 +501,10 @@ export default function MayaAdminPage() {
 
         {tab === "checkin" && adminSession && (
           <GuestCheckinForm adminId={adminSession.id} />
+        )}
+
+        {tab === "pending" && adminSession && (
+          <PendingRegistrations adminId={adminSession.id} />
         )}
 
         {tab === "guests" && adminSession && (

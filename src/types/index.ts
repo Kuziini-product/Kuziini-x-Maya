@@ -232,7 +232,7 @@ export interface AdminUser {
 
 // ─── Guest Management ────────────────────────────────────────────────────────
 
-export type GuestStatus = "registered" | "active" | "inactive" | "checked_out";
+export type GuestStatus = "pending_validation" | "registered" | "active" | "inactive" | "checked_out";
 
 export interface GuestMember {
   phone: string;
