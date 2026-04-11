@@ -234,8 +234,13 @@ export default function PendingRegistrations({ adminId }: Props) {
         <div className="space-y-3">
           {pending.map((g) => {
             const members = g.members || [{ phone: g.phone, name: g.name, email: g.email }];
+            const expectedSize = g.groupSize || 1;
+            const currentSize = members.length;
+            const isGroupComplete = currentSize >= expectedSize;
+            const isGroup = expectedSize > 1;
+
             return (
-              <div key={g.id} className="th-card border p-4">
+              <div key={g.id} className={`th-card border p-4 ${isGroup && !isGroupComplete ? "border-l-4 border-l-orange-400" : isGroup && isGroupComplete ? "border-l-4 border-l-emerald-400" : ""}`}>
                 {/* Guest info */}
                 <div className="flex items-center justify-between mb-3">
                   <div>
@@ -245,7 +250,16 @@ export default function PendingRegistrations({ adminId }: Props) {
                       {g.email && <span className="flex items-center gap-1"><Mail className="w-3 h-3" /> {g.email}</span>}
                     </div>
                   </div>
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1.5">
+                    {isGroup && (
+                      <span className={`text-[10px] font-bold tracking-wider uppercase px-2 py-1 ${
+                        isGroupComplete
+                          ? "bg-emerald-100 text-emerald-600"
+                          : "bg-orange-100 text-orange-600"
+                      }`}>
+                        {currentSize}/{expectedSize}
+                      </span>
+                    )}
                     <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-1 bg-amber-100 text-amber-600">
                       Pending
                     </span>
@@ -253,13 +267,49 @@ export default function PendingRegistrations({ adminId }: Props) {
                 </div>
 
                 {/* Stay period */}
-                <div className="flex items-center gap-2 text-xs th-text-muted mb-3">
+                <div className="flex items-center gap-2 text-xs th-text-muted mb-2">
                   <Calendar className="w-3 h-3" />
                   {g.stayStart} → {g.stayEnd}
                 </div>
 
-                {/* Members count */}
-                {members.length > 1 && (
+                {/* Group status */}
+                {isGroup && (
+                  <div className={`p-2.5 mb-3 border ${isGroupComplete ? "bg-emerald-400/5 border-emerald-400/20" : "bg-orange-400/5 border-orange-400/20"}`}>
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <Users className="w-3.5 h-3.5" />
+                      <span className={`text-xs font-bold ${isGroupComplete ? "text-emerald-500" : "text-orange-500"}`}>
+                        {isGroupComplete ? "Grup complet" : `Se asteapta ${expectedSize - currentSize} ${expectedSize - currentSize === 1 ? "membru" : "membri"}`}
+                      </span>
+                    </div>
+                    {/* Member list */}
+                    <div className="space-y-1">
+                      {members.map((m, i) => (
+                        <div key={m.phone} className="flex items-center gap-2 text-xs th-text-muted">
+                          <Check className="w-3 h-3 text-emerald-400 shrink-0" />
+                          <span className="font-medium">{m.name}</span>
+                          <span className="th-text-faint">{m.phone}</span>
+                        </div>
+                      ))}
+                      {/* Empty slots */}
+                      {Array.from({ length: Math.max(0, expectedSize - currentSize) }).map((_, i) => (
+                        <div key={`empty-${i}`} className="flex items-center gap-2 text-xs text-orange-400/50">
+                          <AlertCircle className="w-3 h-3 shrink-0" />
+                          <span className="italic">In asteptare...</span>
+                        </div>
+                      ))}
+                    </div>
+                    {/* Progress bar */}
+                    <div className="mt-2 h-1.5 bg-black/10 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full transition-all ${isGroupComplete ? "bg-emerald-400" : "bg-orange-400"}`}
+                        style={{ width: `${Math.min(100, (currentSize / expectedSize) * 100)}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Single member info */}
+                {!isGroup && members.length > 1 && (
                   <div className="flex items-center gap-2 text-xs th-text-muted mb-3">
                     <Users className="w-3 h-3" />
                     {members.length} membri: {members.map(m => m.name.split(" ")[0]).join(", ")}
@@ -276,11 +326,16 @@ export default function PendingRegistrations({ adminId }: Props) {
                 <div className="flex gap-2">
                   <button
                     onClick={() => approve(g.id)}
-                    disabled={processing === g.id}
-                    className="flex-1 flex items-center justify-center gap-2 bg-emerald-500 text-white py-2.5 font-bold text-xs tracking-wider uppercase disabled:opacity-50"
+                    disabled={processing === g.id || (isGroup && !isGroupComplete)}
+                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 font-bold text-xs tracking-wider uppercase disabled:opacity-40 ${
+                      isGroup && !isGroupComplete
+                        ? "th-tab-inactive th-text-muted cursor-not-allowed"
+                        : "bg-emerald-500 text-white"
+                    }`}
+                    title={isGroup && !isGroupComplete ? "Asteapta ca toti membrii sa se inregistreze" : ""}
                   >
                     <Check className="w-4 h-4" />
-                    {processing === g.id ? "..." : "Valideaza"}
+                    {processing === g.id ? "..." : isGroup && !isGroupComplete ? `Asteapta ${expectedSize - currentSize} membri` : "Valideaza"}
                   </button>
                   <button
                     onClick={() => reject(g.id)}
@@ -288,7 +343,6 @@ export default function PendingRegistrations({ adminId }: Props) {
                     className="flex items-center justify-center gap-2 px-4 py-2.5 bg-red-500/10 border border-red-500/20 text-red-500 font-bold text-xs tracking-wider uppercase"
                   >
                     <X className="w-4 h-4" />
-                    Respinge
                   </button>
                 </div>
               </div>

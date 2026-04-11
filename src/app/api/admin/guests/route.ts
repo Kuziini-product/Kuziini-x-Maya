@@ -27,7 +27,7 @@ export async function POST(req: Request) {
 
     // ── SELF-REGISTER ── guest registers themselves at reception QR
     if (action === "self-register") {
-      const { name, phone, email, stayStart, stayEnd } = body;
+      const { name, phone, email, stayStart, stayEnd, groupSize } = body;
       if (!name?.trim() || !phone?.trim()) {
         return NextResponse.json({ success: false, error: "Numele si telefonul sunt obligatorii." });
       }
@@ -58,6 +58,7 @@ export async function POST(req: Request) {
         registeredAt: now,
         registeredBy: "self",
         notes: "",
+        groupSize: groupSize || 1,
         loungerHistory: [],
       };
       guests.push(guest);

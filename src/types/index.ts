@@ -257,6 +257,7 @@ export interface GuestProfile {
   registeredAt: string;
   registeredBy: string;
   notes?: string;
+  groupSize?: number;
   loungerHistory?: LoungerHistoryEntry[];
 }
 
