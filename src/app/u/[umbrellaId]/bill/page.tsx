@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, CreditCard, Banknote, Hotel, CheckCircle2, AlertCircle, ChevronRight } from "lucide-react";
+import { ArrowLeft, CreditCard, Banknote, Hotel, CheckCircle2, AlertCircle, ChevronRight, Clock, Heart } from "lucide-react";
 import { PageHeader, EmptyState, Divider, Spinner } from "@/components/ui";
 import { useSessionStore, useCartStore } from "@/store";
 import { formatPrice } from "@/lib/utils";
@@ -24,7 +24,7 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
   const { userSession, orders, clearSession, addClosedBill } = useSessionStore();
   const clearCart = useCartStore((s) => s.clearCart);
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethod | null>(null);
-  const [step, setStep] = useState<"select" | "confirm" | "sending" | "done">("select");
+  const [step, setStep] = useState<"select" | "warn-undelivered" | "confirm" | "sending" | "done">("select");
   const [error, setError] = useState<string | null>(null);
   const [savedTotal, setSavedTotal] = useState(0);
 
@@ -38,10 +38,13 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
     (o) => o.umbrellaId === umbrellaId && !["rejected", "cancelled"].includes(o.status)
   );
   const total = myOrders.reduce((s, o) => s + o.total, 0);
+  const undeliveredOrders = myOrders.filter((o) => o.status !== "delivered");
+  const hasUndelivered = undeliveredOrders.length > 0;
 
   function handleSelectMethod(method: PaymentMethod) {
     setSelectedMethod(method);
-    setStep("confirm");
+    // If user has orders not yet delivered, show extra confirmation step first
+    setStep(hasUndelivered ? "warn-undelivered" : "confirm");
   }
 
   async function handleConfirm() {
@@ -77,6 +80,73 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
       setError(e instanceof Error ? e.message : "Eroare la trimiterea notei.");
       setStep("confirm");
     }
+  }
+
+  // ─── Warn step — orders not yet delivered ──────────────────────────────
+  if (step === "warn-undelivered" && selectedMethod) {
+    const methodLabel = selectedMethod === "cash" ? "Cash" : selectedMethod === "card" ? "Card" : "Room Charge";
+    return (
+      <div className="min-h-dvh bg-maya-dark flex flex-col items-center justify-center px-6 md:px-8 text-center">
+        <div className="w-20 md:w-24 h-20 md:h-24 flex items-center justify-center mb-6 bg-amber-500/15 border border-amber-500/30 text-amber-400 rounded-2xl">
+          <Clock className="w-9 h-9" />
+        </div>
+
+        <div className="flex items-center gap-2 mb-3">
+          <Heart className="w-4 h-4 text-maya-gold" fill="currentColor" />
+          <h2 className="text-xl font-bold text-white tracking-wide">Multumim pentru rabdare</h2>
+          <Heart className="w-4 h-4 text-maya-gold" fill="currentColor" />
+        </div>
+
+        <p className="text-white/60 text-sm mb-2 max-w-sm">
+          Comanda ta este in pregatire si nu a fost inca livrata.
+        </p>
+        <p className="text-white/40 text-xs mb-6 max-w-sm">
+          Confirma daca vrei sa solicitam nota acum. Ospatarul va aduce comanda impreuna cu nota.
+        </p>
+
+        {/* Undelivered items list */}
+        <div className="w-full max-w-xs md:max-w-sm bg-amber-500/5 border border-amber-500/20 rounded-xl p-4 mb-6">
+          <p className="text-amber-400 text-[10px] font-bold tracking-[0.2em] uppercase mb-2">
+            {undeliveredOrders.length} {undeliveredOrders.length === 1 ? "comanda nelivrata" : "comenzi nelivrate"}
+          </p>
+          <div className="space-y-1">
+            {undeliveredOrders.flatMap((o) =>
+              o.items.map((item, i) => (
+                <div key={`${o.id}-${i}`} className="flex justify-between text-xs text-white/60">
+                  <span>{item.quantity}× {item.name}</span>
+                  <span className="text-white/30">{formatPrice(item.price * item.quantity)}</span>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
+        {/* Method + total summary */}
+        <div className="w-full max-w-xs md:max-w-sm bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 mb-6">
+          <div className="flex justify-between text-sm mb-1">
+            <span className="text-white/40">Total</span>
+            <span className="text-maya-gold font-bold">{formatPrice(total)}</span>
+          </div>
+          <div className="flex justify-between text-sm">
+            <span className="text-white/40">Plata</span>
+            <span className="text-white font-bold">{methodLabel}</span>
+          </div>
+        </div>
+
+        <button
+          onClick={() => setStep("confirm")}
+          className="w-full max-w-xs md:max-w-sm bg-maya-gold text-maya-dark py-4 font-bold text-sm tracking-[0.15em] uppercase active:opacity-80 transition-opacity mb-3 rounded-xl"
+        >
+          Da, solicit nota
+        </button>
+        <button
+          onClick={() => { setStep("select"); setSelectedMethod(null); }}
+          className="text-white/40 text-xs font-bold tracking-wider uppercase py-2"
+        >
+          Mai astept livrarea
+        </button>
+      </div>
+    );
   }
 
   // Confirmation step — "Ai selectat plata Cash/Card"
