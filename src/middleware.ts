@@ -43,7 +43,12 @@ export async function middleware(request: NextRequest) {
   if (isProtectedPage) {
     const token = getSessionToken(request.headers.get("cookie"));
     if (!token) {
-      if (pathname === "/Maya") return NextResponse.next();
+      // Both /Maya and /admin have their own login UI built in - let them through
+      if (pathname === "/Maya" || pathname === "/admin") return NextResponse.next();
+      // Sub-routes redirect to the appropriate parent login
+      if (pathname.startsWith("/admin")) {
+        return NextResponse.redirect(new URL("/admin", request.url));
+      }
       return NextResponse.redirect(new URL("/Maya?auth=required", request.url));
     }
     return NextResponse.next();
