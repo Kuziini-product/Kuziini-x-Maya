@@ -373,21 +373,21 @@ export default function AdminPage() {
           <div className="space-y-4">
             <div>
               <label className="text-[10px] font-bold text-maya-gold uppercase tracking-[0.2em] mb-2 block">Email</label>
-              <div className="flex items-center gap-3 bg-gray-50 border th-border px-4 py-3 focus-within:border-maya-gold/50 transition-colors">
+              <div className="flex items-center gap-3 th-input border th-border px-4 py-3 focus-within:border-maya-gold/50 transition-colors">
                 <Mail className="w-4 h-4 th-text-muted shrink-0" />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && document.getElementById("kuziini-pw-input")?.focus()}
-                  className="flex-1 bg-transparent outline-none th-text text-sm placeholder:text-gray-400"
+                  className="flex-1 bg-transparent outline-none th-text text-sm placeholder:th-text-faint"
                   placeholder="admin@kuziini.ro"
                 />
               </div>
             </div>
             <div>
               <label className="text-[10px] font-bold text-maya-gold uppercase tracking-[0.2em] mb-2 block">Parolă</label>
-              <div className="flex items-center gap-3 bg-gray-50 border th-border px-4 py-3 focus-within:border-maya-gold/50 transition-colors">
+              <div className="flex items-center gap-3 th-input border th-border px-4 py-3 focus-within:border-maya-gold/50 transition-colors">
                 <Lock className="w-4 h-4 th-text-muted shrink-0" />
                 <input
                   id="kuziini-pw-input"
@@ -395,7 +395,7 @@ export default function AdminPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-                  className="flex-1 bg-transparent outline-none th-text text-sm placeholder:text-gray-400"
+                  className="flex-1 bg-transparent outline-none th-text text-sm placeholder:th-text-faint"
                   placeholder="Introdu parola"
                   autoFocus
                 />
