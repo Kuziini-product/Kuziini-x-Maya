@@ -12,6 +12,7 @@ import {
   Save,
 } from "lucide-react";
 import type { AdminRole } from "@/types";
+import PhoneInput from "@/components/PhoneInput";
 
 interface AdminSafe {
   id: string;
@@ -200,17 +201,12 @@ export default function AdminUserManager({ adminId }: Props) {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className={labelCls}>Telefon</label>
-              <input
-                type="tel"
-                value={fPhone}
-                onChange={(e) => setFPhone(e.target.value)}
-                className={inputCls}
-                placeholder="+40..."
-              />
-            </div>
+          <div>
+            <label className={labelCls}>Telefon</label>
+            <PhoneInput value={fPhone} onChange={setFPhone} />
+          </div>
+
+          <div className="grid grid-cols-1 gap-3">
             <div>
               <label className={labelCls}>Rol</label>
               <select

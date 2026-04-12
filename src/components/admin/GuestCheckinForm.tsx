@@ -4,7 +4,6 @@ import { useState } from "react";
 import {
   UserPlus,
   Check,
-  Phone,
   Mail,
   Umbrella,
   CreditCard,
@@ -14,6 +13,7 @@ import {
 } from "lucide-react";
 import type { GuestProfile } from "@/types";
 import LoungerMapPicker from "@/components/admin/LoungerMapPicker";
+import PhoneInput from "@/components/PhoneInput";
 
 interface Props {
   adminId: string;
@@ -163,33 +163,24 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
           </div>
         </div>
 
-        {/* Phone + Email row */}
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className={labelCls}>Telefon *</label>
-            <div className="relative">
-              <Phone className="absolute left-3 top-2.5 w-4 h-4 th-text-faint" />
-              <input
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className={`${inputCls} pl-9`}
-                placeholder="+40712345678"
-              />
-            </div>
-          </div>
-          <div>
-            <label className={labelCls}>Email</label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-2.5 w-4 h-4 th-text-faint" />
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className={`${inputCls} pl-9`}
-                placeholder="email@example.com"
-              />
-            </div>
+        {/* Phone */}
+        <div>
+          <label className={labelCls}>Telefon *</label>
+          <PhoneInput value={phone} onChange={setPhone} />
+        </div>
+
+        {/* Email */}
+        <div>
+          <label className={labelCls}>Email</label>
+          <div className="relative">
+            <Mail className="absolute left-3 top-2.5 w-4 h-4 th-text-faint" />
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className={`${inputCls} pl-9`}
+              placeholder="email@example.com"
+            />
           </div>
         </div>
 

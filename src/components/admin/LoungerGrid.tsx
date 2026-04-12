@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import type { GuestProfile, DailyConfirmation } from "@/types";
 import GuestCardModal from "@/components/admin/GuestCardModal";
+import PhoneInput from "@/components/PhoneInput";
 import { getGuestForLounger as getGuestForLoungerUtil, suggestAdjacentLoungers, getOccupiedLoungers } from "@/lib/lounger-utils";
 
 interface LoungerConfig {
@@ -570,15 +571,13 @@ export default function LoungerGrid({ adminId }: Props) {
                 <label className={labelCls}>Nume *</label>
                 <input type="text" value={ciName} onChange={(e) => setCiName(e.target.value)} className={inputCls} placeholder="Ion Popescu" autoFocus />
               </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className={labelCls}>Telefon *</label>
-                  <input type="tel" value={ciPhone} onChange={(e) => setCiPhone(e.target.value)} className={inputCls} placeholder="+40712345678" />
-                </div>
-                <div>
-                  <label className={labelCls}>Email</label>
-                  <input type="email" value={ciEmail} onChange={(e) => setCiEmail(e.target.value)} className={inputCls} placeholder="email@ex.com" />
-                </div>
+              <div>
+                <label className={labelCls}>Telefon *</label>
+                <PhoneInput value={ciPhone} onChange={setCiPhone} />
+              </div>
+              <div>
+                <label className={labelCls}>Email</label>
+                <input type="email" value={ciEmail} onChange={(e) => setCiEmail(e.target.value)} className={inputCls} placeholder="email@ex.com" />
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div>

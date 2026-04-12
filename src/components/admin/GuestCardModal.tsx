@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import type { GuestProfile, GuestMember } from "@/types";
 import LoungerMapPicker from "@/components/admin/LoungerMapPicker";
+import PhoneInput from "@/components/PhoneInput";
 
 interface Props {
   guest: GuestProfile;
@@ -272,8 +273,8 @@ export default function GuestCardModal({ guest, adminId, onClose, onUpdated }: P
             {/* Add member form */}
             {showAddMember && (
               <div className="th-card border p-3 mt-2 space-y-2">
-                <div className="grid grid-cols-3 gap-2">
-                  <input type="tel" value={newPhone} onChange={(e) => setNewPhone(e.target.value)} className={inputCls} placeholder="+40..." />
+                <PhoneInput value={newPhone} onChange={setNewPhone} />
+                <div className="grid grid-cols-2 gap-2">
                   <input type="text" value={newName} onChange={(e) => setNewName(e.target.value)} className={inputCls} placeholder="Nume" />
                   <input type="email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} className={inputCls} placeholder="Email" />
                 </div>
