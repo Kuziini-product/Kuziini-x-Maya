@@ -248,7 +248,7 @@ export default function HomePage() {
             &copy; 2026 Kuziini x Maya. Toate drepturile rezervate.
           </p>
           <p className="text-maya-dark text-[15px] text-center tracking-wider font-medium">
-            Kuziini Furniture Luxyri and More.
+            Kuziini Furniture Luxury and More.
           </p>
         </div>
       </div>
