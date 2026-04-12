@@ -1,24 +1,37 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Plus, Minus, ShoppingBag } from "lucide-react";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, cn } from "@/lib/utils";
 import { useCartStore } from "@/store";
 import type { MenuItem } from "@/types";
 
 interface MenuItemCardProps {
   item: MenuItem;
   umbrellaId: string;
+  highlight?: boolean;
 }
 
-export function MenuItemCard({ item }: MenuItemCardProps) {
+export function MenuItemCard({ item, highlight = false }: MenuItemCardProps) {
   const [expanded, setExpanded] = useState(false);
   const [qty, setQty] = useState(1);
   const [notes, setNotes] = useState("");
+  const cardRef = useRef<HTMLDivElement>(null);
   const { addItem, items: cartItems, updateQuantity, removeItem } = useCartStore();
 
   const cartItem = cartItems.find((i) => i.menuItem.id === item.id);
   const inCart = !!cartItem;
+
+  // When highlighted (from banner click), scroll smoothly into view
+  useEffect(() => {
+    if (highlight && cardRef.current) {
+      // Small delay so tab switch happens first
+      const t = setTimeout(() => {
+        cardRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 200);
+      return () => clearTimeout(t);
+    }
+  }, [highlight]);
 
   function handleAdd() {
     addItem(item, qty, notes);
@@ -37,7 +50,14 @@ export function MenuItemCard({ item }: MenuItemCardProps) {
   }
 
   return (
-    <div className="py-3 border-b border-white/5 last:border-b-0">
+    <div
+      ref={cardRef}
+      className={cn(
+        "py-3 border-b border-white/5 last:border-b-0 transition-all duration-500 -mx-3 px-3",
+        inCart && !highlight && "bg-maya-gold/[0.04] border-l-2 border-l-maya-gold/40",
+        highlight && "bg-maya-gold/15 border-l-2 border-l-maya-gold ring-2 ring-maya-gold/40 animate-pulse-highlight"
+      )}
+    >
       {/* Main row - clickable */}
       <div
         className={`cursor-pointer active:opacity-70 transition-opacity flex items-center ${!item.available ? "opacity-40" : ""}`}

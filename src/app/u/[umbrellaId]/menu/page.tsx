@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useSearchParams, useRouter } from "next/navigation";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { ScratchX } from "@/components/ui/ScratchX";
@@ -28,10 +29,14 @@ const MENU_TABS = [
 
 export default function MenuPage({ params }: { params: { umbrellaId: string } }) {
   const { umbrellaId } = params;
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const highlightId = searchParams.get("highlight");
   const [activeTab, setActiveTab] = useState("food");
   const [search, setSearch] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const [lastVisited, setLastVisited] = useState<string | null>(null);
+  const [highlightedItemId, setHighlightedItemId] = useState<string | null>(null);
   const cartItems = useCartStore((s) => s.items);
   const itemCount = cartItems.reduce((sum, i) => sum + i.quantity, 0);
   const { userSession } = useSessionStore();
@@ -57,6 +62,27 @@ export default function MenuPage({ params }: { params: { umbrellaId: string } })
 
   const categories = data?.categories ?? [];
   const allItems = data?.items ?? [];
+
+  // Handle ?highlight=<menuItemId> from banner click - switch tab + scroll + highlight
+  useEffect(() => {
+    if (!highlightId || allItems.length === 0) return;
+    const item = allItems.find((i) => i.id === highlightId);
+    if (!item) return;
+    // Find which tab contains this category
+    const targetTab = MENU_TABS.find((t) => t.slugs.includes(item.categorySlug));
+    if (targetTab) setActiveTab(targetTab.id);
+    setHighlightedItemId(highlightId);
+    // Clear the URL param after a short delay so refresh doesn't re-trigger
+    const cleanupTimer = setTimeout(() => {
+      router.replace(`/u/${umbrellaId}/menu`, { scroll: false });
+    }, 100);
+    // Auto-clear highlight after animation
+    const highlightTimer = setTimeout(() => setHighlightedItemId(null), 4000);
+    return () => {
+      clearTimeout(cleanupTimer);
+      clearTimeout(highlightTimer);
+    };
+  }, [highlightId, allItems, router, umbrellaId]);
 
   const currentTab = MENU_TABS.find((t) => t.id === activeTab)!;
   const tabCategories = categories.filter((c) => currentTab.slugs.includes(c.slug));
@@ -166,6 +192,7 @@ export default function MenuPage({ params }: { params: { umbrellaId: string } })
                     key={item.id}
                     item={item}
                     umbrellaId={umbrellaId}
+                    highlight={item.id === highlightedItemId}
                   />
                 ))}
               </div>

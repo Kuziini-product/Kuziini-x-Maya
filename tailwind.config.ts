@@ -70,6 +70,7 @@ const config: Config = {
         shimmer: "shimmer 2s infinite",
         pulse: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
         "slide-up": "slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+        "pulse-highlight": "pulseHighlight 1.2s ease-in-out 3",
       },
       keyframes: {
         fadeUp: {
@@ -87,6 +88,10 @@ const config: Config = {
         slideUp: {
           "0%": { transform: "translateY(100%)", opacity: "0" },
           "100%": { transform: "translateY(0)", opacity: "1" },
+        },
+        pulseHighlight: {
+          "0%, 100%": { backgroundColor: "rgba(201, 171, 129, 0.15)", boxShadow: "0 0 0 0 rgba(201, 171, 129, 0.5)" },
+          "50%": { backgroundColor: "rgba(201, 171, 129, 0.30)", boxShadow: "0 0 0 8px rgba(201, 171, 129, 0)" },
         },
       },
       boxShadow: {

@@ -107,13 +107,16 @@ export default function LandingPage({
   const umbrella: Umbrella = data.umbrella;
 
   function handleBannerClick(banner: PromoBanner) {
-    // If banner has a linked menu product, add it to cart with promo label
+    // If banner has a linked menu product, add it to cart and navigate to menu with highlight
     if (banner.menuItemId) {
       const item = menuItems.find((m) => m.id === banner.menuItemId);
       if (item) {
         addItem(item, 1, "", banner.title);
         setAddedToast(banner.title);
-        setTimeout(() => setAddedToast(null), 2500);
+        // Navigate to menu page with the product highlighted
+        setTimeout(() => {
+          router.push(`/u/${umbrellaId}/menu?highlight=${item.id}`);
+        }, 600);
       }
       return;
     }
