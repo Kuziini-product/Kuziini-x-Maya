@@ -1,12 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
-import { MOCK_UMBRELLAS, MOCK_SESSIONS, LOGIN_LOG } from "@/lib/mock-data";
+import { MOCK_UMBRELLAS, LOGIN_LOG } from "@/lib/mock-data";
 import { sleep, generateId } from "@/lib/utils";
 import { sendPushToAll } from "@/lib/push";
+import {
+  getUmbrellaSession,
+  saveUmbrellaSession,
+  isMemberOfSession,
+  isOwnerOfSession,
+  type UmbrellaSession,
+  type UmbrellaJoinRequest,
+} from "@/lib/umbrella-session";
 
 export async function POST(req: NextRequest) {
-  await sleep(400);
+  await sleep(200);
 
-  const { umbrellaId, phone, name, email } = await req.json();
+  const { umbrellaId, phone, name, email, joinAsGuest } = await req.json();
 
   if (!umbrellaId || !phone) {
     return NextResponse.json({ success: false, error: "umbrellaId și phone sunt obligatorii." }, { status: 400 });
@@ -21,78 +29,141 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: false, error: "Umbrela nu este activă." }, { status: 403 });
   }
 
-  // Check if this phone is owner at ANY umbrella (registered at reception)
-  let homeUmbrellaId: string | null = null;
-  let isRegistered = false;
+  // Get current umbrella session from KV
+  let session = await getUmbrellaSession(umbrellaId);
+  const now = new Date().toISOString();
 
-  for (const [uId, u] of Object.entries(MOCK_UMBRELLAS)) {
-    if (u.sessionId) {
-      const sess = MOCK_SESSIONS[u.sessionId];
-      if (sess && !sess.closed && sess.ownerPhone === phone) {
-        homeUmbrellaId = uId;
-        isRegistered = true;
-        break;
-      }
-    }
-  }
-
-  // Guest mode disabled — everyone registers as owner
-  const role: "owner" = "owner";
-  let sessionId = umbrella.sessionId;
-
-  if (sessionId) {
-    const existingSession = MOCK_SESSIONS[sessionId];
-    if (existingSession && !existingSession.closed) {
-      // Update owner phone to current user
-      MOCK_SESSIONS[sessionId] = { ...existingSession, ownerPhone: phone };
-    }
-  } else {
-    // No session on this umbrella — create one
-    sessionId = `sess-${generateId()}`;
-    MOCK_SESSIONS[sessionId] = {
-      id: sessionId,
+  // ─── Case 1: No active session - this user becomes the owner ──────────────
+  if (!session || session.closed) {
+    const sessionId = `sess-${generateId()}`;
+    session = {
       umbrellaId,
-      ownerId: `user-${generateId()}`,
+      sessionId,
       ownerPhone: phone,
-      startedAt: new Date().toISOString(),
-      expiresAt: null,
+      ownerName: name || "",
+      ownerEmail: email || undefined,
+      startedAt: now,
       closed: false,
+      members: [{ phone, name: name || "", email, joinedAt: now }],
+      pendingRequests: [],
     };
-    MOCK_UMBRELLAS[umbrellaId] = { ...umbrella, sessionId };
+    await saveUmbrellaSession(session);
+
+    LOGIN_LOG.push({
+      name: name || "",
+      phone,
+      email: email || "",
+      umbrellaId,
+      timestamp: now,
+    });
+
+    sendPushToAll(
+      "Utilizator nou",
+      `${name || phone} s-a înregistrat la umbrela ${umbrellaId}`,
+      "new-user"
+    ).catch(() => {});
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        role: "owner",
+        sessionId,
+        phone,
+        umbrellaId,
+        homeUmbrellaId: umbrellaId,
+        isRegistered: true,
+        joinedAt: now,
+        ownerName: name || "",
+        ownerPhone: phone,
+      },
+    });
   }
 
-  if (!homeUmbrellaId) {
-    homeUmbrellaId = umbrellaId;
-    isRegistered = true;
+  // ─── Case 2: Session exists, this phone is already the owner ──────────────
+  if (isOwnerOfSession(session, phone)) {
+    return NextResponse.json({
+      success: true,
+      data: {
+        role: "owner",
+        sessionId: session.sessionId,
+        phone,
+        umbrellaId,
+        homeUmbrellaId: umbrellaId,
+        isRegistered: true,
+        joinedAt: now,
+        ownerName: session.ownerName,
+        ownerPhone: session.ownerPhone,
+      },
+    });
   }
 
-  // Log login
-  LOGIN_LOG.push({
-    name: name || "",
-    phone,
-    email: email || "",
-    umbrellaId,
-    timestamp: new Date().toISOString(),
-  });
+  // ─── Case 3: Session exists, this phone is already an approved member ─────
+  if (isMemberOfSession(session, phone)) {
+    return NextResponse.json({
+      success: true,
+      data: {
+        role: "guest",
+        sessionId: session.sessionId,
+        phone,
+        umbrellaId,
+        homeUmbrellaId: umbrellaId,
+        isRegistered: true,
+        joinedAt: now,
+        ownerName: session.ownerName,
+        ownerPhone: session.ownerPhone,
+      },
+    });
+  }
 
-  // Send push notification
-  sendPushToAll(
-    "Utilizator nou",
-    `${name || phone} s-a înregistrat la umbrela ${umbrellaId}`,
-    "new-user"
-  ).catch(() => {});
+  // ─── Case 4: Session exists, new user wants to join ───────────────────────
+  if (joinAsGuest) {
+    // Check if this phone already has a pending request
+    const existingRequest = session.pendingRequests.find((r) => r.phone === phone);
+    if (!existingRequest) {
+      const newRequest: UmbrellaJoinRequest = {
+        id: `req-${generateId()}`,
+        phone,
+        name: name || "",
+        email: email || undefined,
+        requestedAt: now,
+      };
+      session.pendingRequests.push(newRequest);
+      await saveUmbrellaSession(session);
 
+      sendPushToAll(
+        "Cerere alăturare",
+        `${name || phone} vrea să se alăture umbrelei ${umbrellaId}`,
+        "join-request"
+      ).catch(() => {});
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        role: "guest",
+        sessionId: session.sessionId,
+        phone,
+        umbrellaId,
+        homeUmbrellaId: umbrellaId,
+        isRegistered: false, // pending owner approval
+        pendingApproval: true,
+        joinedAt: now,
+        ownerName: session.ownerName,
+        ownerPhone: session.ownerPhone,
+      },
+    });
+  }
+
+  // ─── Case 5: Session exists, no joinAsGuest flag - return session info only ─
   return NextResponse.json({
     success: true,
     data: {
-      role,
-      sessionId,
-      phone,
+      role: "unknown",
       umbrellaId,
-      homeUmbrellaId: homeUmbrellaId || null,
-      isRegistered: isRegistered || role === "owner",
-      joinedAt: new Date().toISOString(),
+      hasOwner: true,
+      ownerName: session.ownerName,
+      ownerPhone: session.ownerPhone,
+      needsJoinRequest: true,
     },
   });
 }
-

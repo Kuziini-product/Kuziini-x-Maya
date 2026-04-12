@@ -1,14 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { Crown, Check, X as XIcon, Users } from "lucide-react";
 import { Spinner } from "@/components/ui";
 import { useSessionStore, useCartStore } from "@/store";
 import { cn } from "@/lib/utils";
 import { ScratchX } from "@/components/ui/ScratchX";
 import type { Umbrella, PromoBanner, MenuItem } from "@/types";
+
+interface PendingJoinRequest {
+  id: string;
+  phone: string;
+  name: string;
+  requestedAt: string;
+}
 
 async function fetchUmbrella(id: string) {
   const res = await fetch(`/api/umbrella/${id}`);
@@ -29,8 +37,49 @@ export default function LandingPage({
   const [kuziiniBanner, setKuziiniBanner] = useState<PromoBanner | null>(null);
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [addedToast, setAddedToast] = useState<string | null>(null);
+  const [pendingRequests, setPendingRequests] = useState<PendingJoinRequest[]>([]);
+  const [processing, setProcessing] = useState<string | null>(null);
   const addItem = useCartStore((s) => s.addItem);
   const cartItems = useCartStore((s) => s.items);
+
+  const isOwner = userSession?.role === "owner";
+
+  // Poll umbrella session for pending join requests (owner only)
+  const fetchSessionInfo = useCallback(async () => {
+    if (!isOwner) return;
+    try {
+      const res = await fetch(`/api/umbrella/${umbrellaId}/session`);
+      const json = await res.json();
+      if (json.success && json.data.hasOwner) {
+        setPendingRequests(json.data.pendingRequests || []);
+      }
+    } catch {}
+  }, [isOwner, umbrellaId]);
+
+  useEffect(() => {
+    if (!isOwner) return;
+    fetchSessionInfo();
+    const interval = setInterval(fetchSessionInfo, 5000);
+    return () => clearInterval(interval);
+  }, [isOwner, fetchSessionInfo]);
+
+  async function handleApproveRequest(reqId: string, action: "approve" | "reject") {
+    if (!userSession) return;
+    setProcessing(reqId);
+    try {
+      const res = await fetch(`/api/umbrella/${umbrellaId}/join-requests/${reqId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action, callerPhone: userSession.phone }),
+      });
+      const json = await res.json();
+      if (json.success) {
+        setPendingRequests(json.data.pendingRequests || []);
+      }
+    } finally {
+      setProcessing(null);
+    }
+  }
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["umbrella", umbrellaId],
@@ -141,11 +190,54 @@ export default function LandingPage({
               {umbrella.zone}
             </p>
             {userSession && (
-              <p className="text-white/30 text-xs mt-3 tracking-wide">
-                {userSession.name || userSession.phone}
-              </p>
+              <div className="flex items-center justify-center gap-2 mt-3">
+                {isOwner && <Crown className="w-3.5 h-3.5 text-maya-gold" />}
+                <p className="text-white/30 text-xs tracking-wide">
+                  {userSession.name || userSession.phone}
+                </p>
+              </div>
             )}
           </div>
+
+          {/* Pending join requests (visible only to owner) */}
+          {isOwner && pendingRequests.length > 0 && (
+            <div className="w-full max-w-sm md:max-w-md mb-4 animate-fade-up">
+              <div className="flex items-center gap-2 mb-2">
+                <Users className="w-4 h-4 text-maya-gold" />
+                <p className="text-[10px] font-bold text-maya-gold tracking-[0.2em] uppercase">
+                  Cereri de alaturare ({pendingRequests.length})
+                </p>
+              </div>
+              <div className="space-y-2">
+                {pendingRequests.map((req) => (
+                  <div key={req.id} className="bg-maya-gold/5 border border-maya-gold/30 p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="min-w-0">
+                        <p className="text-white font-bold text-sm truncate">{req.name || "Anonim"}</p>
+                        <p className="text-white/40 text-xs">{req.phone}</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleApproveRequest(req.id, "reject")}
+                        disabled={processing === req.id}
+                        className="flex-1 flex items-center justify-center gap-1.5 bg-red-500/10 border border-red-500/20 text-red-400 py-2 text-[10px] font-bold tracking-wider uppercase disabled:opacity-50"
+                      >
+                        <XIcon className="w-3 h-3" /> Refuza
+                      </button>
+                      <button
+                        onClick={() => handleApproveRequest(req.id, "approve")}
+                        disabled={processing === req.id}
+                        className="flex-1 flex items-center justify-center gap-1.5 bg-emerald-500 text-white py-2 text-[10px] font-bold tracking-wider uppercase disabled:opacity-50"
+                      >
+                        <Check className="w-3 h-3" /> Aproba
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Maya banner */}
           {mayaBanner && (
