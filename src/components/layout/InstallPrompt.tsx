@@ -87,7 +87,7 @@ export function InstallPrompt() {
 
   return (
     <div className="fixed bottom-4 left-4 right-4 z-[9999]">
-      <div className="relative bg-[#1a1a1a] border border-[#C9AB81]/30 rounded-xl p-4 shadow-2xl shadow-black/60 max-w-md mx-auto">
+      <div className="relative bg-[#1a1a1a] border border-maya-gold/30 rounded-xl p-4 shadow-2xl shadow-black/60 max-w-md mx-auto">
         <button
           onClick={handleDismiss}
           className="absolute top-3 right-3 text-white/40 hover:text-white/80 p-1"
@@ -96,8 +96,8 @@ export function InstallPrompt() {
         </button>
 
         <div className="flex items-center gap-3 pr-6">
-          <div className="w-12 h-12 rounded-xl bg-[#0A0A0A] border border-white/10 flex items-center justify-center shrink-0">
-            <Download className="w-6 h-6 text-[#C9AB81]" />
+          <div className="w-12 h-12 rounded-xl bg-maya-dark border border-white/10 flex items-center justify-center shrink-0">
+            <Download className="w-6 h-6 text-maya-gold" />
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-white font-bold text-sm">Instalează Kuziini</p>
@@ -108,7 +108,7 @@ export function InstallPrompt() {
         {deferredPrompt ? (
           <button
             onClick={handleInstall}
-            className="mt-3 w-full bg-[#C9AB81] text-[#0A0A0A] py-2.5 font-bold text-xs tracking-[0.1em] uppercase rounded-lg"
+            className="mt-3 w-full bg-maya-gold text-maya-dark py-2.5 font-bold text-xs tracking-[0.1em] uppercase rounded-lg"
           >
             Instalează aplicația
           </button>
@@ -116,18 +116,18 @@ export function InstallPrompt() {
           <div className="mt-3 bg-white/5 rounded-lg p-3 space-y-2">
             <p className="text-white/50 text-[10px] text-center uppercase tracking-wider">Cum se instalează:</p>
             <div className="flex items-center gap-3 text-white/80 text-xs">
-              <span className="w-5 h-5 rounded-full bg-[#C9AB81] text-[#0A0A0A] flex items-center justify-center text-[10px] font-bold shrink-0">1</span>
+              <span className="w-5 h-5 rounded-full bg-maya-gold text-maya-dark flex items-center justify-center text-[10px] font-bold shrink-0">1</span>
               <span>Apasă butonul</span>
-              <Share className="w-4 h-4 text-[#C9AB81] shrink-0" />
+              <Share className="w-4 h-4 text-maya-gold shrink-0" />
               <span className="text-white/50">(jos în Safari)</span>
             </div>
             <div className="flex items-center gap-3 text-white/80 text-xs">
-              <span className="w-5 h-5 rounded-full bg-[#C9AB81] text-[#0A0A0A] flex items-center justify-center text-[10px] font-bold shrink-0">2</span>
-              <span>Alege <span className="text-[#C9AB81] font-semibold">Add to Home Screen</span></span>
+              <span className="w-5 h-5 rounded-full bg-maya-gold text-maya-dark flex items-center justify-center text-[10px] font-bold shrink-0">2</span>
+              <span>Alege <span className="text-maya-gold font-semibold">Add to Home Screen</span></span>
             </div>
             <div className="flex items-center gap-3 text-white/80 text-xs">
-              <span className="w-5 h-5 rounded-full bg-[#C9AB81] text-[#0A0A0A] flex items-center justify-center text-[10px] font-bold shrink-0">3</span>
-              <span>Apasă <span className="text-[#C9AB81] font-semibold">Add</span></span>
+              <span className="w-5 h-5 rounded-full bg-maya-gold text-maya-dark flex items-center justify-center text-[10px] font-bold shrink-0">3</span>
+              <span>Apasă <span className="text-maya-gold font-semibold">Add</span></span>
             </div>
           </div>
         ) : null}

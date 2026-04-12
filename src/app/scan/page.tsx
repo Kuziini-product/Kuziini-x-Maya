@@ -109,7 +109,7 @@ export default function ScanPage() {
   }
 
   return (
-    <div className="min-h-dvh bg-[#0A0A0A] text-white flex flex-col">
+    <div className="min-h-dvh bg-maya-dark text-white flex flex-col">
       <div className="px-5 md:px-8 pt-6 pb-4 max-w-md mx-auto w-full">
         <Link
           href="/"
@@ -118,8 +118,8 @@ export default function ScanPage() {
           <ArrowLeft className="w-4 h-4 text-white/70" />
         </Link>
         <div className="flex items-center gap-3 mb-1">
-          <div className="w-2 h-2 bg-[#C9AB81]" />
-          <p className="text-[#C9AB81] text-[10px] font-bold tracking-[0.3em] uppercase">
+          <div className="w-2 h-2 bg-maya-gold" />
+          <p className="text-maya-gold text-[10px] font-bold tracking-[0.3em] uppercase">
             Identificare
           </p>
         </div>
@@ -134,10 +134,10 @@ export default function ScanPage() {
       <div className="flex-1 px-5 md:px-8 pb-8 max-w-md mx-auto w-full">
         <div className="space-y-4 mt-4">
           <div>
-            <label className="text-[10px] font-bold text-[#C9AB81] uppercase tracking-[0.2em] mb-2 block">
+            <label className="text-[10px] font-bold text-maya-gold uppercase tracking-[0.2em] mb-2 block">
               Nume
             </label>
-            <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-3 focus-within:border-[#C9AB81]/50 transition-colors">
+            <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-3 focus-within:border-maya-gold/50 transition-colors">
               <User className="w-4 h-4 text-white/30 shrink-0" />
               <input
                 type="text"
@@ -151,10 +151,10 @@ export default function ScanPage() {
           </div>
 
           <div>
-            <label className="text-[10px] font-bold text-[#C9AB81] uppercase tracking-[0.2em] mb-2 block">
+            <label className="text-[10px] font-bold text-maya-gold uppercase tracking-[0.2em] mb-2 block">
               Telefon
             </label>
-            <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-3 focus-within:border-[#C9AB81]/50 transition-colors">
+            <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-3 focus-within:border-maya-gold/50 transition-colors">
               <Phone className="w-4 h-4 text-white/30 shrink-0" />
               <input
                 type="tel"
@@ -168,10 +168,10 @@ export default function ScanPage() {
           </div>
 
           <div>
-            <label className="text-[10px] font-bold text-[#C9AB81] uppercase tracking-[0.2em] mb-2 block">
+            <label className="text-[10px] font-bold text-maya-gold uppercase tracking-[0.2em] mb-2 block">
               Email
             </label>
-            <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-3 focus-within:border-[#C9AB81]/50 transition-colors">
+            <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-3 focus-within:border-maya-gold/50 transition-colors">
               <Mail className="w-4 h-4 text-white/30 shrink-0" />
               <input
                 type="email"
@@ -194,7 +194,7 @@ export default function ScanPage() {
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="w-full bg-[#C9AB81] text-[#0A0A0A] py-3.5 font-bold text-sm tracking-[0.15em] uppercase active:opacity-80 transition-opacity disabled:opacity-50"
+            className="w-full bg-maya-gold text-maya-dark py-3.5 font-bold text-sm tracking-[0.15em] uppercase active:opacity-80 transition-opacity disabled:opacity-50"
           >
             {loading ? "Se procesează..." : "Intră în meniu"}
           </button>

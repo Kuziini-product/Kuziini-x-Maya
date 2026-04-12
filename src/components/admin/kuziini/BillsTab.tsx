@@ -40,7 +40,7 @@ export default function BillsTab({ billRequests }: BillsTabProps) {
               <p className="text-xs th-text-muted mt-0.5 capitalize">{b.paymentMethod}</p>
             </div>
             <div className="text-right">
-              <p className="font-bold text-[#C9AB81]">{formatPrice(b.amount)}</p>
+              <p className="font-bold text-maya-gold">{formatPrice(b.amount)}</p>
               <p className="text-[10px] text-white/70">{formatTime(b.timestamp)}</p>
             </div>
           </div>

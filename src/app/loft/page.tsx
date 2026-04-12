@@ -250,7 +250,7 @@ export default function MayaPage() {
 
   if (!authenticated) {
     return (
-      <div className="min-h-dvh bg-[#0A0A0A] flex items-center justify-center px-6">
+      <div className="min-h-dvh bg-maya-dark flex items-center justify-center px-6">
         <div className="w-full max-w-sm">
           <div className="text-center mb-8">
             <img
@@ -266,10 +266,10 @@ export default function MayaPage() {
 
           <div className="space-y-4">
             <div>
-              <label className="text-[10px] font-bold text-[#C9AB81] uppercase tracking-[0.2em] mb-2 block">
+              <label className="text-[10px] font-bold text-maya-gold uppercase tracking-[0.2em] mb-2 block">
                 Parolă
               </label>
-              <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-3 focus-within:border-[#C9AB81]/50 transition-colors">
+              <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-3 focus-within:border-maya-gold/50 transition-colors">
                 <Lock className="w-4 h-4 text-white/30 shrink-0" />
                 <input
                   type="password"
@@ -288,7 +288,7 @@ export default function MayaPage() {
             <button
               onClick={handleLogin}
               disabled={loading}
-              className="w-full bg-[#C9AB81] text-[#0A0A0A] py-3.5 font-bold text-sm tracking-[0.15em] uppercase active:opacity-80 transition-opacity disabled:opacity-50"
+              className="w-full bg-maya-gold text-maya-dark py-3.5 font-bold text-sm tracking-[0.15em] uppercase active:opacity-80 transition-opacity disabled:opacity-50"
             >
               {loading ? "Se verifică..." : "Autentificare"}
             </button>
@@ -305,20 +305,20 @@ export default function MayaPage() {
   ];
 
   return (
-    <div className="min-h-dvh bg-[#0A0A0A] text-white">
+    <div className="min-h-dvh bg-maya-dark text-white">
       {/* Header */}
-      <div className="bg-[#0A0A0A]/95 backdrop-blur-md border-b border-white/[0.06] px-4 py-4 sticky top-0 z-10">
+      <div className="bg-maya-dark/95 backdrop-blur-md border-b border-white/[0.06] px-4 py-4 sticky top-0 z-10">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-lg font-bold tracking-wide">Manager Maya</h1>
-            <p className="text-[#C9AB81] text-[10px] tracking-[0.2em] uppercase">
+            <p className="text-maya-gold text-[10px] tracking-[0.2em] uppercase">
               Bannere & QR Codes
             </p>
           </div>
           <div className="flex items-center gap-2">
             <a
               href="/"
-              className="h-9 flex items-center gap-1.5 px-3 bg-[#C9AB81]/20 border border-[#C9AB81]/30 text-[#C9AB81] text-[10px] font-bold tracking-wider uppercase active:bg-[#C9AB81]/30 transition-colors"
+              className="h-9 flex items-center gap-1.5 px-3 bg-maya-gold/20 border border-maya-gold/30 text-maya-gold text-[10px] font-bold tracking-wider uppercase active:bg-maya-gold/30 transition-colors"
             >
               <ExternalLink className="w-3.5 h-3.5" />
               Live App
@@ -343,7 +343,7 @@ export default function MayaPage() {
               onClick={() => setTab(t.key)}
               className={`flex items-center gap-1.5 px-3 py-2 text-[10px] font-bold tracking-wider uppercase whitespace-nowrap transition-all ${
                 tab === t.key
-                  ? "bg-[#C9AB81] text-[#0A0A0A]"
+                  ? "bg-maya-gold text-maya-dark"
                   : "bg-white/[0.06] text-white/40"
               }`}
             >
@@ -431,7 +431,7 @@ export default function MayaPage() {
             </div>
             {/* Add umbrella */}
             <div className="bg-white/[0.03] border border-white/[0.06] p-4 mb-4">
-              <p className="text-[#C9AB81] text-[10px] font-bold tracking-[0.2em] uppercase mb-3">
+              <p className="text-maya-gold text-[10px] font-bold tracking-[0.2em] uppercase mb-3">
                 Adaugă umbrelă
               </p>
               <div className="flex gap-2 mb-2">
@@ -440,13 +440,13 @@ export default function MayaPage() {
                   value={newId}
                   onChange={(e) => setNewId(e.target.value)}
                   placeholder="ID (ex: C-01)"
-                  className="flex-1 bg-white/5 border border-white/10 px-3 py-2 text-white text-sm outline-none focus:border-[#C9AB81]/50 placeholder:text-white/20"
+                  className="flex-1 bg-white/5 border border-white/10 px-3 py-2 text-white text-sm outline-none focus:border-maya-gold/50 placeholder:text-white/20"
                   onKeyDown={(e) => e.key === "Enter" && addUmbrella()}
                 />
                 <select
                   value={newZone}
                   onChange={(e) => setNewZone(e.target.value)}
-                  className="bg-white/5 border border-white/10 px-3 py-2 text-white text-sm outline-none focus:border-[#C9AB81]/50"
+                  className="bg-white/5 border border-white/10 px-3 py-2 text-white text-sm outline-none focus:border-maya-gold/50"
                 >
                   <option value="Zona Lounge">Zona Lounge</option>
                   <option value="Zona Beach">Zona Beach</option>
@@ -455,7 +455,7 @@ export default function MayaPage() {
               </div>
               <button
                 onClick={addUmbrella}
-                className="w-full flex items-center justify-center gap-2 bg-[#C9AB81] text-[#0A0A0A] py-2 font-bold text-xs tracking-wider uppercase"
+                className="w-full flex items-center justify-center gap-2 bg-maya-gold text-maya-dark py-2 font-bold text-xs tracking-wider uppercase"
               >
                 <Plus className="w-3.5 h-3.5" />
                 Adaugă
@@ -491,14 +491,14 @@ export default function MayaPage() {
                     />
                   </div>
                   <p className="font-bold text-sm text-white tracking-wide">{u.id}</p>
-                  <p className="text-[#C9AB81] text-[10px] tracking-wider uppercase mb-3">
+                  <p className="text-maya-gold text-[10px] tracking-wider uppercase mb-3">
                     {u.zone}
                   </p>
 
                   <div className="flex gap-1.5 w-full">
                     <button
                       onClick={() => downloadQR(u.id, u.zone)}
-                      className="flex-1 flex items-center justify-center gap-1 bg-[#C9AB81] text-[#0A0A0A] py-1.5 text-[10px] font-bold tracking-wider uppercase"
+                      className="flex-1 flex items-center justify-center gap-1 bg-maya-gold text-maya-dark py-1.5 text-[10px] font-bold tracking-wider uppercase"
                     >
                       <Download className="w-3 h-3" />
                       Salvează

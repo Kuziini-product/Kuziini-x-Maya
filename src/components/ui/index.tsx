@@ -29,13 +29,13 @@ export function Button({
 
   const variants = {
     primary:
-      "bg-[#C9AB81] text-[#0A0A0A] active:opacity-80",
+      "bg-maya-gold text-maya-dark active:opacity-80",
     secondary:
       "bg-white/[0.06] text-white border border-white/[0.1] active:bg-white/[0.1]",
-    ghost: "bg-transparent text-[#C9AB81] active:bg-white/[0.06]",
+    ghost: "bg-transparent text-maya-gold active:bg-white/[0.06]",
     danger: "bg-red-600/80 text-white active:bg-red-700",
     outline:
-      "border border-[#C9AB81]/40 text-[#C9AB81] active:bg-[#C9AB81]/10",
+      "border border-maya-gold/40 text-maya-gold active:bg-maya-gold/10",
   };
 
   const sizes = {
@@ -72,7 +72,7 @@ interface BadgeProps {
 
 export function Badge({ children, className, variant = "ocean" }: BadgeProps) {
   const variants = {
-    ocean: "bg-[#C9AB81]/20 text-[#C9AB81]",
+    ocean: "bg-maya-gold/20 text-maya-gold",
     coral: "bg-red-500/20 text-red-400",
     sand: "bg-amber-500/20 text-amber-400",
     green: "bg-emerald-500/20 text-emerald-400",
@@ -97,7 +97,7 @@ export function Badge({ children, className, variant = "ocean" }: BadgeProps) {
 
 export function Spinner({ className }: { className?: string }) {
   return (
-    <Loader2 className={cn("w-5 h-5 animate-spin text-[#C9AB81]", className)} />
+    <Loader2 className={cn("w-5 h-5 animate-spin text-maya-gold", className)} />
   );
 }
 
@@ -194,12 +194,12 @@ export function PageHeader({
   right?: ReactNode;
 }) {
   return (
-    <div className="sticky top-0 z-30 bg-[#0A0A0A]/95 backdrop-blur-md border-b border-white/[0.06] px-4 md:px-6 py-3">
+    <div className="sticky top-0 z-30 bg-maya-dark/95 backdrop-blur-md border-b border-white/[0.06] px-4 md:px-6 py-3">
       <div className="relative flex items-center justify-between max-w-3xl mx-auto">
         <div className="shrink-0">{back}</div>
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <div className="text-center">
-            <h1 className="text-xs md:text-sm font-bold tracking-[0.2em] uppercase text-[#C9AB81]">
+            <h1 className="text-xs md:text-sm font-bold tracking-[0.2em] uppercase text-maya-gold">
               {title}
             </h1>
             {subtitle && (

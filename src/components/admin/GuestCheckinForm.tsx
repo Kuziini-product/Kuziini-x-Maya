@@ -128,7 +128,7 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
         </p>
         <button
           onClick={reset}
-          className="bg-[#C9AB81] text-[#0A0A0A] px-6 py-2.5 font-bold text-xs tracking-wider uppercase"
+          className="bg-maya-gold text-maya-dark px-6 py-2.5 font-bold text-xs tracking-wider uppercase"
         >
           Check-in nou
         </button>
@@ -137,9 +137,9 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
   }
 
   const inputCls =
-    "w-full th-input border px-3 py-2.5 text-sm outline-none focus:border-[#C9AB81]/50";
+    "w-full th-input border px-3 py-2.5 text-sm outline-none focus:border-maya-gold/50";
   const labelCls =
-    "text-[10px] font-bold text-[#C9AB81] uppercase tracking-[0.2em] mb-1.5 block";
+    "text-[10px] font-bold text-maya-gold uppercase tracking-[0.2em] mb-1.5 block";
 
   return (
     <>
@@ -243,7 +243,7 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
           <button
             type="button"
             onClick={() => setExtraMembers([...extraMembers, { phone: "", name: "", email: "" }])}
-            className="text-[#C9AB81] text-xs font-bold tracking-wider uppercase"
+            className="text-maya-gold text-xs font-bold tracking-wider uppercase"
           >
             + Adauga membru
           </button>
@@ -311,7 +311,7 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
             <button
               type="button"
               onClick={() => setShowMap(true)}
-              className="flex items-center gap-1.5 px-4 bg-[#C9AB81] text-[#0A0A0A] font-bold text-[10px] tracking-wider uppercase"
+              className="flex items-center gap-1.5 px-4 bg-maya-gold text-maya-dark font-bold text-[10px] tracking-wider uppercase"
             >
               <Map className="w-4 h-4" />
               Harta
@@ -322,7 +322,7 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
           {selectedLoungers.length > 0 && (
             <div className="flex gap-1 flex-wrap mt-2">
               {selectedLoungers.map((lid) => (
-                <span key={lid} className="flex items-center gap-1 bg-[#C9AB81]/10 border border-[#C9AB81]/20 px-2 py-0.5 text-[10px] font-bold text-[#C9AB81]">
+                <span key={lid} className="flex items-center gap-1 bg-maya-gold/10 border border-maya-gold/20 px-2 py-0.5 text-[10px] font-bold text-maya-gold">
                   {lid}
                   <button type="button" onClick={() => setSelectedLoungers(selectedLoungers.filter(l => l !== lid))} className="text-red-400">
                     <X className="w-2.5 h-2.5" />
@@ -393,7 +393,7 @@ export default function GuestCheckinForm({ adminId, onSuccess }: Props) {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-[#C9AB81] text-[#0A0A0A] py-3.5 font-bold text-sm tracking-[0.15em] uppercase active:opacity-80 transition-opacity disabled:opacity-50"
+          className="w-full bg-maya-gold text-maya-dark py-3.5 font-bold text-sm tracking-[0.15em] uppercase active:opacity-80 transition-opacity disabled:opacity-50"
         >
           {loading ? "Se inregistreaza..." : "Check-in oaspete"}
         </button>

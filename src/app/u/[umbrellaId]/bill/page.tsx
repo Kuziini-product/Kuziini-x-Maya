@@ -84,15 +84,15 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
     const methodLabel = selectedMethod === "cash" ? "Cash" : selectedMethod === "card" ? "Card" : "Room Charge";
     const methodIcon = selectedMethod === "cash" ? <Banknote className="w-8 h-8" /> : selectedMethod === "card" ? <CreditCard className="w-8 h-8" /> : <Hotel className="w-8 h-8" />;
     return (
-      <div className="min-h-dvh bg-[#0A0A0A] flex flex-col items-center justify-center px-6 md:px-8 text-center">
-        <div className="w-20 md:w-24 h-20 md:h-24 flex items-center justify-center mb-6 bg-[#C9AB81]/20 border border-[#C9AB81]/30 text-[#C9AB81] rounded-2xl">
+      <div className="min-h-dvh bg-maya-dark flex flex-col items-center justify-center px-6 md:px-8 text-center">
+        <div className="w-20 md:w-24 h-20 md:h-24 flex items-center justify-center mb-6 bg-maya-gold/20 border border-maya-gold/30 text-maya-gold rounded-2xl">
           {methodIcon}
         </div>
         <h2 className="text-2xl font-bold text-white mb-3 tracking-wide">
           Ai selectat plata {methodLabel}
         </h2>
         <p className="text-white/40 text-sm mb-2">
-          Total: <span className="text-[#C9AB81] font-bold">{formatPrice(total)}</span>
+          Total: <span className="text-maya-gold font-bold">{formatPrice(total)}</span>
         </p>
         <p className="text-white/40 text-sm mb-8">
           Umbrela {umbrellaId}
@@ -124,8 +124,8 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
   // Sending step
   if (step === "sending") {
     return (
-      <div className="min-h-dvh bg-[#0A0A0A] flex flex-col items-center justify-center px-6 text-center">
-        <Spinner className="text-[#C9AB81] mb-6" />
+      <div className="min-h-dvh bg-maya-dark flex flex-col items-center justify-center px-6 text-center">
+        <Spinner className="text-maya-gold mb-6" />
         <p className="text-white/40 text-sm">Se trimite nota...</p>
       </div>
     );
@@ -140,7 +140,7 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
       ? "Pregătește cardul, ospătarul vine cu POS-ul."
       : "Suma a fost adăugată pe cameră.";
     return (
-      <div className="min-h-dvh bg-gradient-to-b from-white via-white/10 to-[#0A0A0A] flex flex-col items-center text-center relative">
+      <div className="min-h-dvh bg-gradient-to-b from-white via-white/10 to-maya-dark flex flex-col items-center text-center relative">
         {/* Emojis separated with Maya logo visible between them */}
         <div className="flex-1 flex items-center justify-center w-full relative">
           <img src="/Maya.png" alt="Maya" className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-64 object-contain pointer-events-none" />
@@ -196,7 +196,7 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
             </p>
             <div className="flex justify-between text-sm mb-1">
               <span className="text-white/40">Total</span>
-              <span className="text-[#C9AB81] font-bold">{formatPrice(savedTotal)}</span>
+              <span className="text-maya-gold font-bold">{formatPrice(savedTotal)}</span>
             </div>
             <div className="flex justify-between text-sm mb-1">
               <span className="text-white/40">Plată</span>
@@ -218,13 +218,13 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
             href="https://www.instagram.com/kuziiniconceptstore/"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 flex items-center justify-center border border-[#C9AB81]/30 py-3 px-8 rounded-xl text-[#C9AB81] font-bold text-xs tracking-[0.15em] uppercase active:bg-[#C9AB81]/10 transition-colors"
+            className="flex-1 flex items-center justify-center border border-maya-gold/30 py-3 px-8 rounded-xl text-maya-gold font-bold text-xs tracking-[0.15em] uppercase active:bg-maya-gold/10 transition-colors"
           >
             Kuziini
           </a>
           <button
             onClick={() => router.push("/#about")}
-            className="flex-1 flex items-center justify-center border border-[#C9AB81]/30 py-3 px-8 rounded-xl text-[#C9AB81] font-bold text-xs tracking-[0.15em] uppercase active:bg-[#C9AB81]/10 transition-colors"
+            className="flex-1 flex items-center justify-center border border-maya-gold/30 py-3 px-8 rounded-xl text-maya-gold font-bold text-xs tracking-[0.15em] uppercase active:bg-maya-gold/10 transition-colors"
           >
             Acasă
           </button>
@@ -273,7 +273,7 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
         {/* Orders summary */}
         {myOrders.length > 0 ? (
           <div className="bg-white/[0.03] border border-white/[0.06] p-4">
-            <h3 className="text-[#C9AB81] text-xs font-bold tracking-[0.2em] uppercase mb-3">
+            <h3 className="text-maya-gold text-xs font-bold tracking-[0.2em] uppercase mb-3">
               Sumar comenzi
             </h3>
             <div className="space-y-2">
@@ -289,7 +289,7 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
             <Divider className="my-3" />
             <div className="flex justify-between text-xl font-bold text-white">
               <span>Total</span>
-              <span className="text-[#C9AB81]">{formatPrice(total)}</span>
+              <span className="text-maya-gold">{formatPrice(total)}</span>
             </div>
           </div>
         ) : (
@@ -303,7 +303,7 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
             </p>
             <Link
               href={`/u/${umbrellaId}`}
-              className="inline-flex items-center gap-2 bg-[#C9AB81] text-[#0A0A0A] px-5 py-2.5 font-bold text-xs tracking-[0.1em] uppercase"
+              className="inline-flex items-center gap-2 bg-maya-gold text-maya-dark px-5 py-2.5 font-bold text-xs tracking-[0.1em] uppercase"
             >
               Înapoi la meniu
               <ChevronRight className="w-3.5 h-3.5" />
@@ -313,7 +313,7 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
 
         {/* Payment methods - only show when there are orders */}
         {myOrders.length > 0 && <div>
-          <h3 className="text-[#C9AB81] text-xs font-bold tracking-[0.2em] uppercase mb-3">
+          <h3 className="text-maya-gold text-xs font-bold tracking-[0.2em] uppercase mb-3">
             Metodă de plată
           </h3>
 
@@ -363,8 +363,8 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
 
         {/* Credit info */}
         {payOpts?.creditStatus?.eligible && (
-          <div className="bg-[#C9AB81]/10 border border-[#C9AB81]/20 p-4 space-y-2">
-            <p className="text-[10px] font-bold text-[#C9AB81] uppercase tracking-[0.2em]">
+          <div className="bg-maya-gold/10 border border-maya-gold/20 p-4 space-y-2">
+            <p className="text-[10px] font-bold text-maya-gold uppercase tracking-[0.2em]">
               Credit disponibil
             </p>
             <div className="flex justify-between text-sm">
@@ -381,7 +381,7 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
             </div>
             <div className="w-full bg-white/10 h-1.5 mt-1">
               <div
-                className="bg-[#C9AB81] h-1.5 transition-all"
+                className="bg-maya-gold h-1.5 transition-all"
                 style={{ width: `${(payOpts.creditStatus.limitUsed / payOpts.creditStatus.limitTotal) * 100}%` }}
               />
             </div>

@@ -80,7 +80,7 @@ export function PhoneModal({ umbrellaId, onClose }: PhoneModalProps) {
       />
 
       {/* Sheet - dark Maya style */}
-      <div className="relative w-full max-w-lg bg-[#141414] border-t border-[#C9AB81]/30 p-6 pb-10 animate-slide-up">
+      <div className="relative w-full max-w-lg bg-[#141414] border-t border-maya-gold/30 p-6 pb-10 animate-slide-up">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-xl font-bold text-white tracking-wide">
@@ -100,10 +100,10 @@ export function PhoneModal({ umbrellaId, onClose }: PhoneModalProps) {
 
         {/* Name field */}
         <div className="mb-3">
-          <label className="text-[10px] font-bold text-[#C9AB81] uppercase tracking-[0.2em] mb-2 block">
+          <label className="text-[10px] font-bold text-maya-gold uppercase tracking-[0.2em] mb-2 block">
             Nume
           </label>
-          <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-3 focus-within:border-[#C9AB81]/50 transition-colors">
+          <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-3 focus-within:border-maya-gold/50 transition-colors">
             <User className="w-4 h-4 text-white/30 shrink-0" />
             <input
               type="text"
@@ -118,10 +118,10 @@ export function PhoneModal({ umbrellaId, onClose }: PhoneModalProps) {
 
         {/* Phone field */}
         <div className="mb-2">
-          <label className="text-[10px] font-bold text-[#C9AB81] uppercase tracking-[0.2em] mb-2 block">
+          <label className="text-[10px] font-bold text-maya-gold uppercase tracking-[0.2em] mb-2 block">
             Telefon
           </label>
-          <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-3 focus-within:border-[#C9AB81]/50 transition-colors">
+          <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-3 focus-within:border-maya-gold/50 transition-colors">
             <Phone className="w-4 h-4 text-white/30 shrink-0" />
             <input
               type="tel"
@@ -147,7 +147,7 @@ export function PhoneModal({ umbrellaId, onClose }: PhoneModalProps) {
         <button
           onClick={handleSubmit}
           disabled={loading}
-          className="w-full bg-[#C9AB81] text-[#0A0A0A] py-3.5 font-bold text-sm tracking-[0.15em] uppercase active:opacity-80 transition-opacity disabled:opacity-50"
+          className="w-full bg-maya-gold text-maya-dark py-3.5 font-bold text-sm tracking-[0.15em] uppercase active:opacity-80 transition-opacity disabled:opacity-50"
         >
           {loading ? "Se procesează..." : "CONTINUĂ"}
         </button>

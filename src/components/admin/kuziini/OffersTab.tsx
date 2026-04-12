@@ -6,7 +6,7 @@ import type { GalleryImage } from "@/lib/mock-data";
 
 interface OffersTabProps {
   offers: OfferEntry[];
-  onUpdate: (offers: OfferEntry[]) => void;
+  onUpdate: () => void;
   galleryImages?: GalleryImage[];
 }
 
@@ -26,7 +26,7 @@ export default function OffersTab({ offers, onUpdate, galleryImages = [] }: Offe
         <p className="th-text-muted text-xs">
           {offers.length} solicitări
           {offers.filter((o) => !o.read).length > 0 && (
-            <span className="ml-2 text-[#C9AB81] font-bold">
+            <span className="ml-2 text-maya-gold font-bold">
               ({offers.filter((o) => !o.read).length} noi)
             </span>
           )}
@@ -39,7 +39,7 @@ export default function OffersTab({ offers, onUpdate, galleryImages = [] }: Offe
           <div
             key={o.id}
             className={`bg-white/[0.03] border p-4 ${
-              o.read ? "th-border" : "border-[#C9AB81]/30"
+              o.read ? "th-border" : "border-maya-gold/30"
             }`}
           >
             <div className="flex items-start gap-3">
@@ -69,7 +69,7 @@ export default function OffersTab({ offers, onUpdate, galleryImages = [] }: Offe
                   <p className="font-bold text-sm th-text tracking-wide">
                     {o.name}
                     {!o.read && (
-                      <span className="ml-2 text-[8px] bg-[#C9AB81] text-[#0A0A0A] px-1.5 py-0.5 font-bold tracking-wider uppercase">
+                      <span className="ml-2 text-[8px] bg-maya-gold text-maya-dark px-1.5 py-0.5 font-bold tracking-wider uppercase">
                         NOU
                       </span>
                     )}
@@ -77,7 +77,7 @@ export default function OffersTab({ offers, onUpdate, galleryImages = [] }: Offe
                   <span className="text-[10px] text-white/70 shrink-0">{formatTime(o.timestamp)}</span>
                 </div>
                 <p className="text-xs th-text-secondary">{o.phone}</p>
-                <p className="text-xs text-[#C9AB81]/70">{o.email}</p>
+                <p className="text-xs text-maya-gold/70">{o.email}</p>
                 {o.message && (
                   <p className="text-xs th-text-muted mt-1 italic">&ldquo;{o.message}&rdquo;</p>
                 )}
@@ -93,7 +93,7 @@ export default function OffersTab({ offers, onUpdate, galleryImages = [] }: Offe
                       body: JSON.stringify({ action: "markRead", offerId: o.id }),
                     });
                     const json = await res.json();
-                    if (json.success) onUpdate(json.data);
+                    if (json.success) onUpdate();
                   }}
                   className="flex items-center gap-1.5 th-tab-inactive px-3 py-1.5 text-[10px] font-bold tracking-wider uppercase th-text-secondary"
                 >
@@ -109,7 +109,7 @@ export default function OffersTab({ offers, onUpdate, galleryImages = [] }: Offe
                     body: JSON.stringify({ action: "delete", offerId: o.id }),
                   });
                   const json = await res.json();
-                  if (json.success) onUpdate(json.data);
+                  if (json.success) onUpdate();
                 }}
                 className="flex items-center gap-1.5 bg-red-500/10 px-3 py-1.5 text-[10px] font-bold tracking-wider uppercase text-red-400"
               >

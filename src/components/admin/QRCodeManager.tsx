@@ -113,7 +113,7 @@ export default function QRCodeManager() {
 
       {/* Add umbrella */}
       <div className="th-card border p-4 mb-4">
-        <p className="text-[#C9AB81] text-[10px] font-bold tracking-[0.2em] uppercase mb-3">
+        <p className="text-maya-gold text-[10px] font-bold tracking-[0.2em] uppercase mb-3">
           Adauga umbrela
         </p>
         <div className="flex gap-2 mb-2">
@@ -122,13 +122,13 @@ export default function QRCodeManager() {
             value={newId}
             onChange={(e) => setNewId(e.target.value)}
             placeholder="ID (ex: C-01)"
-            className="flex-1 th-input border th-border px-3 py-2 text-sm outline-none focus:border-[#C9AB81]/50"
+            className="flex-1 th-input border th-border px-3 py-2 text-sm outline-none focus:border-maya-gold/50"
             onKeyDown={(e) => e.key === "Enter" && addUmbrella()}
           />
           <select
             value={newZone}
             onChange={(e) => setNewZone(e.target.value)}
-            className="th-input border th-border px-3 py-2 text-sm outline-none focus:border-[#C9AB81]/50"
+            className="th-input border th-border px-3 py-2 text-sm outline-none focus:border-maya-gold/50"
           >
             <option value="Zona Lounge">Zona Lounge</option>
             <option value="Zona Beach">Zona Beach</option>
@@ -137,7 +137,7 @@ export default function QRCodeManager() {
         </div>
         <button
           onClick={addUmbrella}
-          className="w-full flex items-center justify-center gap-2 bg-[#C9AB81] text-[#0A0A0A] py-2 font-bold text-xs tracking-wider uppercase"
+          className="w-full flex items-center justify-center gap-2 bg-maya-gold text-maya-dark py-2 font-bold text-xs tracking-wider uppercase"
         >
           <Plus className="w-3.5 h-3.5" />
           Adauga
@@ -173,14 +173,14 @@ export default function QRCodeManager() {
               />
             </div>
             <p className="font-bold text-sm th-text tracking-wide">{u.id}</p>
-            <p className="text-[#C9AB81] text-[10px] tracking-wider uppercase mb-3">
+            <p className="text-maya-gold text-[10px] tracking-wider uppercase mb-3">
               {u.zone}
             </p>
 
             <div className="flex gap-1.5 w-full">
               <button
                 onClick={() => downloadQR(u.id, u.zone)}
-                className="flex-1 flex items-center justify-center gap-1 bg-[#C9AB81] text-[#0A0A0A] py-1.5 text-[10px] font-bold tracking-wider uppercase"
+                className="flex-1 flex items-center justify-center gap-1 bg-maya-gold text-maya-dark py-1.5 text-[10px] font-bold tracking-wider uppercase"
               >
                 <Download className="w-3 h-3" />
                 Salveaza

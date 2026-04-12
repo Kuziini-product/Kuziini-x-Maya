@@ -193,18 +193,18 @@ export default function MayaAdminPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-lg font-bold tracking-wide">Manager Maya</h1>
-            <p className="text-[#C9AB81] text-[10px] tracking-[0.2em] uppercase">
+            <p className="text-maya-gold text-[10px] tracking-[0.2em] uppercase">
               {adminSession?.name} · {adminSession?.role === "super_admin" ? "Super Admin" : adminSession?.role === "content_admin" ? "Content" : "Oaspeti"}
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <a href="/" className="h-9 flex items-center gap-1.5 px-3 bg-[#C9AB81]/20 border border-[#C9AB81]/30 text-[#C9AB81] text-[10px] font-bold tracking-wider uppercase active:bg-[#C9AB81]/30 transition-colors">
+            <a href="/" className="h-9 flex items-center gap-1.5 px-3 bg-maya-gold/20 border border-maya-gold/30 text-maya-gold text-[10px] font-bold tracking-wider uppercase active:bg-maya-gold/30 transition-colors">
               <ExternalLink className="w-3.5 h-3.5" /> Live
             </a>
             <button onClick={refresh} disabled={loading} className="w-9 h-9 flex items-center justify-center bg-white/10 active:bg-white/20 transition-colors">
               <RefreshCw className={`w-4 h-4 th-text-muted ${loading ? "animate-spin" : ""}`} />
             </button>
-            <button onClick={cycleTheme} className="h-9 flex items-center gap-1 px-2 bg-[#C9AB81]/20 border border-[#C9AB81]/30 text-[#C9AB81] text-[10px] font-bold tracking-wider uppercase" title={`Tema: ${THEME_LABELS[theme]}`}>
+            <button onClick={cycleTheme} className="h-9 flex items-center gap-1 px-2 bg-maya-gold/20 border border-maya-gold/30 text-maya-gold text-[10px] font-bold tracking-wider uppercase" title={`Tema: ${THEME_LABELS[theme]}`}>
               <Palette className="w-3.5 h-3.5" />
             </button>
             <button onClick={handleLogout} className="h-9 px-3 bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-bold tracking-wider uppercase">
@@ -226,7 +226,7 @@ export default function MayaAdminPage() {
                     key={t.key}
                     onClick={() => setTab(t.key)}
                     className={`flex items-center gap-1.5 px-3 py-2 text-[10px] font-bold tracking-wider uppercase whitespace-nowrap transition-all ${
-                      tab === t.key ? "bg-[#C9AB81] text-[#0A0A0A]" : "th-tab-inactive th-text-muted"
+                      tab === t.key ? "bg-maya-gold text-maya-dark" : "th-tab-inactive th-text-muted"
                     }`}
                   >
                     {t.icon} {t.label}

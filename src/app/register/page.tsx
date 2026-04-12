@@ -159,14 +159,14 @@ export default function RegisterPage() {
   }
 
   const inputCls =
-    "w-full bg-white/[0.06] border border-white/[0.1] px-3 py-3 text-white text-sm outline-none focus:border-[#C9AB81]/50 placeholder:text-white/30";
+    "w-full bg-white/[0.06] border border-white/[0.1] px-3 py-3 text-white text-sm outline-none focus:border-maya-gold/50 placeholder:text-white/30";
   const labelCls =
-    "text-[10px] font-bold text-[#C9AB81] uppercase tracking-[0.2em] mb-1.5 block";
+    "text-[10px] font-bold text-maya-gold uppercase tracking-[0.2em] mb-1.5 block";
 
   // ── SUCCESS SCREEN ──
   if (step === "success") {
     return (
-      <div className="min-h-dvh bg-[#0A0A0A] text-white px-6 py-12">
+      <div className="min-h-dvh bg-maya-dark text-white px-6 py-12">
         <div className="max-w-sm mx-auto text-center">
           <Check className="w-16 h-16 text-emerald-400 mx-auto mb-4" />
           <h1 className="text-2xl font-bold mb-2">Date trimise!</h1>
@@ -179,7 +179,7 @@ export default function RegisterPage() {
             </p>
           )}
           {groupSize > 1 && !groupInfo && (
-            <p className="text-[#C9AB81] text-sm mb-2">
+            <p className="text-maya-gold text-sm mb-2">
               Grup de {groupSize} persoane. Ceilalti membri trebuie sa scaneze QR-ul si sa introduca numarul tau de telefon ({phone}) pentru a se alatura grupului.
             </p>
           )}
@@ -200,7 +200,7 @@ export default function RegisterPage() {
 
   // ── FORM SCREEN ──
   return (
-    <div className="min-h-dvh bg-[#0A0A0A] text-white px-6 py-8">
+    <div className="min-h-dvh bg-maya-dark text-white px-6 py-8">
       <div className="max-w-sm mx-auto">
         {/* Header */}
         <div className="text-center mb-6">
@@ -219,8 +219,8 @@ export default function RegisterPage() {
         </div>
 
         {/* Instructions */}
-        <div className="bg-[#C9AB81]/10 border border-[#C9AB81]/20 p-4 mb-6">
-          <p className="text-[#C9AB81] text-[10px] font-bold tracking-[0.2em] uppercase mb-2">
+        <div className="bg-maya-gold/10 border border-maya-gold/20 p-4 mb-6">
+          <p className="text-maya-gold text-[10px] font-bold tracking-[0.2em] uppercase mb-2">
             Cum functioneaza
           </p>
           <ol className="text-white/50 text-xs space-y-1.5 list-decimal list-inside">
@@ -311,7 +311,7 @@ export default function RegisterPage() {
                 </select>
               </div>
               {groupSize > 1 && (
-                <p className="text-[#C9AB81] text-[10px] mt-1">
+                <p className="text-maya-gold text-[10px] mt-1">
                   Fiecare membru trebuie sa scaneze QR-ul
                 </p>
               )}
@@ -337,7 +337,7 @@ export default function RegisterPage() {
 
             {/* Status indicator */}
             {searchingGroup && (
-              <p className="text-[#C9AB81] text-xs mt-2 animate-pulse">Se cauta grupul...</p>
+              <p className="text-maya-gold text-xs mt-2 animate-pulse">Se cauta grupul...</p>
             )}
 
             {groupError && groupError !== "not_found" && (
@@ -359,7 +359,7 @@ export default function RegisterPage() {
                   </div>
                 </div>
                 <div className="border-t border-white/[0.06] pt-2">
-                  <p className="text-[#C9AB81] text-xs font-bold mb-1">Esti primul din grup?</p>
+                  <p className="text-maya-gold text-xs font-bold mb-1">Esti primul din grup?</p>
                   <p className="text-white/50 text-xs">
                     Daca tu initiezi grupul, lasa acest camp gol si apasa "Trimite". Ceilalti membri vor introduce numarul TAU de telefon ({phone}) cand se inregistreaza, pentru a se alatura grupului tau.
                   </p>
@@ -395,7 +395,7 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#C9AB81] text-[#0A0A0A] py-3.5 font-bold text-sm tracking-[0.15em] uppercase active:opacity-80 transition-opacity disabled:opacity-50"
+            className="w-full bg-maya-gold text-maya-dark py-3.5 font-bold text-sm tracking-[0.15em] uppercase active:opacity-80 transition-opacity disabled:opacity-50"
           >
             {loading ? "Se trimite..." : groupInfo ? "Trimite si alatura-te grupului" : "Trimite pentru validare"}
           </button>

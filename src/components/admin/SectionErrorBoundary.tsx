@@ -36,7 +36,7 @@ export class SectionErrorBoundary extends React.Component<Props, State> {
           </p>
           <button
             onClick={() => this.setState({ hasError: false, error: null })}
-            className="inline-flex items-center gap-2 bg-[#C9AB81] text-[#0A0A0A] px-4 py-2 font-bold text-xs tracking-wider uppercase"
+            className="inline-flex items-center gap-2 bg-maya-gold text-maya-dark px-4 py-2 font-bold text-xs tracking-wider uppercase"
           >
             <RefreshCw className="w-3.5 h-3.5" />
             Reincearca

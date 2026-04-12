@@ -40,7 +40,7 @@ export default function OverviewTab({ data, onNavigate }: OverviewTabProps) {
 
       {Object.keys(data.stats.paymentBreakdown).length > 0 && (
         <div className="th-card border p-4">
-          <h3 className="text-[#C9AB81] text-[10px] font-bold tracking-[0.2em] uppercase mb-3">
+          <h3 className="text-maya-gold text-[10px] font-bold tracking-[0.2em] uppercase mb-3">
             Metode de plată
           </h3>
           {Object.entries(data.stats.paymentBreakdown).map(([method, count]) => (
@@ -66,7 +66,7 @@ function StatCard({ label, value, gold, onClick }: { label: string; value: strin
         {label}
         {onClick && <ChevronRight className="w-3 h-3 inline ml-1 opacity-40" />}
       </p>
-      <p className={`text-2xl font-bold tracking-wide ${gold ? "text-[#C9AB81]" : "th-text"}`}>
+      <p className={`text-2xl font-bold tracking-wide ${gold ? "text-maya-gold" : "th-text"}`}>
         {value}
       </p>
     </Tag>

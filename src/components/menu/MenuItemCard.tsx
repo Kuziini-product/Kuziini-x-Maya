@@ -50,13 +50,13 @@ export function MenuItemCard({ item }: MenuItemCardProps) {
               {item.name}
             </h3>
             {item.popular && (
-              <span className="text-[#C9AB81] text-[9px] tracking-wider uppercase">★</span>
+              <span className="text-maya-gold text-[9px] tracking-wider uppercase">★</span>
             )}
           </div>
           <p className="text-white/35 text-[11px] leading-relaxed mb-0.5">
             {item.description}
           </p>
-          <p className="text-[#C9AB81] text-sm font-bold tracking-wide">
+          <p className="text-maya-gold text-sm font-bold tracking-wide">
             {formatPrice(item.price)}
           </p>
         </div>
@@ -71,7 +71,7 @@ export function MenuItemCard({ item }: MenuItemCardProps) {
           {item.available && (
             <button
               onClick={handleQuickAdd}
-              className="w-9 h-9 flex items-center justify-center bg-[#C9AB81] text-[#0A0A0A] active:opacity-70 transition-opacity"
+              className="w-9 h-9 flex items-center justify-center bg-maya-gold text-maya-dark active:opacity-70 transition-opacity"
             >
               <Plus className="w-4 h-4" strokeWidth={2.5} />
             </button>
@@ -95,7 +95,7 @@ export function MenuItemCard({ item }: MenuItemCardProps) {
             </span>
             <button
               onClick={() => setQty((q) => q + 1)}
-              className="w-8 h-8 rounded-full border border-[#C9AB81]/50 text-[#C9AB81] flex items-center justify-center active:bg-[#C9AB81]/10"
+              className="w-8 h-8 rounded-full border border-maya-gold/50 text-maya-gold flex items-center justify-center active:bg-maya-gold/10"
             >
               <Plus className="w-3 h-3" />
             </button>
@@ -107,13 +107,13 @@ export function MenuItemCard({ item }: MenuItemCardProps) {
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             rows={1}
-            className="w-full bg-white/5 border border-white/10 px-3 py-2 text-[11px] text-white placeholder:text-white/20 outline-none focus:border-[#C9AB81]/40 resize-none mb-3"
+            className="w-full bg-white/5 border border-white/10 px-3 py-2 text-[11px] text-white placeholder:text-white/20 outline-none focus:border-maya-gold/40 resize-none mb-3"
           />
 
           {/* Add button */}
           <button
             onClick={handleAdd}
-            className="w-full bg-[#C9AB81] text-[#0A0A0A] py-2.5 font-bold text-[11px] tracking-[0.2em] uppercase flex items-center justify-center gap-2 active:opacity-80 transition-opacity"
+            className="w-full bg-maya-gold text-maya-dark py-2.5 font-bold text-[11px] tracking-[0.2em] uppercase flex items-center justify-center gap-2 active:opacity-80 transition-opacity"
           >
             <ShoppingBag className="w-3.5 h-3.5" />
             ADAUGĂ — {formatPrice(item.price * qty)}

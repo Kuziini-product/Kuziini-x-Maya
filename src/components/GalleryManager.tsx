@@ -234,7 +234,7 @@ export default function GalleryManager({
 
       {/* Slot selector + Aspect selector */}
       <div className="bg-white/[0.03] border border-white/[0.06] p-4">
-        <p className="text-[#C9AB81] text-[10px] font-bold tracking-[0.2em] uppercase mb-3">
+        <p className="text-maya-gold text-[10px] font-bold tracking-[0.2em] uppercase mb-3">
           Număr ferestre
         </p>
         <div className="flex gap-2 mb-4">
@@ -245,7 +245,7 @@ export default function GalleryManager({
               disabled={loading}
               className={`w-10 h-10 flex items-center justify-center font-bold text-sm transition-all ${
                 slots === n
-                  ? "bg-[#C9AB81] text-[#0A0A0A]"
+                  ? "bg-maya-gold text-maya-dark"
                   : "bg-white/[0.06] text-white/40 active:bg-white/[0.1]"
               } disabled:opacity-50`}
             >
@@ -254,7 +254,7 @@ export default function GalleryManager({
           ))}
         </div>
 
-        <p className="text-[#C9AB81] text-[10px] font-bold tracking-[0.2em] uppercase mb-3">
+        <p className="text-maya-gold text-[10px] font-bold tracking-[0.2em] uppercase mb-3">
           Aspect imagine
         </p>
         <div className="flex gap-2">
@@ -265,7 +265,7 @@ export default function GalleryManager({
               disabled={loading}
               className={`flex-1 py-2 text-xs font-bold tracking-wider uppercase transition-all ${
                 aspect === opt.value
-                  ? "bg-[#C9AB81] text-[#0A0A0A]"
+                  ? "bg-maya-gold text-maya-dark"
                   : "bg-white/[0.06] text-white/40 active:bg-white/[0.1]"
               } disabled:opacity-50`}
             >
@@ -277,7 +277,7 @@ export default function GalleryManager({
 
       {/* Grid - draggable clickable slots */}
       <div className="bg-white/[0.03] border border-white/[0.06] p-4">
-        <p className="text-[#C9AB81] text-[10px] font-bold tracking-[0.2em] uppercase mb-1">
+        <p className="text-maya-gold text-[10px] font-bold tracking-[0.2em] uppercase mb-1">
           Poze galerie ({images.length}/12) — Chenare active: {slots}
         </p>
         <p className="text-white/20 text-[9px] mb-3">Trage și plasează pentru a schimba ordinea. Chenare = câte poze pe pagină</p>
@@ -296,7 +296,7 @@ export default function GalleryManager({
                 onDragEnd={handleDragEnd}
                 className={`relative ${aspectClass} bg-white/[0.03] border-2 overflow-hidden group transition-all ${
                   isDragTarget
-                    ? "border-[#C9AB81] scale-[1.02]"
+                    ? "border-maya-gold scale-[1.02]"
                     : "border-white/[0.08]"
                 }`}
               >
@@ -312,7 +312,7 @@ export default function GalleryManager({
                       <button
                         onClick={() => uploadForSlot(i)}
                         disabled={loading}
-                        className="flex items-center gap-1.5 bg-[#C9AB81] text-[#0A0A0A] px-3 py-1.5 text-[10px] font-bold tracking-wider uppercase"
+                        className="flex items-center gap-1.5 bg-maya-gold text-maya-dark px-3 py-1.5 text-[10px] font-bold tracking-wider uppercase"
                       >
                         <Upload className="w-3 h-3" />
                         Înlocuiește
@@ -344,7 +344,7 @@ export default function GalleryManager({
                 ) : (
                   <div
                     className={`w-full h-full flex flex-col items-center justify-center text-white/30 cursor-pointer active:bg-white/[0.06] transition-colors gap-2 ${
-                      isDragTarget ? "bg-[#C9AB81]/10" : ""
+                      isDragTarget ? "bg-maya-gold/10" : ""
                     }`}
                     onClick={() => {
                       setActiveSlot(i);
@@ -373,13 +373,13 @@ export default function GalleryManager({
       {/* Library section */}
       <div className="bg-white/[0.03] border border-white/[0.06] p-4">
         <div className="flex items-center justify-between mb-3">
-          <p className="text-[#C9AB81] text-[10px] font-bold tracking-[0.2em] uppercase">
+          <p className="text-maya-gold text-[10px] font-bold tracking-[0.2em] uppercase">
             Bibliotecă poze ({library.length})
           </p>
           <button
             onClick={uploadToLibrary}
             disabled={loading}
-            className="flex items-center gap-1.5 bg-[#C9AB81] text-[#0A0A0A] px-3 py-1.5 text-[10px] font-bold tracking-wider uppercase disabled:opacity-50"
+            className="flex items-center gap-1.5 bg-maya-gold text-maya-dark px-3 py-1.5 text-[10px] font-bold tracking-wider uppercase disabled:opacity-50"
           >
             <Upload className="w-3 h-3" />
             Încarcă
@@ -415,7 +415,7 @@ export default function GalleryManager({
         <div className="fixed inset-0 bg-black/80 z-50 flex items-end justify-center">
           <div className="w-full max-w-lg bg-[#111] border-t border-white/[0.1] max-h-[70vh] flex flex-col">
             <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06]">
-              <p className="text-[#C9AB81] text-xs font-bold tracking-wider uppercase">
+              <p className="text-maya-gold text-xs font-bold tracking-wider uppercase">
                 Alege din bibliotecă — Fereastra {activeSlot + 1}
               </p>
               <button
@@ -437,7 +437,7 @@ export default function GalleryManager({
                       setShowLibrary(false);
                       setActiveSlot(null);
                     }}
-                    className="bg-[#C9AB81] text-[#0A0A0A] px-4 py-2 text-xs font-bold tracking-wider uppercase"
+                    className="bg-maya-gold text-maya-dark px-4 py-2 text-xs font-bold tracking-wider uppercase"
                   >
                     Încarcă de pe PC
                   </button>
@@ -449,7 +449,7 @@ export default function GalleryManager({
                       key={photo.id}
                       onClick={() => selectFromLibrary(photo)}
                       disabled={loading}
-                      className="relative aspect-square overflow-hidden border-2 border-transparent hover:border-[#C9AB81] transition-colors disabled:opacity-50"
+                      className="relative aspect-square overflow-hidden border-2 border-transparent hover:border-maya-gold transition-colors disabled:opacity-50"
                     >
                       <img src={photo.url} alt="" className="w-full h-full object-cover" />
                     </button>
@@ -466,7 +466,7 @@ export default function GalleryManager({
                   setActiveSlot(null);
                 }}
                 disabled={loading}
-                className="flex-1 flex items-center justify-center gap-2 bg-[#C9AB81] text-[#0A0A0A] py-2.5 font-bold text-xs tracking-wider uppercase disabled:opacity-50"
+                className="flex-1 flex items-center justify-center gap-2 bg-maya-gold text-maya-dark py-2.5 font-bold text-xs tracking-wider uppercase disabled:opacity-50"
               >
                 <Upload className="w-3.5 h-3.5" />
                 Încarcă de pe PC

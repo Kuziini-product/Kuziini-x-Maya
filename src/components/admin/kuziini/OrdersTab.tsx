@@ -42,7 +42,7 @@ export default function OrdersTab({ orders, onClientClick }: OrdersTabProps) {
             </div>
             <div className="flex items-center gap-3 text-xs th-text-muted mb-2">
               <span>{o.phone}</span>
-              <span className="text-[#C9AB81]">⛱️ {o.umbrellaId}</span>
+              <span className="text-maya-gold">⛱️ {o.umbrellaId}</span>
             </div>
             <div className="space-y-1">
               {o.items.map((item, j) => (
@@ -54,7 +54,7 @@ export default function OrdersTab({ orders, onClientClick }: OrdersTabProps) {
             </div>
             <div className="flex justify-between mt-2 pt-2 border-t th-border">
               <span className="text-xs th-text-muted">Total</span>
-              <span className="text-sm font-bold text-[#C9AB81]">{formatPrice(o.total)}</span>
+              <span className="text-sm font-bold text-maya-gold">{formatPrice(o.total)}</span>
             </div>
           </div>
         ))

@@ -82,9 +82,9 @@ export default function MenuPage({ params }: { params: { umbrellaId: string } })
     {showPhone && !userSession && (
       <PhoneModal umbrellaId={umbrellaId} onClose={() => setShowPhone(false)} />
     )}
-    <div className="min-h-dvh bg-[#0A0A0A] text-white">
+    <div className="min-h-dvh bg-maya-dark text-white">
       {/* Header */}
-      <div className="sticky top-0 z-30 bg-[#0A0A0A]/95 backdrop-blur-md border-b border-white/10">
+      <div className="sticky top-0 z-30 bg-maya-dark/95 backdrop-blur-md border-b border-white/10">
         <div className="flex items-center justify-between px-4 md:px-6 py-3 max-w-3xl mx-auto">
           <Link
             href={`/u/${umbrellaId}`}
@@ -124,7 +124,7 @@ export default function MenuPage({ params }: { params: { umbrellaId: string } })
             className={cn(
               "px-4 md:px-5 py-2 md:py-2.5 text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase border transition-all duration-300",
               activeTab === tab.id
-                ? "bg-white text-[#0A0A0A] border-white"
+                ? "bg-white text-maya-dark border-white"
                 : "bg-transparent text-white border-white/40 active:bg-white/10"
             )}
           >
@@ -137,7 +137,7 @@ export default function MenuPage({ params }: { params: { umbrellaId: string } })
       <div className="px-5 md:px-6 pb-32 max-w-3xl mx-auto">
         {isLoading && (
           <div className="flex justify-center py-16">
-            <Spinner className="text-[#C9AB81]" />
+            <Spinner className="text-maya-gold" />
           </div>
         )}
 
@@ -153,10 +153,10 @@ export default function MenuPage({ params }: { params: { umbrellaId: string } })
             <section key={category.slug} className="text-center">
               {/* Category header - LOFT gold style */}
               <div className="mb-6">
-                <h2 className="text-[#C9AB81] text-lg font-bold tracking-[0.25em] uppercase">
+                <h2 className="text-maya-gold text-lg font-bold tracking-[0.25em] uppercase">
                   {category.name}
                 </h2>
-                <div className="w-12 h-px bg-[#C9AB81]/40 mx-auto mt-2" />
+                <div className="w-12 h-px bg-maya-gold/40 mx-auto mt-2" />
               </div>
 
               {/* Items */}

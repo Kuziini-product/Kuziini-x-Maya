@@ -83,12 +83,12 @@ export default function OwnerRequestsPage({ params }: { params: { umbrellaId: st
         {/* Pending */}
         {pending.length > 0 && (
           <div>
-            <h3 className="text-[#C9AB81] text-xs font-bold tracking-[0.2em] uppercase mb-3">
+            <h3 className="text-maya-gold text-xs font-bold tracking-[0.2em] uppercase mb-3">
               În așteptare ({pending.length})
             </h3>
             <div className="space-y-3">
               {pending.map((req) => (
-                <div key={req.id} className="bg-white/[0.03] border border-[#C9AB81]/30 p-4">
+                <div key={req.id} className="bg-white/[0.03] border border-maya-gold/30 p-4">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-10 h-10 flex items-center justify-center bg-white/10">
                       <Users className="w-5 h-5 text-white/50" />

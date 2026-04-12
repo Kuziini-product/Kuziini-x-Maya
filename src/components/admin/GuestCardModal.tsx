@@ -194,8 +194,8 @@ export default function GuestCardModal({ guest, adminId, onClose, onUpdated }: P
     }
   }
 
-  const inputCls = "w-full th-input border px-3 py-2 text-sm outline-none focus:border-[#C9AB81]/50";
-  const labelCls = "text-[10px] font-bold text-[#C9AB81] uppercase tracking-[0.2em] mb-1 block";
+  const inputCls = "w-full th-input border px-3 py-2 text-sm outline-none focus:border-maya-gold/50";
+  const labelCls = "text-[10px] font-bold text-maya-gold uppercase tracking-[0.2em] mb-1 block";
   const members = guest.members || [{ phone: guest.phone, name: guest.name, email: guest.email }];
   const loungerIds = guest.loungerIds || (guest.loungerId ? [guest.loungerId] : []);
 
@@ -241,7 +241,7 @@ export default function GuestCardModal({ guest, adminId, onClose, onUpdated }: P
               <p className={labelCls}>Membri familie</p>
               <button
                 onClick={() => setShowAddMember(!showAddMember)}
-                className="flex items-center gap-1 text-[#C9AB81] text-[10px] font-bold uppercase tracking-wider"
+                className="flex items-center gap-1 text-maya-gold text-[10px] font-bold uppercase tracking-wider"
               >
                 {showAddMember ? <Minus className="w-3 h-3" /> : <Plus className="w-3 h-3" />}
                 {showAddMember ? "Anuleaza" : "Adauga"}
@@ -253,7 +253,7 @@ export default function GuestCardModal({ guest, adminId, onClose, onUpdated }: P
                 <div key={m.phone} className="th-card border p-2.5 flex items-center justify-between">
                   <div className="min-w-0">
                     <p className="th-text text-sm font-medium truncate">
-                      {m.name} {i === 0 && <span className="text-[#C9AB81] text-[9px]">(principal)</span>}
+                      {m.name} {i === 0 && <span className="text-maya-gold text-[9px]">(principal)</span>}
                     </p>
                     <div className="flex items-center gap-3 text-xs th-text-muted">
                       <span className="flex items-center gap-1"><Phone className="w-3 h-3" /> {m.phone}</span>
@@ -277,7 +277,7 @@ export default function GuestCardModal({ guest, adminId, onClose, onUpdated }: P
                   <input type="text" value={newName} onChange={(e) => setNewName(e.target.value)} className={inputCls} placeholder="Nume" />
                   <input type="email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} className={inputCls} placeholder="Email" />
                 </div>
-                <button onClick={addMember} disabled={saving} className="w-full bg-[#C9AB81] text-[#0A0A0A] py-2 font-bold text-xs tracking-wider uppercase disabled:opacity-50">
+                <button onClick={addMember} disabled={saving} className="w-full bg-maya-gold text-maya-dark py-2 font-bold text-xs tracking-wider uppercase disabled:opacity-50">
                   {saving ? "..." : "Adauga membru"}
                 </button>
               </div>
@@ -291,14 +291,14 @@ export default function GuestCardModal({ guest, adminId, onClose, onUpdated }: P
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setShowMapPicker(true)}
-                  className="flex items-center gap-1 text-[#C9AB81] text-[10px] font-bold uppercase tracking-wider"
+                  className="flex items-center gap-1 text-maya-gold text-[10px] font-bold uppercase tracking-wider"
                 >
                   <Map className="w-3 h-3" />
                   Harta
                 </button>
                 <button
                   onClick={() => setShowAddLounger(!showAddLounger)}
-                  className="flex items-center gap-1 text-[#C9AB81] text-[10px] font-bold uppercase tracking-wider"
+                  className="flex items-center gap-1 text-maya-gold text-[10px] font-bold uppercase tracking-wider"
                 >
                   {showAddLounger ? <Minus className="w-3 h-3" /> : <Plus className="w-3 h-3" />}
                   Manual
@@ -308,8 +308,8 @@ export default function GuestCardModal({ guest, adminId, onClose, onUpdated }: P
 
             <div className="flex gap-1.5 flex-wrap">
               {loungerIds.map((lid) => (
-                <div key={lid} className="flex items-center gap-1 bg-[#C9AB81]/10 border border-[#C9AB81]/20 px-2.5 py-1.5">
-                  <Umbrella className="w-3 h-3 text-[#C9AB81]" />
+                <div key={lid} className="flex items-center gap-1 bg-maya-gold/10 border border-maya-gold/20 px-2.5 py-1.5">
+                  <Umbrella className="w-3 h-3 text-maya-gold" />
                   <span className="text-sm font-medium th-text">{lid}</span>
                   {loungerIds.length > 1 && (
                     <button onClick={() => removeLounger(lid)} className="text-red-400 ml-1" disabled={saving}>
@@ -329,7 +329,7 @@ export default function GuestCardModal({ guest, adminId, onClose, onUpdated }: P
                   className={`flex-1 ${inputCls}`}
                   placeholder="Nr. sezlong (ex: B-020)"
                 />
-                <button onClick={addLounger} disabled={saving} className="bg-[#C9AB81] text-[#0A0A0A] px-4 font-bold text-xs tracking-wider uppercase disabled:opacity-50">
+                <button onClick={addLounger} disabled={saving} className="bg-maya-gold text-maya-dark px-4 font-bold text-xs tracking-wider uppercase disabled:opacity-50">
                   {saving ? "..." : "Adauga"}
                 </button>
               </div>
@@ -426,7 +426,7 @@ export default function GuestCardModal({ guest, adminId, onClose, onUpdated }: P
             <button
               onClick={saveChanges}
               disabled={saving}
-              className="flex-1 flex items-center justify-center gap-2 bg-[#C9AB81] text-[#0A0A0A] py-3 font-bold text-xs tracking-wider uppercase disabled:opacity-50"
+              className="flex-1 flex items-center justify-center gap-2 bg-maya-gold text-maya-dark py-3 font-bold text-xs tracking-wider uppercase disabled:opacity-50"
             >
               <Save className="w-4 h-4" />
               {saving ? "Se salveaza..." : "Salveaza"}

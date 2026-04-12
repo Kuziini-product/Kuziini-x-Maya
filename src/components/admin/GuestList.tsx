@@ -96,7 +96,7 @@ export default function GuestList({ adminId }: Props) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Cauta dupa nume, telefon sau sezlong..."
-          className="w-full th-input border pl-9 pr-3 py-2.5 text-sm outline-none focus:border-[#C9AB81]/50"
+          className="w-full th-input border pl-9 pr-3 py-2.5 text-sm outline-none focus:border-maya-gold/50"
         />
       </div>
 
@@ -108,7 +108,7 @@ export default function GuestList({ adminId }: Props) {
             onClick={() => setFilter(f.key)}
             className={`px-3 py-1.5 text-[10px] font-bold tracking-wider uppercase transition-all ${
               filter === f.key
-                ? "bg-[#C9AB81] text-[#0A0A0A]"
+                ? "bg-maya-gold text-maya-dark"
                 : "th-tab-inactive th-text-muted"
             }`}
           >
@@ -119,7 +119,7 @@ export default function GuestList({ adminId }: Props) {
 
       <p className="th-text-muted text-xs mb-3">
         {filtered.length} oaspeti{" "}
-        <button onClick={() => refetch()} className="text-[#C9AB81]">
+        <button onClick={() => refetch()} className="text-maya-gold">
           <RefreshCw className={`w-3 h-3 inline ${isLoading ? "animate-spin" : ""}`} />
         </button>
       </p>
@@ -170,7 +170,7 @@ export default function GuestList({ adminId }: Props) {
 
                   {g.loungerHistory && g.loungerHistory.length > 0 && (
                     <div className="th-card border th-border p-2 mt-1">
-                      <p className="text-[10px] font-bold text-[#C9AB81] uppercase tracking-wider mb-1">Istoric locuri</p>
+                      <p className="text-[10px] font-bold text-maya-gold uppercase tracking-wider mb-1">Istoric locuri</p>
                       {g.loungerHistory.map((h, i) => (
                         <div key={i} className="flex items-center gap-2 text-[10px] th-text-muted">
                           <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${h.action === "assigned" ? "bg-emerald-400" : h.action === "relocated_to" ? "bg-sky-400" : "bg-amber-400"}`} />
@@ -195,7 +195,7 @@ export default function GuestList({ adminId }: Props) {
                     </button>
                     <button
                       onClick={() => setEditingGuest(g)}
-                      className="flex-1 flex items-center justify-center gap-1.5 py-2 text-[10px] font-bold tracking-wider uppercase bg-[#C9AB81]/10 border border-[#C9AB81]/20 text-[#C9AB81]"
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2 text-[10px] font-bold tracking-wider uppercase bg-maya-gold/10 border border-maya-gold/20 text-maya-gold"
                     >
                       Edit card
                     </button>

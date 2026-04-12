@@ -81,8 +81,8 @@ export default function GuestDashboard({ adminId, onNavigate }: Props) {
       value: stats.totalGuestsToday,
       subValue: `${stats.totalPersonsToday} persoane`,
       icon: <Users className="w-6 h-6" />,
-      color: "text-[#C9AB81]",
-      bg: "bg-[#C9AB81]/10 border-[#C9AB81]/20",
+      color: "text-maya-gold",
+      bg: "bg-maya-gold/10 border-maya-gold/20",
       tab: "guest-daily",
     },
     {

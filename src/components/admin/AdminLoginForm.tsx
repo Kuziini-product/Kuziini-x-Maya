@@ -56,10 +56,10 @@ export default function AdminLoginForm({ theme, onLogin }: Props) {
 
         <div className="space-y-4">
           <div>
-            <label className="text-[10px] font-bold text-[#C9AB81] uppercase tracking-[0.2em] mb-2 block">
+            <label className="text-[10px] font-bold text-maya-gold uppercase tracking-[0.2em] mb-2 block">
               Email
             </label>
-            <div className="flex items-center gap-3 th-input border th-border px-4 py-3 focus-within:border-[#C9AB81]/50 transition-colors">
+            <div className="flex items-center gap-3 th-input border th-border px-4 py-3 focus-within:border-maya-gold/50 transition-colors">
               <Mail className="w-4 h-4 th-text-muted shrink-0" />
               <input
                 type="email"
@@ -74,10 +74,10 @@ export default function AdminLoginForm({ theme, onLogin }: Props) {
           </div>
 
           <div>
-            <label className="text-[10px] font-bold text-[#C9AB81] uppercase tracking-[0.2em] mb-2 block">
+            <label className="text-[10px] font-bold text-maya-gold uppercase tracking-[0.2em] mb-2 block">
               Parola
             </label>
-            <div className="flex items-center gap-3 th-input border th-border px-4 py-3 focus-within:border-[#C9AB81]/50 transition-colors">
+            <div className="flex items-center gap-3 th-input border th-border px-4 py-3 focus-within:border-maya-gold/50 transition-colors">
               <Lock className="w-4 h-4 th-text-muted shrink-0" />
               <input
                 id="pw-input"
@@ -96,7 +96,7 @@ export default function AdminLoginForm({ theme, onLogin }: Props) {
           <button
             onClick={handleLogin}
             disabled={loading}
-            className="w-full bg-[#C9AB81] text-[#0A0A0A] py-3.5 font-bold text-sm tracking-[0.15em] uppercase active:opacity-80 transition-opacity disabled:opacity-50"
+            className="w-full bg-maya-gold text-maya-dark py-3.5 font-bold text-sm tracking-[0.15em] uppercase active:opacity-80 transition-opacity disabled:opacity-50"
           >
             {loading ? "Se verifica..." : "Autentificare"}
           </button>

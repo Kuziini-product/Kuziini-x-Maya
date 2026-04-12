@@ -137,7 +137,7 @@ export default function LoungerMapPicker({
             <button
               onClick={() => setZoneFilter(null)}
               className={`px-3 py-1.5 text-[10px] font-bold tracking-wider uppercase whitespace-nowrap ${
-                !zoneFilter ? "bg-[#C9AB81] text-[#0A0A0A]" : "bg-gray-100 text-gray-500"
+                !zoneFilter ? "bg-maya-gold text-maya-dark" : "bg-gray-100 text-gray-500"
               }`}
             >
               Toate
@@ -147,7 +147,7 @@ export default function LoungerMapPicker({
                 key={z}
                 onClick={() => setZoneFilter(zoneFilter === z ? null : z)}
                 className={`px-3 py-1.5 text-[10px] font-bold tracking-wider uppercase whitespace-nowrap ${
-                  zoneFilter === z ? "bg-[#C9AB81] text-[#0A0A0A]" : "bg-gray-100 text-gray-500"
+                  zoneFilter === z ? "bg-maya-gold text-maya-dark" : "bg-gray-100 text-gray-500"
                 }`}
               >
                 {z}
@@ -161,7 +161,7 @@ export default function LoungerMapPicker({
               <span className="w-2.5 h-2.5 bg-emerald-100 border border-emerald-300 inline-block" /> Liber
             </span>
             <span className="flex items-center gap-1">
-              <span className="w-2.5 h-2.5 bg-[#C9AB81]/30 border border-[#C9AB81] inline-block" /> Selectat
+              <span className="w-2.5 h-2.5 bg-maya-gold/30 border border-maya-gold inline-block" /> Selectat
             </span>
             <span className="flex items-center gap-1">
               <span className="w-2.5 h-2.5 bg-orange-100 border border-orange-300 inline-block" /> Sugerat
@@ -181,7 +181,7 @@ export default function LoungerMapPicker({
           ) : (
             Object.entries(filteredZones).map(([zone, zLoungers]) => (
               <div key={zone} className="mb-5">
-                <p className="text-[#C9AB81] text-[10px] font-bold tracking-[0.2em] uppercase mb-2">
+                <p className="text-maya-gold text-[10px] font-bold tracking-[0.2em] uppercase mb-2">
                   {zone} ({zLoungers.length})
                 </p>
                 <div className="grid grid-cols-6 gap-1">
@@ -192,7 +192,7 @@ export default function LoungerMapPicker({
 
                     let cls = "";
                     if (isSelected) {
-                      cls = "bg-[#C9AB81]/20 border-[#C9AB81] text-[#C9AB81] ring-1 ring-[#C9AB81] font-bold";
+                      cls = "bg-maya-gold/20 border-maya-gold text-maya-gold ring-1 ring-maya-gold font-bold";
                     } else if (isSuggested) {
                       cls = "bg-orange-100 border-orange-300 text-orange-600 animate-pulse";
                     } else if (isOccupied) {
@@ -228,7 +228,7 @@ export default function LoungerMapPicker({
           {localSelected.length > 0 && (
             <div className="flex gap-1 flex-wrap mb-2">
               {localSelected.map((lid) => (
-                <span key={lid} className="flex items-center gap-1 bg-[#C9AB81]/10 border border-[#C9AB81]/20 px-2 py-0.5 text-[10px] font-bold text-[#C9AB81]">
+                <span key={lid} className="flex items-center gap-1 bg-maya-gold/10 border border-maya-gold/20 px-2 py-0.5 text-[10px] font-bold text-maya-gold">
                   {lid}
                   <button onClick={() => toggleLounger(lid)} className="text-red-400">
                     <X className="w-2.5 h-2.5" />
@@ -247,7 +247,7 @@ export default function LoungerMapPicker({
           <button
             onClick={confirmSelection}
             disabled={localSelected.length === 0}
-            className="w-full bg-[#C9AB81] text-[#0A0A0A] py-3 font-bold text-sm tracking-wider uppercase disabled:opacity-40"
+            className="w-full bg-maya-gold text-maya-dark py-3 font-bold text-sm tracking-wider uppercase disabled:opacity-40"
           >
             Confirma {localSelected.length} {localSelected.length === 1 ? "loc" : "locuri"}
           </button>

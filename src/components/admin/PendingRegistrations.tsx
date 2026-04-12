@@ -129,8 +129,8 @@ export default function PendingRegistrations({ adminId }: Props) {
       <div className="th-card border p-4 mb-4">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <QrCode className="w-4 h-4 text-[#C9AB81]" />
-            <p className="text-[10px] font-bold text-[#C9AB81] uppercase tracking-[0.2em]">QR Code Receptie</p>
+            <QrCode className="w-4 h-4 text-maya-gold" />
+            <p className="text-[10px] font-bold text-maya-gold uppercase tracking-[0.2em]">QR Code Receptie</p>
           </div>
           <button onClick={() => setShowQR(!showQR)} className="th-text-muted text-xs font-bold">
             {showQR ? "Ascunde" : "Arata"}
@@ -144,7 +144,7 @@ export default function PendingRegistrations({ adminId }: Props) {
             <p className="th-text-muted text-xs mb-1">Oaspetii scaneaza acest cod la receptie</p>
             <p className="th-text-faint text-[10px] mb-4 break-all">{registerUrl}</p>
             <div className="flex gap-2 justify-center">
-              <button onClick={downloadQR} className="flex items-center gap-1.5 px-4 py-2 bg-[#C9AB81] text-[#0A0A0A] font-bold text-[10px] tracking-wider uppercase">
+              <button onClick={downloadQR} className="flex items-center gap-1.5 px-4 py-2 bg-maya-gold text-maya-dark font-bold text-[10px] tracking-wider uppercase">
                 <Download className="w-3.5 h-3.5" /> Descarca PNG
               </button>
               <button onClick={printQR} className="flex items-center gap-1.5 px-4 py-2 th-tab-inactive th-text-muted font-bold text-[10px] tracking-wider uppercase">

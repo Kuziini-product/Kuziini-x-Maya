@@ -224,7 +224,7 @@ export default function BannerManager({
                 <button
                   onClick={() => handleSaveEdit(banner)}
                   disabled={loading}
-                  className="flex-1 flex items-center justify-center gap-2 bg-[#C9AB81] text-[#0A0A0A] py-2 font-bold text-xs tracking-wider uppercase disabled:opacity-50"
+                  className="flex-1 flex items-center justify-center gap-2 bg-maya-gold text-maya-dark py-2 font-bold text-xs tracking-wider uppercase disabled:opacity-50"
                 >
                   <Save className="w-3.5 h-3.5" />
                   Salvează
@@ -298,7 +298,7 @@ export default function BannerManager({
                   </button>
                   <button
                     onClick={() => startEdit(banner)}
-                    className="w-7 h-7 flex items-center justify-center bg-white/10 text-[#C9AB81]"
+                    className="w-7 h-7 flex items-center justify-center bg-white/10 text-maya-gold"
                   >
                     <Save className="w-3.5 h-3.5" />
                   </button>
@@ -318,8 +318,8 @@ export default function BannerManager({
 
       {/* Add form */}
       {adding ? (
-        <div className="bg-white/[0.03] border border-[#C9AB81]/30 p-4 space-y-3">
-          <p className="text-[#C9AB81] text-[10px] font-bold tracking-[0.2em] uppercase">
+        <div className="bg-white/[0.03] border border-maya-gold/30 p-4 space-y-3">
+          <p className="text-maya-gold text-[10px] font-bold tracking-[0.2em] uppercase">
             Banner nou
           </p>
           <BannerForm
@@ -335,7 +335,7 @@ export default function BannerManager({
             <button
               onClick={handleAdd}
               disabled={loading}
-              className="flex-1 flex items-center justify-center gap-2 bg-[#C9AB81] text-[#0A0A0A] py-2 font-bold text-xs tracking-wider uppercase disabled:opacity-50"
+              className="flex-1 flex items-center justify-center gap-2 bg-maya-gold text-maya-dark py-2 font-bold text-xs tracking-wider uppercase disabled:opacity-50"
             >
               <Plus className="w-3.5 h-3.5" />
               Adaugă
@@ -383,14 +383,14 @@ function BannerForm({
         value={form.title}
         onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
         placeholder="Titlu"
-        className="w-full bg-white/5 border border-white/10 px-3 py-2 text-white text-sm outline-none focus:border-[#C9AB81]/50 placeholder:text-white/20"
+        className="w-full bg-white/5 border border-white/10 px-3 py-2 text-white text-sm outline-none focus:border-maya-gold/50 placeholder:text-white/20"
       />
       <input
         type="text"
         value={form.subtitle}
         onChange={(e) => setForm((f) => ({ ...f, subtitle: e.target.value }))}
         placeholder="Subtitlu (opțional)"
-        className="w-full bg-white/5 border border-white/10 px-3 py-2 text-white text-sm outline-none focus:border-[#C9AB81]/50 placeholder:text-white/20"
+        className="w-full bg-white/5 border border-white/10 px-3 py-2 text-white text-sm outline-none focus:border-maya-gold/50 placeholder:text-white/20"
       />
       <div className="flex gap-2">
         <input
@@ -398,7 +398,7 @@ function BannerForm({
           value={form.emoji}
           onChange={(e) => setForm((f) => ({ ...f, emoji: e.target.value }))}
           placeholder="Emoji"
-          className="w-20 bg-white/5 border border-white/10 px-3 py-2 text-white text-sm outline-none focus:border-[#C9AB81]/50 placeholder:text-white/20 text-center"
+          className="w-20 bg-white/5 border border-white/10 px-3 py-2 text-white text-sm outline-none focus:border-maya-gold/50 placeholder:text-white/20 text-center"
         />
         <button
           type="button"

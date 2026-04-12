@@ -115,7 +115,7 @@ export default function PhoneInput({ value, onChange, placeholder, className, au
           type="tel"
           value={formatted}
           onChange={(e) => handleDigitsChange(e.target.value)}
-          className="flex-1 bg-white/[0.06] border border-white/[0.1] px-3 py-3 text-white text-sm tracking-wider font-mono outline-none focus:border-[#C9AB81]/50 placeholder:text-white/30"
+          className="flex-1 bg-white/[0.06] border border-white/[0.1] px-3 py-3 text-white text-sm tracking-wider font-mono outline-none focus:border-maya-gold/50 placeholder:text-white/30"
           placeholder={placeholder || formatNumber("712345678", country.format)}
           autoFocus={autoFocus}
           inputMode="tel"
@@ -124,7 +124,7 @@ export default function PhoneInput({ value, onChange, placeholder, className, au
 
       {/* Full number preview */}
       {digits.length > 0 && (
-        <p className="text-[#C9AB81] text-[10px] mt-1 font-mono tracking-wider">
+        <p className="text-maya-gold text-[10px] mt-1 font-mono tracking-wider">
           {country.dial} {formatted}
         </p>
       )}
@@ -138,7 +138,7 @@ export default function PhoneInput({ value, onChange, placeholder, className, au
               type="button"
               onClick={() => selectCountry(c)}
               className={`w-full flex items-center gap-2 px-3 py-2.5 text-left text-sm hover:bg-white/[0.06] ${
-                c.code === country.code ? "bg-[#C9AB81]/10 text-[#C9AB81]" : "text-white/80"
+                c.code === country.code ? "bg-maya-gold/10 text-maya-gold" : "text-white/80"
               }`}
             >
               <span className="text-lg">{c.flag}</span>

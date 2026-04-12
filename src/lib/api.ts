@@ -150,3 +150,59 @@ export async function fetchLoungerAssignments() {
   ]);
   return { stats: dashData.stats, guests };
 }
+
+// ─── Kuziini Admin Dashboard ────────────────────────────────────────────────
+
+import type {
+  AdminData,
+  OfferEntry,
+  AnalyticsData,
+  GalleryStatsData,
+  AccessData,
+  LoginEntry,
+  OrderEntry,
+  BillEntry,
+} from "@/types/admin-dashboard";
+
+export async function fetchAdminData() {
+  return post<AdminData>("/api/admin", {});
+}
+
+export async function fetchOffers() {
+  return post<OfferEntry[]>("/api/offers", { action: "list" });
+}
+
+export async function fetchClientProfiles(params: {
+  logins: LoginEntry[];
+  orders: OrderEntry[];
+  billRequests: BillEntry[];
+  offers: OfferEntry[];
+}) {
+  return post<AnalyticsData>("/api/analytics", {
+    action: "getClientProfiles",
+    ...params,
+  });
+}
+
+export async function fetchGalleryStats() {
+  return post<GalleryStatsData>("/api/analytics", { action: "getGalleryStats" });
+}
+
+export async function fetchAccessLog() {
+  return post<AccessData>("/api/access-log", { action: "getLog" });
+}
+
+export async function fetchOnlineCount(): Promise<{ online: number; phones: string[] }> {
+  const res = await fetch("/api/access-log", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "getOnline" }),
+  });
+  const json = await res.json();
+  if (!json.success) throw new Error(json.error || "Eroare server.");
+  return { online: json.online, phones: json.phones || [] };
+}
+
+export async function markAccessLogRead() {
+  return post<void>("/api/access-log", { action: "markRead" });
+}

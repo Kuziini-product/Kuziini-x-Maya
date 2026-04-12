@@ -46,7 +46,7 @@ export default function UmbrellasTab({ umbrellas }: UmbrellasTabProps) {
               {u.hasSession ? "Ocupat" : "Liber"}
             </span>
           </div>
-          <p className="text-xs text-[#C9AB81] tracking-wider uppercase">{u.zone}</p>
+          <p className="text-xs text-maya-gold tracking-wider uppercase">{u.zone}</p>
           {u.ownerPhone && (
             <p className="text-xs th-text-muted mt-1">{u.ownerPhone}</p>
           )}

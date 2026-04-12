@@ -43,7 +43,7 @@ export default function LoginsTab({ logins, onClientClick }: LoginsTabProps) {
             <div className="flex items-center gap-3 text-xs th-text-muted">
               <span>{l.phone}</span>
               {l.email && <span>{l.email}</span>}
-              <span className="text-[#C9AB81]">⛱️ {l.umbrellaId}</span>
+              <span className="text-maya-gold">⛱️ {l.umbrellaId}</span>
             </div>
           </button>
         ))

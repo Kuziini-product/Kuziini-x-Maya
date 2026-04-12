@@ -24,7 +24,7 @@ export default function SectionHelp({ items }: SectionHelpProps) {
         <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center px-5">
           <div className="w-full max-w-md bg-[#111] border border-white/[0.1] max-h-[80vh] flex flex-col">
             <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06]">
-              <p className="text-[#C9AB81] text-xs font-bold tracking-wider uppercase">
+              <p className="text-maya-gold text-xs font-bold tracking-wider uppercase">
                 Instrucțiuni
               </p>
               <button
@@ -38,7 +38,7 @@ export default function SectionHelp({ items }: SectionHelpProps) {
               <ul className="space-y-3">
                 {items.map((item, i) => (
                   <li key={i} className="flex gap-3 text-sm text-white/60 leading-relaxed">
-                    <span className="text-[#C9AB81] font-bold shrink-0">{i + 1}.</span>
+                    <span className="text-maya-gold font-bold shrink-0">{i + 1}.</span>
                     <span>{item}</span>
                   </li>
                 ))}
@@ -47,7 +47,7 @@ export default function SectionHelp({ items }: SectionHelpProps) {
             <div className="p-4 border-t border-white/[0.06]">
               <button
                 onClick={() => setOpen(false)}
-                className="w-full bg-[#C9AB81] text-[#0A0A0A] py-2.5 font-bold text-xs tracking-wider uppercase"
+                className="w-full bg-maya-gold text-maya-dark py-2.5 font-bold text-xs tracking-wider uppercase"
               >
                 Am înțeles
               </button>

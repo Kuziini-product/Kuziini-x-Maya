@@ -260,9 +260,9 @@ export default function LoungerGrid({ adminId }: Props) {
   }
 
   const inputCls =
-    "w-full th-input border px-3 py-2 text-sm outline-none focus:border-[#C9AB81]/50";
+    "w-full th-input border px-3 py-2 text-sm outline-none focus:border-maya-gold/50";
   const labelCls =
-    "text-[10px] font-bold text-[#C9AB81] uppercase tracking-[0.2em] mb-1 block";
+    "text-[10px] font-bold text-maya-gold uppercase tracking-[0.2em] mb-1 block";
 
   if (loading) {
     return (
@@ -299,7 +299,7 @@ export default function LoungerGrid({ adminId }: Props) {
 
       {Object.entries(zones).map(([zone, zLoungers]) => (
         <div key={zone} className="mb-6">
-          <p className="text-[#C9AB81] text-[10px] font-bold tracking-[0.2em] uppercase mb-2">
+          <p className="text-maya-gold text-[10px] font-bold tracking-[0.2em] uppercase mb-2">
             {zone}
           </p>
           <div className="grid grid-cols-5 gap-2">
@@ -310,7 +310,7 @@ export default function LoungerGrid({ adminId }: Props) {
                   key={l.id}
                   onClick={() => openLounger(l.id)}
                   className={`border p-2 text-center transition-all ${getLoungerColor(l.id)} ${
-                    selected === l.id ? "ring-2 ring-[#C9AB81]" : ""
+                    selected === l.id ? "ring-2 ring-maya-gold" : ""
                   }`}
                 >
                   <p className="text-xs font-bold">{l.id}</p>
@@ -440,7 +440,7 @@ export default function LoungerGrid({ adminId }: Props) {
                   {/* Lounger history */}
                   {selectedGuest.loungerHistory && selectedGuest.loungerHistory.length > 0 && (
                     <div className="th-card border p-3 mb-3">
-                      <p className="text-[10px] font-bold text-[#C9AB81] uppercase tracking-[0.2em] mb-2">
+                      <p className="text-[10px] font-bold text-maya-gold uppercase tracking-[0.2em] mb-2">
                         Istoric locuri
                       </p>
                       <div className="space-y-1.5">
@@ -476,7 +476,7 @@ export default function LoungerGrid({ adminId }: Props) {
                   {/* Action buttons */}
                   <button
                     onClick={() => setPanelMode("relocate")}
-                    className="w-full flex items-center justify-center gap-2 bg-[#C9AB81] text-[#0A0A0A] py-3 font-bold text-xs tracking-wider uppercase"
+                    className="w-full flex items-center justify-center gap-2 bg-maya-gold text-maya-dark py-3 font-bold text-xs tracking-wider uppercase"
                   >
                     <ArrowRightLeft className="w-4 h-4" />
                     Reloca oaspetele
@@ -498,7 +498,7 @@ export default function LoungerGrid({ adminId }: Props) {
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       onClick={() => setPanelMode("assign")}
-                      className="flex items-center justify-center gap-2 bg-[#C9AB81] text-[#0A0A0A] py-3 font-bold text-xs tracking-wider uppercase"
+                      className="flex items-center justify-center gap-2 bg-maya-gold text-maya-dark py-3 font-bold text-xs tracking-wider uppercase"
                     >
                       <Search className="w-4 h-4" />
                       Asigneaza oaspete
@@ -538,7 +538,7 @@ export default function LoungerGrid({ adminId }: Props) {
                     onClick={() => setSelectedGuestId(selectedGuestId === g.id ? null : g.id)}
                     className={`w-full text-left px-3 py-2 text-sm border transition-all ${
                       selectedGuestId === g.id
-                        ? "bg-[#C9AB81]/10 border-[#C9AB81]/30"
+                        ? "bg-maya-gold/10 border-maya-gold/30"
                         : "th-card th-border"
                     }`}
                   >
@@ -556,7 +556,7 @@ export default function LoungerGrid({ adminId }: Props) {
               <button
                 onClick={assignGuest}
                 disabled={!selectedGuestId || saving}
-                className="w-full bg-[#C9AB81] text-[#0A0A0A] py-3 font-bold text-xs tracking-wider uppercase disabled:opacity-40"
+                className="w-full bg-maya-gold text-maya-dark py-3 font-bold text-xs tracking-wider uppercase disabled:opacity-40"
               >
                 {saving ? "Se asigneaza..." : "Confirma asignare"}
               </button>
@@ -637,7 +637,7 @@ export default function LoungerGrid({ adminId }: Props) {
                           disabled={!isFree}
                           className={`px-3 py-1.5 text-xs font-bold border transition-all ${
                             relocateTarget.toUpperCase() === lid
-                              ? "bg-[#C9AB81]/20 border-[#C9AB81] text-[#C9AB81]"
+                              ? "bg-maya-gold/20 border-maya-gold text-maya-gold"
                               : isFree
                               ? "bg-emerald-50 border-emerald-200 text-emerald-600"
                               : "bg-red-50 border-red-200 text-red-400 cursor-not-allowed line-through"
@@ -678,7 +678,7 @@ export default function LoungerGrid({ adminId }: Props) {
               <button
                 onClick={relocateGuest}
                 disabled={!relocateTarget.trim() || !relocateReason.trim() || saving}
-                className="w-full bg-[#C9AB81] text-[#0A0A0A] py-3 font-bold text-xs tracking-wider uppercase disabled:opacity-40 mt-3"
+                className="w-full bg-maya-gold text-maya-dark py-3 font-bold text-xs tracking-wider uppercase disabled:opacity-40 mt-3"
               >
                 {saving ? "Se reloca..." : `Muta pe ${relocateTarget.trim().toUpperCase() || "..."}`}
               </button>

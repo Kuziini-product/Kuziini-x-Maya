@@ -1,6 +1,16 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  useAdminData,
+  useOffers,
+  useGalleryStats,
+  useAccessLog,
+  useOnlineUsers,
+  queryKeys,
+} from "@/hooks/use-admin";
+import * as adminApi from "@/lib/api";
 import {
   Lock, Users, ShoppingBag, Receipt, DollarSign, RefreshCw, Umbrella,
   ImageIcon, LayoutGrid, FileText, Bell, BarChart3, ExternalLink,
@@ -153,30 +163,54 @@ const MAYA_TABS: { key: Tab; label: string; icon: React.ReactNode }[] = [
 // ─── Page Component ─────────────────────────────────────────────────────────
 
 export default function AdminPage() {
+  const qc = useQueryClient();
   const [password, setPassword] = useState("");
   const [authenticated, setAuthenticated] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<AdminData | null>(null);
   const [tab, setTab] = useState<Tab>("overview");
 
-  // Content state
+  // Content state (local, managed by BannerManager/GalleryManager)
   const [kuziiniBanners, setKuziiniBanners] = useState<PromoBanner[]>([]);
   const [gallerySlots, setGallerySlots] = useState(3);
   const [galleryAspect, setGalleryAspect] = useState<GalleryAspect>("square");
   const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
   const [galleryLibrary, setGalleryLibrary] = useState<LibraryPhoto[]>([]);
-  const [offers, setOffers] = useState<OfferEntry[]>([]);
-  const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
-  const [accessData, setAccessData] = useState<AccessData | null>(null);
-  const [accessUnread, setAccessUnread] = useState(0);
-  const [galleryStats, setGalleryStats] = useState<GalleryStatsData | null>(null);
   const [mayaAdminId, setMayaAdminId] = useState<string | null>(null);
+
+  // ─── React Query hooks (auto-refetch, auto-cache) ───────────────────────
+  const { data: adminData, refetch: refetchAdmin } = useAdminData(authenticated);
+  const { data: offers = [], refetch: refetchOffers } = useOffers(authenticated);
+  const { data: galleryStats } = useGalleryStats(authenticated);
+  const { data: accessData, refetch: refetchAccessLog } = useAccessLog(authenticated);
+  const { data: onlineData } = useOnlineUsers(authenticated);
+
+  // Derive state from React Query data
+  const data = adminData ?? null;
+  const accessUnread = accessData?.unread ?? 0;
+  const onlineCount = onlineData?.online ?? 0;
+  const onlinePhones = useMemo(
+    () => new Set(onlineData?.phones ?? []),
+    [onlineData?.phones]
+  );
+
+  // Analytics is a useMemo-triggered query since it depends on other data
+  const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
+  useEffect(() => {
+    if (!authenticated || !adminData) return;
+    adminApi
+      .fetchClientProfiles({
+        logins: adminData.logins,
+        orders: adminData.orders,
+        billRequests: adminData.billRequests,
+        offers,
+      })
+      .then(setAnalyticsData)
+      .catch(() => {});
+  }, [authenticated, adminData, offers]);
 
   // UI state
   const [theme, setThemeState] = useState<AdminTheme>("dark");
-  const [onlineCount, setOnlineCount] = useState(0);
-  const [onlinePhones, setOnlinePhones] = useState<Set<string>>(new Set());
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [pushEnabled, setPushEnabled] = useState(false);
   const prevStatsRef = useRef<{ logins: number; orders: number; bills: number; offers: number; likes: number; accessEntries: number } | null>(null);
@@ -192,48 +226,16 @@ export default function AdminPage() {
 
   // ─── Effects ──────────────────────────────────────────────────────────────
 
-  // Poll online users
-  useEffect(() => {
-    if (!authenticated) return;
-    function fetchOnline() {
-      fetch("/api/access-log", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "getOnline" }),
-      })
-        .then((r) => r.json())
-        .then((j) => {
-          if (j.success) {
-            setOnlineCount(j.online);
-            if (j.phones) setOnlinePhones(new Set(j.phones));
-          }
-        })
-        .catch(() => {});
-    }
-    fetchOnline();
-    const interval = setInterval(fetchOnline, 30_000);
-    return () => clearInterval(interval);
-  }, [authenticated]);
-
   // Clear unread when viewing Rapoarte
   useEffect(() => {
     if (tab !== "rapoarte" || !authenticated || accessUnread === 0) return;
-    fetch("/api/access-log", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "markRead" }),
-    })
-      .then((r) => r.json())
-      .then((j) => {
-        if (j.success) {
-          setAccessUnread(0);
-          const nav = navigator as Navigator & { clearAppBadge?: () => Promise<void> };
-          nav.clearAppBadge?.();
-        }
-      })
-      .catch(() => {});
+    adminApi.markAccessLogRead().then(() => {
+      qc.invalidateQueries({ queryKey: queryKeys.accessLog });
+      const nav = navigator as Navigator & { clearAppBadge?: () => Promise<void> };
+      nav.clearAppBadge?.();
+    }).catch(() => {});
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab]);
+  }, [tab, authenticated, accessUnread]);
 
   // Auto-login
   useEffect(() => {
@@ -242,7 +244,7 @@ export default function AdminPage() {
     const saved = getSavedSession();
     if (saved) {
       setPassword(saved);
-      fetchData(saved);
+      login(saved);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -255,13 +257,22 @@ export default function AdminPage() {
     }
   }, [authenticated]);
 
-  // Auto-refresh every 15s
+  // Load kuziini banners/gallery on login (not covered by React Query - has its own managers)
   useEffect(() => {
     if (!authenticated) return;
-    const interval = setInterval(() => fetchData(), 15_000);
-    return () => clearInterval(interval);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authenticated, password]);
+    Promise.all([
+      fetch("/api/banners", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ category: "kuziini", action: "list" }) }).then(r => r.json()),
+      fetch("/api/gallery", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ category: "kuziini", action: "get" }) }).then(r => r.json()),
+    ]).then(([bJson, gJson]) => {
+      if (bJson.success) setKuziiniBanners(bJson.data);
+      if (gJson.success) {
+        setGallerySlots(gJson.data.slots);
+        if (gJson.data.aspect) setGalleryAspect(gJson.data.aspect);
+        setGalleryImages(gJson.data.images);
+        if (gJson.data.library) setGalleryLibrary(gJson.data.library);
+      }
+    }).catch(() => {});
+  }, [authenticated]);
 
   // Audio notifications on data changes
   useEffect(() => {
@@ -286,61 +297,25 @@ export default function AdminPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, offers, galleryStats, accessData]);
 
-  // ─── Data fetching ────────────────────────────────────────────────────────
+  // ─── Login action ─────────────────────────────────────────────────────────
 
-  async function fetchData(pw?: string) {
+  async function login(pw: string) {
     setLoading(true);
     setError(null);
     try {
       const loginRes = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: "admin@maya.ro", password: pw || password }),
+        body: JSON.stringify({ email: "admin@maya.ro", password: pw }),
       });
       const loginJson = await loginRes.json();
       if (!loginJson.success) throw new Error(loginJson.error);
       setMayaAdminId(loginJson.data.id);
-
-      const res = await fetch("/api/admin", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}),
-      });
-      const json = await res.json();
-      if (!json.success) throw new Error(json.error);
-      setData(json.data);
       setAuthenticated(true);
-      saveSession(pw || password);
-
-      // Parallel fetches for secondary data
-      const [bJson, gJson, oJson] = await Promise.all([
-        fetch("/api/banners", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ category: "kuziini", action: "list" }) }).then(r => r.json()),
-        fetch("/api/gallery", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ category: "kuziini", action: "get" }) }).then(r => r.json()),
-        fetch("/api/offers", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "list" }) }).then(r => r.json()),
-      ]);
-
-      if (bJson.success) setKuziiniBanners(bJson.data);
-      if (gJson.success) {
-        setGallerySlots(gJson.data.slots);
-        if (gJson.data.aspect) setGalleryAspect(gJson.data.aspect);
-        setGalleryImages(gJson.data.images);
-        if (gJson.data.library) setGalleryLibrary(gJson.data.library);
-      }
-      if (oJson.success) setOffers(oJson.data);
-
-      // Analytics + access log in parallel
-      const [aJson, gsJson, acJson] = await Promise.all([
-        fetch("/api/analytics", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "getClientProfiles", logins: json.data.logins, orders: json.data.orders, billRequests: json.data.billRequests, offers: oJson.success ? oJson.data : [] }) }).then(r => r.json()),
-        fetch("/api/analytics", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "getGalleryStats" }) }).then(r => r.json()),
-        fetch("/api/access-log", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "getLog" }) }).then(r => r.json()),
-      ]);
-
-      if (aJson.success) setAnalyticsData(aJson.data);
-      if (gsJson.success) setGalleryStats(gsJson.data);
-      if (acJson.success) { setAccessData(acJson.data); setAccessUnread(acJson.data.unread); }
+      saveSession(pw);
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Eroare.");
-      if (!authenticated) setAuthenticated(false);
+      setAuthenticated(false);
     } finally {
       setLoading(false);
     }
@@ -349,7 +324,13 @@ export default function AdminPage() {
   function handleLogin() {
     if (!password.trim()) { setError("Introdu parola."); return; }
     try { getAudioCtx().resume().then(() => { audioResumed = true; }); } catch {}
-    fetchData();
+    login(password);
+  }
+
+  function manualRefresh() {
+    refetchAdmin();
+    refetchOffers();
+    refetchAccessLog();
   }
 
   async function subscribePush() {
@@ -381,22 +362,22 @@ export default function AdminPage() {
       <div className="min-h-dvh flex items-center justify-center px-6" data-theme={theme}>
         <div className="w-full max-w-sm">
           <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-[#C9AB81]/20 border border-[#C9AB81]/30 flex items-center justify-center mx-auto mb-4">
-              <Lock className="w-8 h-8 text-[#C9AB81]" />
+            <div className="w-16 h-16 bg-maya-gold/20 border border-maya-gold/30 flex items-center justify-center mx-auto mb-4">
+              <Lock className="w-8 h-8 text-maya-gold" />
             </div>
             <h1 className="text-2xl font-bold th-text tracking-wide">Kuziini</h1>
             <p className="th-text-muted text-xs mt-1">Kuziini × Maya</p>
           </div>
           <div className="space-y-4">
             <div>
-              <label className="text-[10px] font-bold text-[#C9AB81] uppercase tracking-[0.2em] mb-2 block">Parolă</label>
-              <div className="flex items-center gap-3 bg-gray-50 border th-border px-4 py-3 focus-within:border-[#C9AB81]/50 transition-colors">
+              <label className="text-[10px] font-bold text-maya-gold uppercase tracking-[0.2em] mb-2 block">Parolă</label>
+              <div className="flex items-center gap-3 bg-gray-50 border th-border px-4 py-3 focus-within:border-maya-gold/50 transition-colors">
                 <Lock className="w-4 h-4 th-text-muted shrink-0" />
                 <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleLogin()} className="flex-1 bg-transparent outline-none th-text text-sm placeholder:text-gray-400" placeholder="Introdu parola" autoFocus />
               </div>
             </div>
             {error && <p className="text-red-400 text-xs">{error}</p>}
-            <button onClick={handleLogin} disabled={loading} className="w-full bg-[#C9AB81] text-[#0A0A0A] py-3.5 font-bold text-sm tracking-[0.15em] uppercase active:opacity-80 transition-opacity disabled:opacity-50">
+            <button onClick={handleLogin} disabled={loading} className="w-full bg-maya-gold text-maya-dark py-3.5 font-bold text-sm tracking-[0.15em] uppercase active:opacity-80 transition-opacity disabled:opacity-50">
               {loading ? "Se verifică..." : "Autentificare"}
             </button>
           </div>
@@ -416,7 +397,7 @@ export default function AdminPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-lg font-bold tracking-wide">Kuziini Panel</h1>
-            <p className="text-[#C9AB81] text-[10px] tracking-[0.2em] uppercase">Kuziini × Maya</p>
+            <p className="text-maya-gold text-[10px] tracking-[0.2em] uppercase">Kuziini × Maya</p>
           </div>
           <div className="flex items-center gap-2">
             {!pushEnabled ? (
@@ -446,13 +427,13 @@ export default function AdminPage() {
               </span>
               {onlineCount}
             </div>
-            <a href="/" className="h-9 flex items-center gap-1.5 px-3 bg-[#C9AB81]/20 border border-[#C9AB81]/30 text-[#C9AB81] text-[10px] font-bold tracking-wider uppercase active:bg-[#C9AB81]/30 transition-colors">
+            <a href="/" className="h-9 flex items-center gap-1.5 px-3 bg-maya-gold/20 border border-maya-gold/30 text-maya-gold text-[10px] font-bold tracking-wider uppercase active:bg-maya-gold/30 transition-colors">
               <ExternalLink className="w-3.5 h-3.5" /> Live App
             </a>
-            <button onClick={cycleTheme} className="h-9 flex items-center gap-1 px-2 bg-[#C9AB81]/20 border border-[#C9AB81]/30 text-[#C9AB81] text-[10px] font-bold tracking-wider uppercase" title={`Tema: ${THEME_LABELS[theme]}`}>
+            <button onClick={cycleTheme} className="h-9 flex items-center gap-1 px-2 bg-maya-gold/20 border border-maya-gold/30 text-maya-gold text-[10px] font-bold tracking-wider uppercase" title={`Tema: ${THEME_LABELS[theme]}`}>
               <Palette className="w-3.5 h-3.5" />
             </button>
-            <button onClick={() => fetchData()} disabled={loading} className="w-9 h-9 flex items-center justify-center th-tab-inactive transition-colors">
+            <button onClick={manualRefresh} disabled={loading} className="w-9 h-9 flex items-center justify-center th-tab-inactive transition-colors">
               <RefreshCw className={`w-4 h-4 th-text-muted ${loading ? "animate-spin" : ""}`} />
             </button>
           </div>
@@ -463,7 +444,7 @@ export default function AdminPage() {
           <p className="th-text-faint text-[8px] font-bold tracking-[0.3em] uppercase mb-1">KUZIINI</p>
           <div className="flex gap-1 overflow-x-auto">
             {KUZIINI_TABS.map((t) => (
-              <button key={t.key} onClick={() => setTab(t.key)} className={`flex items-center gap-1.5 px-3 py-2 text-[10px] font-bold tracking-wider uppercase whitespace-nowrap transition-all relative ${tab === t.key ? "bg-[#C9AB81] text-[#0A0A0A]" : "th-tab-inactive th-text-muted"}`}>
+              <button key={t.key} onClick={() => setTab(t.key)} className={`flex items-center gap-1.5 px-3 py-2 text-[10px] font-bold tracking-wider uppercase whitespace-nowrap transition-all relative ${tab === t.key ? "bg-maya-gold text-maya-dark" : "th-tab-inactive th-text-muted"}`}>
                 {t.icon} {t.label}
                 {t.key === "rapoarte" && accessUnread > 0 && (
                   <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] flex items-center justify-center bg-red-500 text-white text-[9px] font-bold rounded-full px-1">{accessUnread}</span>
@@ -477,7 +458,7 @@ export default function AdminPage() {
           <p className="th-text-faint text-[8px] font-bold tracking-[0.3em] uppercase mb-1">MAYA · OASPETI</p>
           <div className="flex gap-1 overflow-x-auto">
             {MAYA_TABS.map((t) => (
-              <button key={t.key} onClick={() => setTab(t.key)} className={`flex items-center gap-1.5 px-3 py-2 text-[10px] font-bold tracking-wider uppercase whitespace-nowrap transition-all ${tab === t.key ? "bg-[#C9AB81] text-[#0A0A0A]" : "th-tab-inactive th-text-muted"}`}>
+              <button key={t.key} onClick={() => setTab(t.key)} className={`flex items-center gap-1.5 px-3 py-2 text-[10px] font-bold tracking-wider uppercase whitespace-nowrap transition-all ${tab === t.key ? "bg-maya-gold text-maya-dark" : "th-tab-inactive th-text-muted"}`}>
                 {t.icon} {t.label}
               </button>
             ))}
@@ -506,9 +487,9 @@ export default function AdminPage() {
               }}
             />
           )}
-          {tab === "offers" && <OffersTab offers={offers} onUpdate={setOffers} galleryImages={galleryImages} />}
-          {tab === "clients" && <ClientsTab analyticsData={analyticsData} galleryStats={galleryStats} onlinePhones={onlinePhones} accessData={accessData} />}
-          {tab === "rapoarte" && <AccessLogTab accessData={accessData} onlinePhones={onlinePhones} accessUnread={accessUnread} />}
+          {tab === "offers" && <OffersTab offers={offers} onUpdate={() => refetchOffers()} galleryImages={galleryImages} />}
+          {tab === "clients" && <ClientsTab analyticsData={analyticsData} galleryStats={galleryStats ?? null} onlinePhones={onlinePhones} accessData={accessData ?? null} />}
+          {tab === "rapoarte" && <AccessLogTab accessData={accessData ?? null} onlinePhones={onlinePhones} accessUnread={accessUnread} />}
 
           {/* Maya guest management tabs */}
           {tab === "guest-dashboard" && mayaAdminId && (

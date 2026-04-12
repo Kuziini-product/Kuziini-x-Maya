@@ -81,7 +81,7 @@ export default function CartPage({ params }: { params: { umbrellaId: string } })
 
           {/* Notes */}
           <div className="bg-white/[0.03] border border-white/[0.06] p-4">
-            <label className="text-[10px] font-bold text-[#C9AB81] uppercase tracking-[0.2em] block mb-2">
+            <label className="text-[10px] font-bold text-maya-gold uppercase tracking-[0.2em] block mb-2">
               Observații generale
             </label>
             <textarea
@@ -89,7 +89,7 @@ export default function CartPage({ params }: { params: { umbrellaId: string } })
               placeholder="Alergii, preferințe sau alte mențiuni..."
               value={globalNotes}
               onChange={(e) => setGlobalNotes(e.target.value)}
-              className="w-full bg-white/[0.06] px-3 py-2.5 text-sm text-white placeholder:text-white/20 outline-none focus:ring-1 focus:ring-[#C9AB81]/30 resize-none"
+              className="w-full bg-white/[0.06] px-3 py-2.5 text-sm text-white placeholder:text-white/20 outline-none focus:ring-1 focus:ring-maya-gold/30 resize-none"
             />
           </div>
 
@@ -107,14 +107,14 @@ export default function CartPage({ params }: { params: { umbrellaId: string } })
               <Divider className="my-2" />
               <div className="flex justify-between text-xl font-bold text-white">
                 <span>Total</span>
-                <span className="text-[#C9AB81]">{formatPrice(totalAmount)}</span>
+                <span className="text-maya-gold">{formatPrice(totalAmount)}</span>
               </div>
             </div>
           </div>
 
           {/* Delivery info */}
-          <div className="bg-[#C9AB81]/10 border border-[#C9AB81]/20 px-4 py-3">
-            <span className="text-sm text-[#C9AB81] font-bold tracking-wide">
+          <div className="bg-maya-gold/10 border border-maya-gold/20 px-4 py-3">
+            <span className="text-sm text-maya-gold font-bold tracking-wide">
               📍 Livrare: Umbrela {umbrellaId}
             </span>
           </div>
@@ -152,7 +152,7 @@ function CartItemRow({
         {item.notes && (
           <p className="text-xs text-white/30 mt-0.5">{item.notes}</p>
         )}
-        <p className={`font-bold text-sm mt-1 ${isPromo ? "text-emerald-400" : "text-[#C9AB81]"}`}>
+        <p className={`font-bold text-sm mt-1 ${isPromo ? "text-emerald-400" : "text-maya-gold"}`}>
           {formatPrice(item.menuItem.price * item.quantity)}
         </p>
       </div>
@@ -174,7 +174,7 @@ function CartItemRow({
         <button
           onClick={() => onUpdateQty(item.quantity + 1)}
           className={`w-8 h-8 flex items-center justify-center ${
-            isPromo ? "bg-emerald-500 text-white" : "bg-[#C9AB81] text-[#0A0A0A]"
+            isPromo ? "bg-emerald-500 text-white" : "bg-maya-gold text-maya-dark"
           }`}
         >
           <Plus className="w-3.5 h-3.5" />

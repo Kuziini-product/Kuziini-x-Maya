@@ -45,7 +45,7 @@ function StatCard({ label, value, gold }: { label: string; value: string | numbe
       <p className="text-[10px] th-text-muted font-bold tracking-[0.15em] uppercase mb-1">
         {label}
       </p>
-      <p className={`text-2xl font-bold tracking-wide ${gold ? "text-[#C9AB81]" : "th-text"}`}>
+      <p className={`text-2xl font-bold tracking-wide ${gold ? "text-maya-gold" : "th-text"}`}>
         {value}
       </p>
     </div>
@@ -76,7 +76,7 @@ export default function ClientsTab({ analyticsData, galleryStats, onlinePhones, 
       <div>
         <button
           onClick={() => setSelectedGalleryUser(null)}
-          className="flex items-center gap-1.5 text-[#C9AB81] text-xs font-bold tracking-wider uppercase mb-4"
+          className="flex items-center gap-1.5 text-maya-gold text-xs font-bold tracking-wider uppercase mb-4"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           Înapoi
@@ -103,7 +103,7 @@ export default function ClientsTab({ analyticsData, galleryStats, onlinePhones, 
           </div>
         </div>
 
-        <p className="text-[#C9AB81] text-[10px] font-bold tracking-[0.2em] uppercase mb-3">
+        <p className="text-maya-gold text-[10px] font-bold tracking-[0.2em] uppercase mb-3">
           Poze accesate ({selectedGalleryUser.photoDetails.length})
         </p>
         <div className="space-y-2">
@@ -149,7 +149,7 @@ export default function ClientsTab({ analyticsData, galleryStats, onlinePhones, 
       {/* Detailed gallery stats */}
       {galleryStats && (
         <div className="th-card border p-4 mb-4">
-          <h3 className="text-[#C9AB81] text-[10px] font-bold tracking-[0.2em] uppercase mb-3 flex items-center gap-2">
+          <h3 className="text-maya-gold text-[10px] font-bold tracking-[0.2em] uppercase mb-3 flex items-center gap-2">
             <Heart className="w-3.5 h-3.5" />
             Statistici Galerie
           </h3>
@@ -157,7 +157,7 @@ export default function ClientsTab({ analyticsData, galleryStats, onlinePhones, 
           {/* Total time spent */}
           <div className="bg-white/[0.03] p-3 mb-3 text-center">
             <p className="text-[9px] th-text-muted uppercase tracking-wider mb-1">Timp total vizualizare</p>
-            <p className="text-xl font-bold text-[#C9AB81]">{formatDuration(galleryStats.totalTimeSpent)}</p>
+            <p className="text-xl font-bold text-maya-gold">{formatDuration(galleryStats.totalTimeSpent)}</p>
           </div>
 
           {/* Photo breakdown */}
@@ -187,7 +187,7 @@ export default function ClientsTab({ analyticsData, galleryStats, onlinePhones, 
               return (
                 <div
                   key={hour}
-                  className={`flex-1 rounded-t-sm transition-all ${count > 0 ? "bg-[#C9AB81]" : "bg-gray-200"}`}
+                  className={`flex-1 rounded-t-sm transition-all ${count > 0 ? "bg-maya-gold" : "bg-gray-200"}`}
                   style={{ height: `${h}%` }}
                   title={`${hour}:00 — ${count} vizualizări`}
                 />
@@ -250,7 +250,7 @@ export default function ClientsTab({ analyticsData, galleryStats, onlinePhones, 
             onClick={() => setClientFilter(key)}
             className={`px-3 py-1.5 text-[10px] font-bold tracking-wider uppercase transition-all ${
               clientFilter === key
-                ? "bg-[#C9AB81] text-[#0A0A0A]"
+                ? "bg-maya-gold text-maya-dark"
                 : "th-tab-inactive th-text-muted"
             }`}
           >
@@ -266,7 +266,7 @@ export default function ClientsTab({ analyticsData, galleryStats, onlinePhones, 
           placeholder="Caută client (nume, telefon, email)..."
           value={clientSearch}
           onChange={(e) => setClientSearch(e.target.value)}
-          className="flex-1 th-tab-inactive border th-border px-3 py-2 text-white text-xs placeholder:text-gray-400 outline-none focus:border-[#C9AB81]/50"
+          className="flex-1 th-tab-inactive border th-border px-3 py-2 text-white text-xs placeholder:text-gray-400 outline-none focus:border-maya-gold/50"
         />
         <button
           onClick={() => {
@@ -329,10 +329,10 @@ export default function ClientsTab({ analyticsData, galleryStats, onlinePhones, 
                   )}
                 </div>
                 <p className="text-xs th-text-muted">{c.phone}</p>
-                {c.email && <p className="text-xs text-[#C9AB81]/70">{c.email}</p>}
+                {c.email && <p className="text-xs text-maya-gold/70">{c.email}</p>}
               </div>
               <div className="text-right">
-                <p className="text-sm font-bold text-[#C9AB81]">{formatPrice(c.totalSpent)}</p>
+                <p className="text-sm font-bold text-maya-gold">{formatPrice(c.totalSpent)}</p>
                 <p className="text-[10px] th-text-muted">{c.totalVisits} vizite</p>
               </div>
             </div>
@@ -345,7 +345,7 @@ export default function ClientsTab({ analyticsData, galleryStats, onlinePhones, 
                 </span>
               )}
               {c.source.includes("oferta") && (
-                <span className="text-[9px] bg-[#C9AB81]/20 text-[#C9AB81] px-2 py-0.5 font-bold tracking-wider uppercase">
+                <span className="text-[9px] bg-maya-gold/20 text-maya-gold px-2 py-0.5 font-bold tracking-wider uppercase">
                   Cerere ofertă
                 </span>
               )}
@@ -382,7 +382,7 @@ export default function ClientsTab({ analyticsData, galleryStats, onlinePhones, 
             {c.umbrellas.length > 0 && (
               <div className="flex flex-wrap gap-1 mb-2">
                 {c.umbrellas.map((u) => (
-                  <span key={u} className="text-[10px] bg-[#C9AB81]/10 text-[#C9AB81]/70 px-1.5 py-0.5">
+                  <span key={u} className="text-[10px] bg-maya-gold/10 text-maya-gold/70 px-1.5 py-0.5">
                     ⛱️ {u}
                   </span>
                 ))}
@@ -392,7 +392,7 @@ export default function ClientsTab({ analyticsData, galleryStats, onlinePhones, 
             {/* Offer details */}
             {c.offerDetails.length > 0 && (
               <div className="border-t th-border pt-2 mt-2 space-y-1.5">
-                <p className="text-[9px] text-[#C9AB81] font-bold tracking-wider uppercase">Solicitări ofertă</p>
+                <p className="text-[9px] text-maya-gold font-bold tracking-wider uppercase">Solicitări ofertă</p>
                 {c.offerDetails.map((od, oi) => (
                   <div key={oi} className="flex items-start gap-2 bg-white/[0.02] p-2">
                     {od.photoUrl && !od.photoUrl.startsWith("[") && (
@@ -482,7 +482,7 @@ export default function ClientsTab({ analyticsData, galleryStats, onlinePhones, 
                 a.click();
                 URL.revokeObjectURL(url);
               }}
-              className="w-full mt-3 flex items-center justify-center gap-2 bg-[#C9AB81]/15 border border-[#C9AB81]/30 text-[#C9AB81] py-2 text-[10px] font-bold tracking-wider uppercase active:bg-[#C9AB81]/25 transition-colors"
+              className="w-full mt-3 flex items-center justify-center gap-2 bg-maya-gold/15 border border-maya-gold/30 text-maya-gold py-2 text-[10px] font-bold tracking-wider uppercase active:bg-maya-gold/25 transition-colors"
             >
               <FileText className="w-3.5 h-3.5" />
               Generează raport complet

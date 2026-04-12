@@ -153,9 +153,9 @@ export default function AdminUserManager({ adminId }: Props) {
   }
 
   const inputCls =
-    "w-full th-input border px-3 py-2 text-sm outline-none focus:border-[#C9AB81]/50";
+    "w-full th-input border px-3 py-2 text-sm outline-none focus:border-maya-gold/50";
   const labelCls =
-    "text-[10px] font-bold text-[#C9AB81] uppercase tracking-[0.2em] mb-1 block";
+    "text-[10px] font-bold text-maya-gold uppercase tracking-[0.2em] mb-1 block";
 
   return (
     <div>
@@ -163,7 +163,7 @@ export default function AdminUserManager({ adminId }: Props) {
         <p className="th-text-muted text-xs">{admins.length} administratori</p>
         <button
           onClick={() => { showForm ? resetForm() : setShowForm(true); }}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#C9AB81] text-[#0A0A0A] text-[10px] font-bold tracking-wider uppercase"
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-maya-gold text-maya-dark text-[10px] font-bold tracking-wider uppercase"
         >
           <UserPlus className="w-3.5 h-3.5" />
           {showForm ? "Anuleaza" : "Admin nou"}
@@ -173,7 +173,7 @@ export default function AdminUserManager({ adminId }: Props) {
       {/* Form */}
       {showForm && (
         <div className="th-card border p-4 mb-4 space-y-3">
-          <p className="text-[#C9AB81] text-[10px] font-bold tracking-[0.2em] uppercase">
+          <p className="text-maya-gold text-[10px] font-bold tracking-[0.2em] uppercase">
             {editing ? "Editeaza admin" : "Admin nou"}
           </p>
 
@@ -260,7 +260,7 @@ export default function AdminUserManager({ adminId }: Props) {
           <button
             onClick={handleSave}
             disabled={saving}
-            className="w-full flex items-center justify-center gap-2 bg-[#C9AB81] text-[#0A0A0A] py-2.5 font-bold text-xs tracking-wider uppercase disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-2 bg-maya-gold text-maya-dark py-2.5 font-bold text-xs tracking-wider uppercase disabled:opacity-50"
           >
             <Save className="w-3.5 h-3.5" />
             {saving ? "Se salveaza..." : editing ? "Salveaza modificarile" : "Creeaza admin"}

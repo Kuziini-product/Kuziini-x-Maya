@@ -40,7 +40,7 @@ export default function AccessLogTab({ accessData, onlinePhones, accessUnread = 
       <div>
         <button
           onClick={() => setSelectedAccessUser(null)}
-          className="flex items-center gap-1.5 text-[#C9AB81] text-xs font-bold tracking-wider uppercase mb-4"
+          className="flex items-center gap-1.5 text-maya-gold text-xs font-bold tracking-wider uppercase mb-4"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           Înapoi la lista
@@ -56,7 +56,7 @@ export default function AccessLogTab({ accessData, onlinePhones, accessUnread = 
             )}
           </div>
           <p className="text-xs th-text-secondary">{selectedAccessUser.phone}</p>
-          {selectedAccessUser.email && <p className="text-xs text-[#C9AB81]/70">{selectedAccessUser.email}</p>}
+          {selectedAccessUser.email && <p className="text-xs text-maya-gold/70">{selectedAccessUser.email}</p>}
           <div className="grid grid-cols-2 gap-3 mt-3">
             <div className="bg-white/[0.03] px-3 py-2 text-center">
               <p className="text-[9px] th-text-muted uppercase tracking-wider">Total accesări</p>
@@ -69,7 +69,7 @@ export default function AccessLogTab({ accessData, onlinePhones, accessUnread = 
           </div>
         </div>
 
-        <p className="text-[#C9AB81] text-[10px] font-bold tracking-[0.2em] uppercase mb-3">
+        <p className="text-maya-gold text-[10px] font-bold tracking-[0.2em] uppercase mb-3">
           Istoric accesări ({selectedAccessUser.pages.length})
         </p>
         <div className="space-y-2">
@@ -99,7 +99,7 @@ export default function AccessLogTab({ accessData, onlinePhones, accessUnread = 
                        p.action === "menu-return" ? "Revenire meniu" :
                        p.action}
                     </span>
-                    {p.umbrellaId && <span className="text-[#C9AB81]">⛱️ {p.umbrellaId}</span>}
+                    {p.umbrellaId && <span className="text-maya-gold">⛱️ {p.umbrellaId}</span>}
                   </div>
                 </div>
               </div>
@@ -148,7 +148,7 @@ export default function AccessLogTab({ accessData, onlinePhones, accessUnread = 
                     </span>
                   )}
                   <p className={`font-bold text-sm tracking-wide ${isOnline ? "text-emerald-400" : "text-white"}`}>{u.name || "—"}</p>
-                  <span className="text-[9px] bg-[#C9AB81]/20 text-[#C9AB81] px-1.5 py-0.5 font-bold">
+                  <span className="text-[9px] bg-maya-gold/20 text-maya-gold px-1.5 py-0.5 font-bold">
                     {u.totalAccess}×
                   </span>
                   {isOnline && (
@@ -158,7 +158,7 @@ export default function AccessLogTab({ accessData, onlinePhones, accessUnread = 
                   )}
                 </div>
                 <p className="text-xs th-text-muted">{u.phone}</p>
-                {u.email && <p className="text-xs text-[#C9AB81]/60">{u.email}</p>}
+                {u.email && <p className="text-xs text-maya-gold/60">{u.email}</p>}
                 <div className="flex items-center gap-3 mt-1.5 text-[10px] th-text-secondary">
                   <span>Prima: {formatTime(u.firstAccess)}</span>
                   <span>Ultima: {formatTime(u.lastAccess)}</span>

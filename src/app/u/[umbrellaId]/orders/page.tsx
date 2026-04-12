@@ -117,7 +117,7 @@ export default function OrdersPage({ params }: { params: { umbrellaId: string } 
   }
 
   return (
-    <div className="min-h-dvh bg-[#0A0A0A] text-white pb-24">
+    <div className="min-h-dvh bg-maya-dark text-white pb-24">
       <PageHeader
         title="Comenzile mele"
         subtitle={`Umbrela ${umbrellaId}`}
@@ -147,7 +147,7 @@ export default function OrdersPage({ params }: { params: { umbrellaId: string } 
             description="Comenzile tale vor apărea aici după plasare."
             action={
               <Link href={`/u/${umbrellaId}/menu`}>
-                <button className="px-6 py-3 bg-[#C9AB81] text-[#0A0A0A] font-bold text-xs tracking-[0.15em] uppercase">
+                <button className="px-6 py-3 bg-maya-gold text-maya-dark font-bold text-xs tracking-[0.15em] uppercase">
                   Vezi meniul
                 </button>
               </Link>
@@ -157,7 +157,7 @@ export default function OrdersPage({ params }: { params: { umbrellaId: string } 
           <>
             {merged.length > 0 && (
               <div className="space-y-4 mb-8">
-                <h3 className="text-[#C9AB81] text-xs font-bold tracking-[0.2em] uppercase">
+                <h3 className="text-maya-gold text-xs font-bold tracking-[0.2em] uppercase">
                   Comenzi active
                 </h3>
                 {merged.map((order) => (
@@ -214,8 +214,8 @@ function OrderCard({
 
   const statusColors: Record<OrderStatus, string> = {
     pending: "bg-amber-500/20 text-amber-400",
-    sent: "bg-[#C9AB81]/20 text-[#C9AB81]",
-    confirmed: "bg-[#C9AB81]/20 text-[#C9AB81]",
+    sent: "bg-maya-gold/20 text-maya-gold",
+    confirmed: "bg-maya-gold/20 text-maya-gold",
     preparing: "bg-amber-500/20 text-amber-400",
     delivering: "bg-purple-500/20 text-purple-400",
     delivered: "bg-emerald-500/20 text-emerald-400",
@@ -238,9 +238,9 @@ function OrderCard({
   const currentIdx = statusOrder.indexOf(order.status);
 
   return (
-    <div className={cn("bg-white/[0.03] border overflow-hidden", isActive ? "border-[#C9AB81]/30" : isRejected ? "border-red-500/20" : "border-white/[0.06]")}>
+    <div className={cn("bg-white/[0.03] border overflow-hidden", isActive ? "border-maya-gold/30" : isRejected ? "border-red-500/20" : "border-white/[0.06]")}>
       {isActive && (
-        <div className="h-0.5 bg-gradient-to-r from-[#C9AB81]/60 to-[#C9AB81] animate-pulse" />
+        <div className="h-0.5 bg-gradient-to-r from-maya-gold/60 to-maya-gold animate-pulse" />
       )}
 
       <button onClick={() => setExpanded(!expanded)} className="w-full p-4 text-left">
@@ -269,12 +269,12 @@ function OrderCard({
                 <div key={step.key} className="flex-1 flex flex-col items-center gap-1">
                   <div className={cn(
                     "h-1 w-full rounded-full transition-all duration-500",
-                    isDone ? "bg-[#C9AB81]" : "bg-white/10",
-                    isCurrent && "animate-pulse bg-[#C9AB81]"
+                    isDone ? "bg-maya-gold" : "bg-white/10",
+                    isCurrent && "animate-pulse bg-maya-gold"
                   )} />
                   <span className={cn(
                     "text-[8px] tracking-wider uppercase font-bold transition-colors",
-                    isCurrent ? "text-[#C9AB81]" : isDone ? "text-white/40" : "text-white/15"
+                    isCurrent ? "text-maya-gold" : isDone ? "text-white/40" : "text-white/15"
                   )}>
                     {step.icon}
                   </span>
@@ -288,7 +288,7 @@ function OrderCard({
           <span className="text-xs text-white/40">
             {order.items.length} {order.items.length === 1 ? "articol" : "articole"}
           </span>
-          <span className="font-bold text-[#C9AB81]">{formatPrice(order.total)}</span>
+          <span className="font-bold text-maya-gold">{formatPrice(order.total)}</span>
         </div>
       </button>
 
@@ -305,7 +305,7 @@ function OrderCard({
                   {isCompleted && (
                     <button
                       onClick={(e) => { e.stopPropagation(); onAddItem(item); }}
-                      className="w-7 h-7 flex items-center justify-center bg-[#C9AB81]/20 text-[#C9AB81] active:bg-[#C9AB81]/40 transition-colors"
+                      className="w-7 h-7 flex items-center justify-center bg-maya-gold/20 text-maya-gold active:bg-maya-gold/40 transition-colors"
                     >
                       <Plus className="w-3.5 h-3.5" />
                     </button>
@@ -318,7 +318,7 @@ function OrderCard({
           {isCompleted && (
             <button
               onClick={(e) => { e.stopPropagation(); onAddAll(order.items); }}
-              className="w-full flex items-center justify-center gap-2 bg-[#C9AB81]/10 border border-[#C9AB81]/20 py-2.5 text-[#C9AB81] text-xs font-bold tracking-[0.1em] uppercase active:bg-[#C9AB81]/20 transition-colors"
+              className="w-full flex items-center justify-center gap-2 bg-maya-gold/10 border border-maya-gold/20 py-2.5 text-maya-gold text-xs font-bold tracking-[0.1em] uppercase active:bg-maya-gold/20 transition-colors"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               Recomandă toată comanda
@@ -379,7 +379,7 @@ function ClosedBillCard({
                   <span className="text-sm text-white/30">{formatPrice(item.price * item.quantity)}</span>
                   <button
                     onClick={(e) => { e.stopPropagation(); onAddItem(item); }}
-                    className="w-7 h-7 flex items-center justify-center bg-[#C9AB81]/20 text-[#C9AB81] active:bg-[#C9AB81]/40 transition-colors"
+                    className="w-7 h-7 flex items-center justify-center bg-maya-gold/20 text-maya-gold active:bg-maya-gold/40 transition-colors"
                   >
                     <Plus className="w-3.5 h-3.5" />
                   </button>
@@ -390,7 +390,7 @@ function ClosedBillCard({
 
           <button
             onClick={(e) => { e.stopPropagation(); onAddAll(allItems); }}
-            className="w-full flex items-center justify-center gap-2 bg-[#C9AB81]/10 border border-[#C9AB81]/20 py-2.5 text-[#C9AB81] text-xs font-bold tracking-[0.1em] uppercase active:bg-[#C9AB81]/20 transition-colors"
+            className="w-full flex items-center justify-center gap-2 bg-maya-gold/10 border border-maya-gold/20 py-2.5 text-maya-gold text-xs font-bold tracking-[0.1em] uppercase active:bg-maya-gold/20 transition-colors"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             Recomandă toată nota

@@ -79,12 +79,12 @@ export default function LandingPage({
 
   if (isLoading) {
     return (
-      <div className="min-h-dvh flex items-center justify-center bg-[#0A0A0A]">
+      <div className="min-h-dvh flex items-center justify-center bg-maya-dark">
         <div className="flex flex-col items-center gap-4">
           <a href="https://www.instagram.com/kuziiniconceptstore/" target="_blank" rel="noopener noreferrer">
             <Image src="/kuziini-logo.png" alt="Kuziini" width={80} height={80} className="rounded-xl opacity-60 invert brightness-200" />
           </a>
-          <Spinner className="text-[#C9AB81]" />
+          <Spinner className="text-maya-gold" />
         </div>
       </div>
     );
@@ -92,7 +92,7 @@ export default function LandingPage({
 
   if (isError || !data) {
     return (
-      <div className="min-h-dvh flex items-center justify-center p-6 bg-[#0A0A0A]">
+      <div className="min-h-dvh flex items-center justify-center p-6 bg-maya-dark">
         <div className="text-center">
           <span className="text-5xl">🏖️</span>
           <h1 className="text-2xl mt-4 mb-2 text-white font-bold">QR invalid</h1>
@@ -125,7 +125,7 @@ export default function LandingPage({
 
   return (
     <>
-      <div className="min-h-dvh bg-[#0A0A0A] text-white flex flex-col">
+      <div className="min-h-dvh bg-maya-dark text-white flex flex-col">
         {/* ═══ TOP: Umbrella number + ad space ═══ */}
         <div className="flex-1 flex flex-col items-center justify-center px-5 md:px-8 pt-6">
           {/* Umbrella icon + number - centered, prominent */}
@@ -134,7 +134,7 @@ export default function LandingPage({
             <h1 className="text-6xl md:text-7xl font-bold tracking-wider text-white">
               {umbrella.number}
             </h1>
-            <p className="text-[#C9AB81] text-sm font-semibold tracking-[0.2em] uppercase mt-2">
+            <p className="text-maya-gold text-sm font-semibold tracking-[0.2em] uppercase mt-2">
               {umbrella.zone}
             </p>
             {userSession && (
@@ -179,7 +179,7 @@ export default function LandingPage({
               alt="Maya"
               className="h-20 object-contain opacity-60"
             />
-            <ScratchX className="h-12 text-[#C9AB81]/40" />
+            <ScratchX className="h-12 text-maya-gold/40" />
             <a href="https://www.instagram.com/kuziiniconceptstore/" target="_blank" rel="noopener noreferrer">
               <img src="/kuziini-logo.png" alt="Kuziini" className="h-10 object-contain invert brightness-200" />
             </a>

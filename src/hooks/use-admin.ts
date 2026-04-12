@@ -9,6 +9,13 @@ export const queryKeys = {
   guests: ["admin", "guests"] as const,
   pendingGuests: ["admin", "guests", "pending"] as const,
   dailyStatus: ["admin", "daily"] as const,
+  // Kuziini admin
+  adminData: ["admin", "kuziini", "data"] as const,
+  offers: ["admin", "kuziini", "offers"] as const,
+  clientProfiles: ["admin", "kuziini", "clients"] as const,
+  galleryStats: ["admin", "kuziini", "gallery-stats"] as const,
+  accessLog: ["admin", "kuziini", "access-log"] as const,
+  onlineUsers: ["admin", "kuziini", "online"] as const,
 };
 
 // ─── Dashboard ──────────────────────────────────────────────────────────────
@@ -179,5 +186,49 @@ export function useRelocateGuest() {
       qc.invalidateQueries({ queryKey: queryKeys.guests });
       qc.invalidateQueries({ queryKey: queryKeys.dashboard });
     },
+  });
+}
+
+// ─── Kuziini Admin Dashboard ────────────────────────────────────────────────
+
+export function useAdminData(enabled: boolean = true) {
+  return useQuery({
+    queryKey: queryKeys.adminData,
+    queryFn: api.fetchAdminData,
+    enabled,
+    refetchInterval: 15_000,
+  });
+}
+
+export function useOffers(enabled: boolean = true) {
+  return useQuery({
+    queryKey: queryKeys.offers,
+    queryFn: api.fetchOffers,
+    enabled,
+  });
+}
+
+export function useGalleryStats(enabled: boolean = true) {
+  return useQuery({
+    queryKey: queryKeys.galleryStats,
+    queryFn: api.fetchGalleryStats,
+    enabled,
+  });
+}
+
+export function useAccessLog(enabled: boolean = true) {
+  return useQuery({
+    queryKey: queryKeys.accessLog,
+    queryFn: api.fetchAccessLog,
+    enabled,
+  });
+}
+
+export function useOnlineUsers(enabled: boolean = true) {
+  return useQuery({
+    queryKey: queryKeys.onlineUsers,
+    queryFn: api.fetchOnlineCount,
+    enabled,
+    refetchInterval: 30_000,
   });
 }

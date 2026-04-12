@@ -88,7 +88,7 @@ export default function DailyConfirmationPanel({ adminId }: Props) {
                       value={manualLounger[g.id] || ""}
                       onChange={(e) => setManualLounger((prev) => ({ ...prev, [g.id]: e.target.value }))}
                       placeholder={g.loungerId || "Nr. sezlong"}
-                      className="w-full th-input border pl-8 pr-2 py-1.5 text-xs outline-none focus:border-[#C9AB81]/50"
+                      className="w-full th-input border pl-8 pr-2 py-1.5 text-xs outline-none focus:border-maya-gold/50"
                     />
                   </div>
                   <button

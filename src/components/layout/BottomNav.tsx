@@ -114,7 +114,7 @@ export function BottomNav({ umbrellaId }: BottomNavProps) {
   if (isOnLanding) {
     actionLabel = "Meniu";
     actionIcon = <UtensilsCrossed className="w-4 h-4" />;
-    actionStyle = "bg-[#C9AB81] text-[#0A0A0A]";
+    actionStyle = "bg-maya-gold text-maya-dark";
   } else if (itemCount > 0) {
     actionLabel = ordering ? "Se trimite..." : `Plasează · ${cartTotal} RON`;
     actionIcon = <ShoppingBag className="w-4 h-4" />;
@@ -132,7 +132,7 @@ export function BottomNav({ umbrellaId }: BottomNavProps) {
           {orderError}
         </div>
       )}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-[#0A0A0A]/95 backdrop-blur-md border-t border-white/[0.06] pb-safe">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-maya-dark/95 backdrop-blur-md border-t border-white/[0.06] pb-safe">
         <div className="flex items-center gap-3 px-4 md:px-6 pt-2 pb-2 max-w-3xl mx-auto">
           {/* Speaker toggle - left */}
           <button
