@@ -9,13 +9,16 @@ async function getAdmins(): Promise<AdminUser[]> {
   return kvGet<AdminUser[]>(KV_KEY, []);
 }
 
-async function seedIfEmpty(): Promise<AdminUser[]> {
-  let admins = await getAdmins();
-  if (admins.length === 0) {
-    const { generateId } = await import("@/lib/utils");
-    const seed: AdminUser = {
+async function ensureSeedAdmins(): Promise<AdminUser[]> {
+  const { generateId } = await import("@/lib/utils");
+  const admins = await getAdmins();
+  let modified = false;
+
+  // Default Maya admin
+  if (!admins.some((a) => a.email.toLowerCase() === "admin@maya.ro")) {
+    admins.push({
       id: generateId(),
-      name: "Admin",
+      name: "Admin Maya",
       email: "admin@maya.ro",
       phone: "+40700000000",
       role: "super_admin",
@@ -23,10 +26,27 @@ async function seedIfEmpty(): Promise<AdminUser[]> {
       active: true,
       createdAt: new Date().toISOString(),
       lastLoginAt: null,
-    };
-    admins = [seed];
-    await kvSet(KV_KEY, admins);
+    });
+    modified = true;
   }
+
+  // Default Kuziini admin
+  if (!admins.some((a) => a.email.toLowerCase() === "admin@kuziini.ro")) {
+    admins.push({
+      id: generateId(),
+      name: "Admin Kuziini",
+      email: "admin@kuziini.ro",
+      phone: "+40700000001",
+      role: "super_admin",
+      passwordHash: await hashPassword(process.env.KUZIINI_ADMIN_PASSWORD || "Kuziini1"),
+      active: true,
+      createdAt: new Date().toISOString(),
+      lastLoginAt: null,
+    });
+    modified = true;
+  }
+
+  if (modified) await kvSet(KV_KEY, admins);
   return admins;
 }
 
@@ -41,7 +61,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const admins = await seedIfEmpty();
+    const admins = await ensureSeedAdmins();
     const hash = await hashPassword(password);
     const admin = admins.find(
       (a) =>

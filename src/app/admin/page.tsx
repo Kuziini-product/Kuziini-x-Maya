@@ -306,7 +306,7 @@ export default function AdminPage() {
       const loginRes = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: "admin@maya.ro", password: pw }),
+        body: JSON.stringify({ email: "admin@kuziini.ro", password: pw }),
       });
       const loginJson = await loginRes.json();
       if (!loginJson.success) throw new Error(loginJson.error);
