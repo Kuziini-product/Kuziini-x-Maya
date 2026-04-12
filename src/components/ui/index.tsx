@@ -140,14 +140,14 @@ export function EmptyState({
   description,
   action,
 }: {
-  icon: string;
+  icon?: string;
   title: string;
   description?: string;
   action?: ReactNode;
 }) {
   return (
     <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
-      <span className="text-5xl mb-4">{icon}</span>
+      {icon && <span className="text-5xl mb-4">{icon}</span>}
       <h3 className="text-xl font-bold text-white mb-2">{title}</h3>
       {description && (
         <p className="text-white/40 text-sm leading-relaxed mb-6">

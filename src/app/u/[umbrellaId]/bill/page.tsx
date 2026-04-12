@@ -214,8 +214,7 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
         {/* Emojis separated with Maya logo visible between them */}
         <div className="flex-1 flex items-center justify-center w-full relative">
           <img src="/Maya.png" alt="Maya" className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-64 object-contain pointer-events-none" />
-          <div className="flex items-center justify-between w-full px-2 relative z-10">
-            <span className="text-5xl animate-bounce">🏃‍♂️</span>
+          <div className="flex items-center justify-center w-full px-2 relative z-10">
             <div className="relative animate-bounce" style={{ animationDelay: "0.3s" }}>
               {/* CSS Receipt */}
               <div className="w-8 bg-white rounded-t-md shadow-xl -rotate-6" style={{
@@ -252,7 +251,7 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
                 </div>
               )}
               {selectedMethod === "room-charge" && (
-                <div className="absolute -bottom-2 -right-4 text-2xl">🔑</div>
+                <div className="absolute -bottom-2 -right-4 w-7 h-5 bg-gradient-to-br from-maya-gold to-amber-700 rounded-md shadow-lg" />
               )}
             </div>
           </div>
@@ -312,7 +311,7 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
 
         {/* Nota a fost transmisă - at the very bottom */}
         <p className="text-white/30 text-sm mb-6">
-          Nota ta a fost transmisă ✨
+          Nota ta a fost transmisă
         </p>
       </div>
     );
@@ -322,7 +321,7 @@ export default function BillPage({ params }: { params: { umbrellaId: string } })
     return (
       <div>
         <PageHeader title="Solicită nota" back={<Link href={`/u/${umbrellaId}`} className="w-9 h-9 flex items-center justify-center bg-white/10"><ArrowLeft className="w-4 h-4 text-white/70" /></Link>} />
-        <EmptyState icon="🔐" title="Identificare necesară" description="Identifică-te pentru a solicita nota." />
+        <EmptyState title="Identificare necesară" description="Identifică-te pentru a solicita nota." />
       </div>
     );
   }
