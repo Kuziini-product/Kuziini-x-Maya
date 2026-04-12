@@ -49,6 +49,16 @@ export function MenuItemCard({ item, highlight = false }: MenuItemCardProps) {
     }
   }
 
+  function handleQuickRemove(e: React.MouseEvent) {
+    e.stopPropagation();
+    if (!cartItem) return;
+    if (cartItem.quantity <= 1) {
+      removeItem(item.id);
+    } else {
+      updateQuantity(item.id, cartItem.quantity - 1);
+    }
+  }
+
   return (
     <div
       ref={cardRef}
@@ -81,10 +91,19 @@ export function MenuItemCard({ item, highlight = false }: MenuItemCardProps) {
           </p>
         </div>
 
-        {/* Right: quantity + add button */}
-        <div className="flex items-center gap-2 ml-3 shrink-0">
+        {/* Right: quantity controls */}
+        <div className="flex items-center gap-1.5 ml-3 shrink-0">
+          {inCart && item.available && (
+            <button
+              onClick={handleQuickRemove}
+              className="w-9 h-9 flex items-center justify-center bg-white/10 text-white active:bg-white/20 transition-colors"
+              aria-label="Scade cantitatea"
+            >
+              <Minus className="w-4 h-4" strokeWidth={2.5} />
+            </button>
+          )}
           {inCart && (
-            <span className="text-white text-sm font-bold w-5 text-center">
+            <span className="text-white text-sm font-bold w-6 text-center">
               {cartItem.quantity}
             </span>
           )}
@@ -92,6 +111,7 @@ export function MenuItemCard({ item, highlight = false }: MenuItemCardProps) {
             <button
               onClick={handleQuickAdd}
               className="w-9 h-9 flex items-center justify-center bg-maya-gold text-maya-dark active:opacity-70 transition-opacity"
+              aria-label="Creste cantitatea"
             >
               <Plus className="w-4 h-4" strokeWidth={2.5} />
             </button>
