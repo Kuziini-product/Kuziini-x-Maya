@@ -12,7 +12,7 @@ import {
 } from "@/hooks/use-admin";
 import * as adminApi from "@/lib/api";
 import {
-  Lock, Users, ShoppingBag, Receipt, DollarSign, RefreshCw, Umbrella,
+  Lock, Mail, Users, ShoppingBag, Receipt, DollarSign, RefreshCw, Umbrella,
   ImageIcon, LayoutGrid, FileText, Bell, BarChart3, ExternalLink,
   Volume2, VolumeX, UserPlus, CalendarCheck, Map, Shield, Palette, Inbox,
 } from "lucide-react";
@@ -118,21 +118,21 @@ function soundInstall() {
 const SESSION_KEY = "kuziini_admin_session";
 const SESSION_HOURS = 24;
 
-function getSavedSession(): string | null {
+function getSavedSession(): { email: string; password: string } | null {
   try {
     const raw = localStorage.getItem(SESSION_KEY);
     if (!raw) return null;
-    const { password: pw, timestamp } = JSON.parse(raw);
-    if (Date.now() - timestamp > SESSION_HOURS * 60 * 60 * 1000) {
+    const parsed = JSON.parse(raw);
+    if (Date.now() - parsed.timestamp > SESSION_HOURS * 60 * 60 * 1000) {
       localStorage.removeItem(SESSION_KEY);
       return null;
     }
-    return pw;
+    return { email: parsed.email || "admin@kuziini.ro", password: parsed.password };
   } catch { return null; }
 }
 
-function saveSession(pw: string) {
-  localStorage.setItem(SESSION_KEY, JSON.stringify({ password: pw, timestamp: Date.now() }));
+function saveSession(email: string, password: string) {
+  localStorage.setItem(SESSION_KEY, JSON.stringify({ email, password, timestamp: Date.now() }));
 }
 
 // ─── Tab config ─────────────────────────────────────────────────────────────
@@ -164,6 +164,7 @@ const MAYA_TABS: { key: Tab; label: string; icon: React.ReactNode }[] = [
 
 export default function AdminPage() {
   const qc = useQueryClient();
+  const [email, setEmail] = useState("admin@kuziini.ro");
   const [password, setPassword] = useState("");
   const [authenticated, setAuthenticated] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -243,8 +244,9 @@ export default function AdminPage() {
     autoLoginDone.current = true;
     const saved = getSavedSession();
     if (saved) {
-      setPassword(saved);
-      login(saved);
+      setEmail(saved.email);
+      setPassword(saved.password);
+      login(saved.email, saved.password);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -299,20 +301,20 @@ export default function AdminPage() {
 
   // ─── Login action ─────────────────────────────────────────────────────────
 
-  async function login(pw: string) {
+  async function login(em: string, pw: string) {
     setLoading(true);
     setError(null);
     try {
       const loginRes = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: "admin@kuziini.ro", password: pw }),
+        body: JSON.stringify({ email: em, password: pw }),
       });
       const loginJson = await loginRes.json();
       if (!loginJson.success) throw new Error(loginJson.error);
       setMayaAdminId(loginJson.data.id);
       setAuthenticated(true);
-      saveSession(pw);
+      saveSession(em, pw);
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Eroare.");
       setAuthenticated(false);
@@ -322,9 +324,9 @@ export default function AdminPage() {
   }
 
   function handleLogin() {
-    if (!password.trim()) { setError("Introdu parola."); return; }
+    if (!email.trim() || !password.trim()) { setError("Introdu email si parola."); return; }
     try { getAudioCtx().resume().then(() => { audioResumed = true; }); } catch {}
-    login(password);
+    login(email.trim(), password);
   }
 
   function manualRefresh() {
@@ -370,10 +372,33 @@ export default function AdminPage() {
           </div>
           <div className="space-y-4">
             <div>
+              <label className="text-[10px] font-bold text-maya-gold uppercase tracking-[0.2em] mb-2 block">Email</label>
+              <div className="flex items-center gap-3 bg-gray-50 border th-border px-4 py-3 focus-within:border-maya-gold/50 transition-colors">
+                <Mail className="w-4 h-4 th-text-muted shrink-0" />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && document.getElementById("kuziini-pw-input")?.focus()}
+                  className="flex-1 bg-transparent outline-none th-text text-sm placeholder:text-gray-400"
+                  placeholder="admin@kuziini.ro"
+                />
+              </div>
+            </div>
+            <div>
               <label className="text-[10px] font-bold text-maya-gold uppercase tracking-[0.2em] mb-2 block">Parolă</label>
               <div className="flex items-center gap-3 bg-gray-50 border th-border px-4 py-3 focus-within:border-maya-gold/50 transition-colors">
                 <Lock className="w-4 h-4 th-text-muted shrink-0" />
-                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleLogin()} className="flex-1 bg-transparent outline-none th-text text-sm placeholder:text-gray-400" placeholder="Introdu parola" autoFocus />
+                <input
+                  id="kuziini-pw-input"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+                  className="flex-1 bg-transparent outline-none th-text text-sm placeholder:text-gray-400"
+                  placeholder="Introdu parola"
+                  autoFocus
+                />
               </div>
             </div>
             {error && <p className="text-red-400 text-xs">{error}</p>}
