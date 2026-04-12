@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Phone, User, Mail, ArrowLeft } from "lucide-react";
+import { User, Mail, ArrowLeft } from "lucide-react";
 import { useSessionStore } from "@/store";
 import Link from "next/link";
+import PhoneInput from "@/components/PhoneInput";
 
 const DEFAULT_UMBRELLA = "VIP-001";
 
@@ -154,17 +155,7 @@ export default function ScanPage() {
             <label className="text-[10px] font-bold text-maya-gold uppercase tracking-[0.2em] mb-2 block">
               Telefon
             </label>
-            <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-3 focus-within:border-maya-gold/50 transition-colors">
-              <Phone className="w-4 h-4 text-white/30 shrink-0" />
-              <input
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="flex-1 bg-transparent outline-none text-white text-sm placeholder:text-white/20"
-                placeholder="+40 7XX XXX XXX"
-                inputMode="tel"
-              />
-            </div>
+            <PhoneInput value={phone} onChange={setPhone} />
           </div>
 
           <div>
